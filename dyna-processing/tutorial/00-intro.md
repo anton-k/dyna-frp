@@ -158,12 +158,11 @@ See the module `Dyna.Proc.Run` for complete list of the user input functions.
 
 That's it. We have described the FRP binding to `processing-fro-haskell`.
 
-Peculiriaties comparing to `gloss`:
+Peculiriaties comparing to `processing-for-haskell`:
 
-* usage of strict vectors `Vec` instead of lazy tuples
-* special type for game initialisation `Spec`
-* main function `runApp` expects `Run (Dyn Picture)` to evaluate
-* `vector-space` instances for vectors
+* special type for game initialisation `Spec` which contains 
+   processing's `setup` function
+* main function `runApp` expects `Run (Dyn Draw)` to evaluate
 * the `Run` is a Frp-monad (`MonadIO` and `MonadBaseControl`)
 
 FRP peculiriaties:
