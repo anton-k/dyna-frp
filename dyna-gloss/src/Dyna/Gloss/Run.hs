@@ -15,8 +15,12 @@ module Dyna.Gloss.Run(
   mouseRight,
   mouseLeft,
   mouseWheel,
+  Click(..),
   getClicks,
   getFrames,
+  getResize,
+  keyUp, keyDown,
+  charUp, charDown,
   -- * Re-exports
   Key(..),
   SpecialKey(..),
@@ -114,7 +118,7 @@ mouseA = Dyn $ D.constDyn $ do
   liftIO $ readIORef ref
 
 isDrag :: MouseButton -> Dyn Bool
-isDrag btn = Dyn $ D.foldD collect False $ D.mapMaybe go $ unEvt getClicks
+isDrag btn = Dyn $ D.scanD collect False $ D.mapMay go $ unEvt getClicks
   where
     go (Click key st mods pos) = case key of
       MouseButton mbtn | mbtn == btn -> Just st
@@ -135,24 +139,47 @@ drag btn = (\x -> if x then id else const 0) <$> isDrag btn <*> mouse
 
 -- | Event stream of clicks of the mouse right button
 mouseRight :: Evt Vec
-mouseRight = Evt $ D.mapMaybe go $ unEvt getClicks
+mouseRight = Evt $ D.mapMay go $ unEvt getClicks
   where
-    go (Click key st mods pos) = case key of
-      MouseButton RightButton | st == Down -> Just pos
-      _                                    -> Nothing
+    go = \case
+      Click (MouseButton RightButton) Down mods pos -> Just pos
+      _                                             -> Nothing
+
+-- | Event stream of key up actions
+keyUp :: Key -> Evt Modifiers
+keyUp = keyBy Up
+
+-- | Event stream of key down actions
+keyDown :: Key -> Evt Modifiers
+keyDown = keyBy Down
+
+-- | Event stream of char press up actions
+charUp :: Char -> Evt Modifiers
+charUp = keyUp . Char
+
+-- | Event stream of char press down actions
+charDown :: Char -> Evt Modifiers
+charDown = keyDown . Char
+
+keyBy :: KeyState -> Key -> Evt Modifiers
+keyBy st' key' = Evt $ D.mapMay go $ unEvt getClicks
+  where
+    go (Click key st mods pos)
+      | key == key' && st == st' = Just mods
+      | otherwise                = Nothing
 
 -- | Event stream of clicks of the mouse left button
 mouseLeft :: Evt Vec
-mouseLeft = Evt $ D.mapMaybe go $ unEvt getClicks
+mouseLeft = Evt $ D.mapMay go $ unEvt getClicks
   where
-    go (Click key st mods pos) = case key of
-      MouseButton LeftButton | st == Down -> Just pos
-      _                                   -> Nothing
+    go = \case
+      Click (MouseButton LeftButton) Down mods pos -> Just pos
+      _                                            -> Nothing
 
 -- | Mouse wheel displacement.
 -- If positive then it goes up, if negative then it goes down.
 mouseWheel :: Evt Float
-mouseWheel = Evt $ D.mapMaybe go $ unEvt getClicks
+mouseWheel = Evt $ D.mapMay go $ unEvt getClicks
   where
     go (Click key st mods pos) = case key of
       MouseButton WheelUp   -> Just 1
@@ -169,4 +196,11 @@ getClicks = Evt $ D.uchanEvt $ fst <$> asks env'keyChan
 -- we can also use time utilities from the FRP library: @clock@, @pulse@, @ticks@, @timer@.
 getFrames :: Evt Float
 getFrames = Evt $ D.uchanEvt $ fst <$> asks env'frameChan
+
+-- | Reads window resize events
+getResize :: Evt (Int, Int)
+getResize = Evt $ D.uchanEvt $ fst <$> asks env'resizeChan
+
+
+
 

@@ -1,5 +1,5 @@
 -- | FRP main types and combinators
-module Dyna.Gloss.Frp(
+module Dyna.Brick.Frp(
   -- * Events
   Evt,
   once,
@@ -138,7 +138,7 @@ import Data.Time
 import System.Random
 import Data.VectorSpace
 
-import Dyna.Gloss.Types
+import Dyna.Brick.Types
 import Dyna qualified as D
 
 infixl 4 <@>
@@ -652,4 +652,5 @@ instance RunFunctor Evt where
 
 instance RunFunctor Dyn where
   fmap' f (Dyn dyn) = Dyn $ D.fmap' f dyn
+
 

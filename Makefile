@@ -1,8 +1,9 @@
 build:
-	stack build dyna-gloss
+	stack build dyna-processing
 
 run:
-	stack exec -- ghc -O2 -threaded dyna-gloss/examples/SolarSystem.hs
-	./dyna-gloss/examples/SolarSystem
-	
-#	stack exec -- runhaskell dyna-brick/examples/Hello.hs
+	stack exec -- runhaskell dyna-processing/examples/Ball.hs
+	# stack exec -- runhaskell dyna/examples/RockPaperScissors.hs
+	# stack exec -- ghc -O2 -threaded dyna-gloss/examples/Ball.hs
+	# ./dyna-gloss/examples/Ball	
+	# stack exec -- runhaskell dyna/examples/InputForm.hs

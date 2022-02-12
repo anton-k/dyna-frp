@@ -5,11 +5,14 @@ packages:
 - dyna
 - dyna-brick
 - dyna-gloss
+- dyna-processing
 
 extra-deps:
 - brick-0.66.1
 - temporal-media-0.6.3
-
+- git: https://github.com/anton-k/processing-for-haskell.git
+  commit: 7f99414f3c266135b6a2848978fcb572fd7b67b1
+- hsnoise-0.0.2
 
 # flags: {}
 

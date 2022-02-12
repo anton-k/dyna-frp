@@ -58,6 +58,8 @@
 -- * Dynamics are based on event streams. The dynamic is an observation of some underlying event streams.
 --    We just remember the last event and keep producing it until the next one wil arrive.
 module Dyna(
+  -- * Pipe
+  (|>),
   -- * Class
   Frp(..),
   -- * Events
@@ -79,12 +81,12 @@ module Dyna(
 
   -- * API
   -- * Event API
-  foldE,
-  foldMaybeE,
-  mapMaybe,
+  scanE,
+  scanMayE,
+  mapMay,
   accumE,
   accumB,
-  accumMaybeE,
+  accumMayE,
   filterE,
   filterJust,
   whenE,
@@ -112,6 +114,7 @@ module Dyna(
   count,
   withCount,
   appendE,
+  foldMapE,
   takeE,
   dropE,
   takeWhileE,
@@ -120,21 +123,37 @@ module Dyna(
   listAt,
   toToggle,
 
+  foreverE,
+  raceE,
+  forkE,
+  -- * Render streams
+  headE,
   printE,
   putStrLnE,
+  foldE,
+  foldlE,
+  foldlE',
+  foldrE,
+  foldrE',
+  Parser,
+  runParser,
+  takeP,
+  cycleP,
+  headP,
+  maybeP,
   -- * Event/Dynamic interaction
   hold,
   unhold,
-  foldD,
-  foldMaybeD,
+  scanD,
+  scanMayD,
   switchD,
   switchDyn,
   apply,
-  applyMaybe,
+  applyMay,
   snap,
   attach,
   attachWith,
-  attachWithMaybe,
+  attachWithMay,
   (<@>),
   (<@),
   -- * Effectful API
@@ -142,14 +161,14 @@ module Dyna(
   foreach,
   posteach,
   iterateE',
-  foldE',
-  foldMaybeE',
+  scanE',
+  scanMayE',
   accumE',
-  accumMaybeE',
+  accumMayE',
   filterE',
-  mapMaybe',
+  mapMay',
   apply',
-  applyMaybe',
+  applyMay',
   -- * Utilities
 
   -- **  Channels (interaction with the world)
@@ -157,6 +176,8 @@ module Dyna(
   tchanEvt,
   uchanEvt,
   UChan,
+  -- ** IO
+  getLineE,
 
   -- ** Clock
   clock,
@@ -192,6 +213,7 @@ import System.Environment
 import Data.Functor
 import Data.Bifunctor
 import Data.Function
+import Data.Maybe (fromJust)
 import Data.Vector qualified as V
 import Data.AdditiveGroup as X
 import Data.AffineSpace as X
@@ -215,12 +237,26 @@ import Data.Time
 import System.Random (Random, newStdGen, randomR, random)
 import Control.Exception.Lifted
 import Control.Monad.Random.Class qualified as R
-import Temporal.Class
+import Temporal.Class as X
 
 import Data.Boolean
 
 infixl 4 <@>
 infixl 4 <@
+infixl 0  |>
+
+{-# inline (|>) #-}
+-- | Pipe operator. We often write processors of event streams
+-- It makes it convenient write them from first to the last:
+--
+-- > evt = proc1 |> proc2 |> ... |> procN
+--
+-- Instead of reversed order with @($)@:
+--
+-- > evt = procN $ ... $ proc2 $ proc1
+(|>) :: a -> (a -> b) -> b
+a |> f = f a
+
 
 class (IsRef (Ref m), MonadBaseControl IO m, MonadIO m) => Frp m where
   type Ref m :: * -> *
@@ -401,8 +437,25 @@ instance Frp m => Semigroup (Evt m a) where
   (<>) (Evt a) (Evt b) = Evt $ \proc ->
     concurrently_ (a proc) (b proc)
 
+-- | Shutdown the remaining event if one of the events close up early.
+raceE :: Frp m => Evt m a -> Evt m a -> Evt m a
+raceE (Evt a) (Evt b) = Evt $ \go ->
+  race_ (a go) (b go)
+
+-- | Execute each callback in separate thread
+forkE :: Frp m => Evt m a -> Evt m a
+forkE evt =
+  Evt $ \go -> runEvt evt $ void . fork . go
+
 instance Frp m => Monoid (Evt m a) where
   mempty = never
+
+instance Frp m => Applicative (Evt m) where
+  pure a = once (pure a)
+  f <*> a = a >>= (\x -> fmap ( $ x) f)
+
+instance Frp m => Monad (Evt m) where
+  (>>=) a f = switchE (fmap f a)
 
 -- | Accumulate over event stream.
 accumE :: Frp m => (a -> s -> (b, s)) -> s -> Evt m a -> Evt m b
@@ -423,8 +476,8 @@ accumE' f s evt = Evt $ \go -> do
     liftIO $ writeRef ref s
 
 -- | Accumulate over event stream.
-accumMaybeE :: Frp m => (a -> s -> Maybe (b, s)) -> s -> Evt m a -> Evt m b
-accumMaybeE f s evt = Evt $ \go -> do
+accumMayE :: Frp m => (a -> s -> Maybe (b, s)) -> s -> Evt m a -> Evt m b
+accumMayE f s evt = Evt $ \go -> do
   ref <- proxyNewRef evt s
   runEvt evt $ \x -> do
     mRes <- f x <$> liftIO (readRef ref)
@@ -433,8 +486,8 @@ accumMaybeE f s evt = Evt $ \go -> do
       liftIO $ writeRef ref s
 
 -- | Accumulate over event stream.
-accumMaybeE' :: Frp m => (a -> s -> m (Maybe (b, s))) -> s -> Evt m a -> Evt m b
-accumMaybeE' f s evt = Evt $ \go -> do
+accumMayE' :: Frp m => (a -> s -> m (Maybe (b, s))) -> s -> Evt m a -> Evt m b
+accumMayE' f s evt = Evt $ \go -> do
   ref <- proxyNewRef evt s
   runEvt evt $ \x -> do
     mRes <- f x =<< liftIO (readRef ref)
@@ -442,30 +495,30 @@ accumMaybeE' f s evt = Evt $ \go -> do
       go b
       liftIO $ writeRef ref s
 
--- | Fold over event stream. Example:
+-- | scan over event stream. Example:
 --
--- > naturals = foldE (+) 0 pulse
-foldE :: Frp m => (a -> b -> b) -> b -> Evt m a -> Evt m b
-foldE f s evt = Evt $ \go -> do
+-- > naturals = scanE (+) 0 pulse
+scanE :: Frp m => (a -> b -> b) -> b -> Evt m a -> Evt m b
+scanE f s evt = Evt $ \go -> do
   ref <- proxyNewRef evt s
   runEvt evt $ \x -> do
     s <- f x <$> liftIO (readRef ref)
     go s
     liftIO $ writeRef ref s
 
--- | Fold over event stream with effectful function.
-foldE' :: Frp m => (a -> b -> m b) -> b -> Evt m a -> Evt m b
-foldE' f s evt = Evt $ \go -> do
+-- | scan over event stream with effectful function.
+scanE' :: Frp m => (a -> b -> m b) -> b -> Evt m a -> Evt m b
+scanE' f s evt = Evt $ \go -> do
   ref <- proxyNewRef evt s
   runEvt evt $ \x -> do
     s <- f x =<< liftIO (readRef ref)
     go s
     liftIO $ writeRef ref s
 
--- | Fold combined with filter. If accumulator function produces @Nothing@ on event then
+-- | scan combined with filter. If accumulator function produces @Nothing@ on event then
 -- that event is ignored and state is kept to previous state.
-foldMaybeE :: Frp m => (a -> b -> Maybe b) -> b -> Evt m a -> Evt m b
-foldMaybeE f s evt = Evt $ \go -> do
+scanMayE :: Frp m => (a -> b -> Maybe b) -> b -> Evt m a -> Evt m b
+scanMayE f s evt = Evt $ \go -> do
   ref <- proxyNewRef evt s
   runEvt evt $ \x -> do
     ms <- f x <$> liftIO (readRef ref)
@@ -473,9 +526,9 @@ foldMaybeE f s evt = Evt $ \go -> do
       go s
       liftIO $ writeRef ref s
 
--- | Fold combined with filter for effectful function. See @foldMaybeE@ for details.
-foldMaybeE' :: Frp m => (a -> b -> m (Maybe b)) -> b -> Evt m a -> Evt m b
-foldMaybeE' f s evt = Evt $ \go -> do
+-- | scan combined with filter for effectful function. See @scanMayE@ for details.
+scanMayE' :: Frp m => (a -> b -> m (Maybe b)) -> b -> Evt m a -> Evt m b
+scanMayE' f s evt = Evt $ \go -> do
   ref <- proxyNewRef evt s
   runEvt evt $ \x -> do
     ms <- f x =<< liftIO (readRef ref)
@@ -483,7 +536,7 @@ foldMaybeE' f s evt = Evt $ \go -> do
       go s
       liftIO $ writeRef ref s
 
--- | Iterates over event stream. It's like foldE but it ignores the values of underying stream
+-- | Iterates over event stream. It's like scanE but it ignores the values of underying stream
 -- and starts with initial value as first element.
 iterateE :: Frp m => (a -> a) -> a -> Evt m b -> Evt m a
 iterateE f val evt = Evt $ \go -> do
@@ -569,10 +622,10 @@ hold s evt = Dyn pure evt (pure s) (pure ())
 
 -- | Counts how many events accured so far on the stream.
 count :: Frp m => Evt m a -> Evt m Int
-count = foldE (const succ) 0
+count = scanE (const succ) 0
 
 withCount :: Frp m => Evt m a -> Evt m (Int, a)
-withCount = accumE (\a b -> ((b, a), succ b)) 0
+withCount = accumE (\a b -> ((b, a), succ b)) 1
 
 -- | Turns dynamic into event stream of underlying events
 -- that trigger dynamic updates.
@@ -582,17 +635,17 @@ unhold (Dyn extract evts init release) = Evt $ \go -> do
   go =<< extract =<< init
   runEvt evts (go <=< extract) `finally` release
 
--- | Folds over event stream and converts it to dynamic.
-foldD :: Frp m => (a -> b -> b) -> b -> Evt m a -> Dyn m b
-foldD f s evt = hold s (foldE f s evt)
+-- | scans over event stream and converts it to dynamic.
+scanD :: Frp m => (a -> b -> b) -> b -> Evt m a -> Dyn m b
+scanD f s evt = hold s (scanE f s evt)
 
 -- | Accumulates the values with event stream that produce functions.
 accumB :: Frp m => a -> Evt m (a -> a) -> Dyn m a
-accumB a evt = foldD ($) a evt
+accumB a evt = scanD ($) a evt
 
--- | Dynamic fold that can also filter out events. If Nothing is produced then the event is skipped.
-foldMaybeD :: Frp m => (a -> b -> Maybe b) -> b -> Evt m a -> Dyn m b
-foldMaybeD f s evt = hold s (foldMaybeE f s evt)
+-- | Dynamic scan that can also filter out events. If Nothing is produced then the event is skipped.
+scanMayD :: Frp m => (a -> b -> Maybe b) -> b -> Evt m a -> Dyn m b
+scanMayD f s evt = hold s (scanMayE f s evt)
 
 -- | Adds some procedure to callback. Procedure is called prior to callback execution.
 foreach :: Frp m => (a -> m ()) -> Evt m a -> Evt m a
@@ -635,15 +688,15 @@ apply' dyn evt = Evt $ \go -> do
 (<@) = snap
 
 -- | Apply combined with filter.
-applyMaybe :: Frp m => Dyn m (a -> Maybe b) -> Evt m a -> Evt m b
-applyMaybe dyn evt = Evt $ \go -> do
+applyMay :: Frp m => Dyn m (a -> Maybe b) -> Evt m a -> Evt m b
+applyMay dyn evt = Evt $ \go -> do
   ref <- runDyn dyn
   runEvt evt $ \b -> do
     mapM_ go . ($ b) =<< readDyn ref
 
--- | Effectful @applyMaybe@.
-applyMaybe' :: Frp m => Dyn m (a -> m (Maybe b)) -> Evt m a -> Evt m b
-applyMaybe' dyn evt = Evt $ \go -> do
+-- | Effectful @applyMay@.
+applyMay' :: Frp m => Dyn m (a -> m (Maybe b)) -> Evt m a -> Evt m b
+applyMay' dyn evt = Evt $ \go -> do
   ref <- runDyn dyn
   runEvt evt $ \b -> do
     (\f -> mapM_ go =<< f b) =<< readDyn ref
@@ -662,19 +715,19 @@ attachWith :: Frp m => (a -> b -> c) -> Dyn m a -> Evt m b -> Evt m c
 attachWith f dyn evt = apply (f <$> dyn) evt
 
 -- | Attach with filtering. When @Nothing@ is produced event is omitted from the stream.
-attachWithMaybe :: Frp m => (a -> b -> Maybe c) -> Dyn m a -> Evt m b -> Evt m c
-attachWithMaybe f dyn evt = applyMaybe (f <$> dyn) evt
+attachWithMay :: Frp m => (a -> b -> Maybe c) -> Dyn m a -> Evt m b -> Evt m c
+attachWithMay f dyn evt = applyMay (f <$> dyn) evt
 
 --------------------------------------------------------------------------------
 -- filters
 
 -- | Map with filtering. When @Nothing@ is produced event is omitted from the stream.
-mapMaybe :: Frp m => (a -> Maybe b) -> Evt m a -> Evt m b
-mapMaybe f evt = Evt $ \go -> runEvt evt (mapM_ go . f)
+mapMay :: Frp m => (a -> Maybe b) -> Evt m a -> Evt m b
+mapMay f evt = Evt $ \go -> runEvt evt (mapM_ go . f)
 
--- | Effectful @mapMaybe@
-mapMaybe' :: Frp m => (a -> m (Maybe b)) -> Evt m a -> Evt m b
-mapMaybe' f evt = Evt $ \go -> runEvt evt (mapM_ go <=< f)
+-- | Effectful @mapMay@
+mapMay' :: Frp m => (a -> m (Maybe b)) -> Evt m a -> Evt m b
+mapMay' f evt = Evt $ \go -> runEvt evt (mapM_ go <=< f)
 
 -- | Filtering of the event strewams. Only events that produce True remain in the stream.
 filterE :: Frp m => (a -> Bool) -> Evt m a -> Evt m a
@@ -703,24 +756,23 @@ splitE evt = (leftE evt, rightE evt)
 
 -- | Gets all left events from the stream
 leftE :: Frp m => Evt m (Either a b) -> Evt m a
-leftE evt = mapMaybe (either Just (const Nothing)) evt
+leftE evt = mapMay (either Just (const Nothing)) evt
 
 -- | Gets all right events from the stream
 rightE :: Frp m => Evt m (Either a b) -> Evt m b
-rightE evt = mapMaybe (either (const Nothing) Just) evt
+rightE evt = mapMay (either (const Nothing) Just) evt
 
 -- | Takes only so many events from the stream
 takeE :: Frp m => Int -> Evt m a -> Evt m a
 takeE n evt = Evt $ \go -> do
-  tv <- proxyNewRef evt 0
-  exitRef <- newEmptyMVar
-  tid <- fork $ runEvt evt $ \x -> do
-    cur <- liftIO $ readRef tv
-    when (cur < n) $ go x
-    when (cur == n) $ putMVar exitRef ()
-    liftIO $ writeRef tv (succ cur)
-  _ <- takeMVar exitRef
-  killThread tid
+  ref <- proxyNewRef evt 0
+  waitAsync $ do
+    runEvt evt $ \x -> do
+      cur <- liftIO (readRef ref)
+      when (cur < n) $ do
+        go x
+        when (cur == n - 1) stopSelf
+        liftIO $ writeRef ref (cur + 1)
 
 -- | Drops first so many events from the stream
 dropE :: Frp m => Int -> Evt m a -> Evt m a
@@ -732,16 +784,25 @@ dropE n evt = Evt $ \go -> do
       then go x
       else liftIO (modifyRef tv pred)
 
+stopSelf :: Frp m => m ()
+stopSelf = killThread =<< myThreadId
+
+waitStop :: Frp m => Async a -> m ()
+waitStop x = void $ liftIO $ waitCatch x
+
+waitAsync :: Frp m => m () -> m ()
+waitAsync act = do
+  tid <- async act
+  waitStop tid
+
 -- | Takes events only while predicate is true.
 takeWhileE :: Frp m => (a -> Bool) -> Evt m a -> Evt m a
 takeWhileE pred evt = Evt $ \go -> do
-  exitRef <- newEmptyMVar
-  tid <- fork $ runEvt evt $ \x -> do
-    if (pred x)
-      then go x
-      else putMVar exitRef ()
-  _ <- takeMVar exitRef
-  killThread tid
+  waitAsync $ do
+    runEvt evt $ \x -> do
+      if (pred x)
+        then go x
+        else stopSelf
 
 -- | Drops events while predicate is true.
 dropWhileE :: Frp m => (a -> Bool) -> Evt m a -> Evt m a
@@ -758,7 +819,7 @@ dropWhileE pred evt = Evt $ \go -> do
 
 -- | Takes elements from the list by index. If index is out of bounds the event is omitted.
 listAt :: Frp m => [a] -> Evt m Int -> Evt m a
-listAt vals evt = mapMaybe (vec V.!?) evt
+listAt vals evt = mapMay (vec V.!?) evt
   where
     vec = V.fromList vals
 
@@ -775,17 +836,17 @@ cycleE vals evt = fmap (vec V.!) $ iterateE ((`mod` len) . succ) 0 evt
 
 -- | Sums all the elements in the event stream
 sumE :: (Frp m, Num a) => Evt m a -> Evt m a
-sumE = foldE (+) 0
+sumE = scanE (+) 0
 
 -- | Integrates signal of vectors with given time step
 integrate :: (Frp m, VectorSpace v, Real (Scalar v), Fractional (Scalar v)) => (Scalar v) -> Dyn m v -> Dyn m v
 integrate dt dyn =
-  hold zeroV $ foldE (^+^) zeroV (attachWith (\v k -> realToFrac k *^ v) dyn (ticks (realToFrac dt)))
+  hold zeroV $ scanE (^+^) zeroV (attachWith (\v k -> realToFrac k *^ v) dyn (ticks (realToFrac dt)))
 
 -- | More accurate integration of signal of vectors with given time step
 integrate2 :: (Frp m, VectorSpace v, Real (Scalar v), Fractional (Scalar v)) => (Scalar v) -> Dyn m v -> Dyn m v
 integrate2 dt dyn =
-  hold zeroV $ fmap snd $ foldE go (Nothing, zeroV) (attach dyn (ticks (realToFrac dt)))
+  hold zeroV $ fmap snd $ scanE go (Nothing, zeroV) (attach dyn (ticks (realToFrac dt)))
   where
     go (v, h) (mPrev, res) = ((Just (v, h), ) . (res ^+^ )) $ case mPrev of
       Nothing       -> realToFrac h *^ v
@@ -798,11 +859,50 @@ sumD dt dyn = hold 0 $ sumE (snap dyn (pulse dt))
 
 -- | Finds the product of all elements in the event stream.
 productE :: (Frp m, Num a) => Evt m a -> Evt m a
-productE = foldE (*) 1
+productE = scanE (*) 1
 
 -- | Monoidal append of all elements in the stream
 appendE :: (Frp m, Monoid a) => Evt m a -> Evt m a
-appendE = foldE (<>) mempty
+appendE = scanE (flip (<>)) mempty
+
+-- | Same as foldMap only for streams.
+foldMapE :: (Frp m, Monoid b) => (a -> b) -> Evt m a -> Evt m b
+foldMapE f = appendE . fmap f
+
+-- | Monoidal fold for event streams, note that stream have to be finite for
+-- the function to complete
+foldE :: (Frp m, Monoid a) => Evt m a -> m a
+foldE = foldlE (<>) mempty
+
+-- | Left fold for event streams, note that stream have to be finite for
+-- the function to complete
+foldlE :: (Frp m) => (b -> a -> b) -> b -> Evt m a -> m b
+foldlE f s evt = do
+  ref <- proxyNewRef evt s
+  runEvt evt $ \x -> liftIO $ modifyRef ref $ flip f x
+  liftIO $ readRef ref
+
+-- | Effectful left fold
+foldlE' :: (Frp m) => (b -> a -> m b) -> b -> Evt m a -> m b
+foldlE' f s evt = do
+  ref <- proxyNewRef evt s
+  runEvt evt $ \x -> liftIO . writeRef ref =<< flip f x =<< liftIO (readRef ref)
+  liftIO $ readRef ref
+
+-- | Right fold for event streams, note that stream have to be finite for
+-- the function to complete
+foldrE :: (Frp m) => (a -> b -> b) -> b -> Evt m a -> m b
+foldrE f s evt = do
+  ref <- proxyNewRef evt s
+  runEvt evt $ \x -> liftIO $ modifyRef ref $ f x
+  liftIO $ readRef ref
+
+-- | Effectful right fold
+foldrE' :: (Frp m) => (a -> b -> m b) -> b -> Evt m a -> m b
+foldrE' f s evt = do
+  ref <- proxyNewRef evt s
+  runEvt evt $ \x -> liftIO . writeRef ref =<< f x =<< liftIO (readRef ref)
+  liftIO $ readRef ref
 
 -- | Starts event stream process and as callback prints it values.
 printE :: (Frp m, Show a) => Evt m a -> m ()
@@ -811,6 +911,10 @@ printE evt = runEvt evt (liftIO . print)
 -- | Starts event stream process and as callback prints it values.
 putStrLnE :: (Frp m) => Evt m String -> m ()
 putStrLnE evt = runEvt evt (liftIO . putStrLn)
+
+-- | Stream of user inputs
+getLineE :: Frp m => Evt m String
+getLineE = once (liftIO getLine)
 
 -- | Queries the event stream form dynamic and runs it all next event streams are ignored.
 switchDyn :: Frp m => Dyn m (Evt m a) -> Evt m a
@@ -832,7 +936,7 @@ joinE evt = Evt $ \go ->
 -- For example if we need 3-recursive event stream:
 --
 --  > fixE3 ::
---  >      (Evt m a -> Evt m b -> Evt m c -> (Evt m a, Evt m b, Evt m c))
+--  >      (Evt m a -> Evt m b -> Evt m c -> m (Evt m a, Evt m b, Evt m c))
 --  >   -> (Evt m a, Evt m b, Evt m c)
 --
 -- we can use sum tpye tags
@@ -842,53 +946,54 @@ joinE evt = Evt $ \go ->
 --
 -- > fixE3 f = unwrap $ fixE g
 -- >   where
--- >      g x = wrap (f (unwrapA x) (unwrapB x) (unwrapC x))
+-- >      g x = wrap <$> f (unwrapA x) (unwrapB x) (unwrapC x)
 -- >
 -- >      wrap a b c = mconcat [TagA <$> a, TagB <$> b, TagC <$> c]
 -- >      unwrap evt = (unwrapA evt, unwrapB evt, unwrapC evt)
 -- >
--- >      unwrapA = flip mapMaybe $ \x -> case x of
+-- >      unwrapA = flip mapMay $ \x -> case x of
 -- >                                  TagA a -> Just a
 -- >                                  _      -> Nothing
 --
 -- We can use this trck with any number of streams. There are helper functions: @fixE2@, @fixE3@, @fixE4@
-fixE :: Frp m => (Evt m a -> Evt m a) -> Evt m a
+fixE :: Frp m => (Evt m a -> m (Evt m a)) -> Evt m a
 fixE f = Evt $ \go -> do
   chan <- liftIO U.newChan
   let evt = uchanEvt (pure $ fst chan)
-  runEvt (f evt) $ \x -> do
+  evt' <- f evt
+  runEvt evt' $ \x -> do
     liftIO $ U.writeChan (fst chan) x
     go x
 
 -- | Recursion for binary functions
-fixE2 :: Frp m => (Evt m a -> Evt m b -> (Evt m a, Evt m b)) -> (Evt m a, Evt m b)
+fixE2 :: Frp m => (Evt m a -> Evt m b -> m (Evt m a, Evt m b)) -> (Evt m a, Evt m b)
 fixE2 f = splitE $ fixE g
   where
-    g x = wrap $ f (leftE x) (rightE x)
+    g x = wrap <$> f (leftE x) (rightE x)
     wrap (a, b) = (Left <$> )a <> (Right <$> b)
 
 data Tag3 a b c = TagA3 a | TagB3 b | TagC3 c
 
 -- | Recursion for ternary functions
 fixE3 :: Frp m
-  => (Evt m a -> Evt m b -> Evt m c -> (Evt m a, Evt m b, Evt m c))
+  => (Evt m a -> Evt m b -> Evt m c -> m (Evt m a, Evt m b, Evt m c))
   -> (Evt m a, Evt m b, Evt m c)
 fixE3 f = unwrap $ fixE g
   where
-    g x = wrap $ f (unwrapA x) (unwrapB x) (unwrapC x)
+    g x = wrap <$> f (unwrapA x) (unwrapB x) (unwrapC x)
     wrap (a, b, c) = (TagA3 <$> a) <> (TagB3 <$> b) <> (TagC3 <$> c)
 
     unwrap x = (unwrapA x, unwrapB x, unwrapC x)
 
-    unwrapA = mapMaybe $ \case
+    unwrapA = mapMay $ \case
                 TagA3 a -> Just a
                 _       -> Nothing
 
-    unwrapB = mapMaybe $ \case
+    unwrapB = mapMay $ \case
                 TagB3 a -> Just a
                 _       -> Nothing
 
-    unwrapC = mapMaybe $ \case
+    unwrapC = mapMay $ \case
                 TagC3 a -> Just a
                 _       -> Nothing
 
@@ -897,28 +1002,28 @@ data Tag4 a b c d = TagA4 a | TagB4 b | TagC4 c | TagD4 d
 
 -- | Recursion for functions of four arguments
 fixE4 :: Frp m =>
-     (Evt m a -> Evt m b -> Evt m c -> Evt m d -> (Evt m a, Evt m b, Evt m c, Evt m d))
+     (Evt m a -> Evt m b -> Evt m c -> Evt m d -> m (Evt m a, Evt m b, Evt m c, Evt m d))
   -> (Evt m a, Evt m b, Evt m c, Evt m d)
 fixE4 f = unwrap $ fixE g
   where
-    g x = wrap $ f (unwrapA x) (unwrapB x) (unwrapC x) (unwrapD x)
+    g x = wrap <$> f (unwrapA x) (unwrapB x) (unwrapC x) (unwrapD x)
     wrap (a, b, c, d) = (TagA4 <$> a) <> (TagB4 <$> b) <> (TagC4 <$> c) <> (TagD4 <$> d)
 
     unwrap x = (unwrapA x, unwrapB x, unwrapC x, unwrapD x)
 
-    unwrapA = mapMaybe $ \case
+    unwrapA = mapMay $ \case
                 TagA4 a -> Just a
                 _       -> Nothing
 
-    unwrapB = mapMaybe $ \case
+    unwrapB = mapMay $ \case
                 TagB4 a -> Just a
                 _       -> Nothing
 
-    unwrapC = mapMaybe $ \case
+    unwrapC = mapMay $ \case
                 TagC4 a -> Just a
                 _       -> Nothing
 
-    unwrapD = mapMaybe $ \case
+    unwrapD = mapMay $ \case
                 TagD4 a -> Just a
                 _       -> Nothing
 
@@ -1120,14 +1225,14 @@ withOneOf xs evt = first (vec V.! ) <$> withRandomR (0, len - 1) evt
 -- | Picks at random one element from the list. We also provide distribution of events.
 -- Probability to pick up the element. Sum of probabilities should equal to 1.
 freqOf :: (R.MonadRandom m, Frp m) => Dyn m [(a, Rational)] -> Evt m b -> Evt m a
-freqOf dynVals evts = applyMaybe' ((\vals -> const (go vals)) <$> dynVals) evts
+freqOf dynVals evts = applyMay' ((\vals -> const (go vals)) <$> dynVals) evts
   where
     go vals = R.fromListMay vals
 
 -- | Picks at random one element from the list. We also provide distribution of events.
 -- Probability to pick up the element. Sum of probabilities should equal to 1.
 withFreqOf :: (R.MonadRandom m, Frp m) => Dyn m [(a, Rational)] -> Evt m b -> Evt m (a, b)
-withFreqOf dynVals evts = applyMaybe' (go <$> dynVals) evts
+withFreqOf dynVals evts = applyMay' (go <$> dynVals) evts
   where
     go vals x = fmap (fmap ((, x))) $ R.fromListMay vals
 
@@ -1137,7 +1242,7 @@ randSkip prob evt = randSkipBy (const <$> prob) evt
 
 -- | Skips elements at random. The probability to skip element depends on the element itself.
 randSkipBy :: Frp m => Dyn m (a -> Double) -> Evt m a -> Evt m a
-randSkipBy  prob evt = attachWithMaybe f prob $ withRandomR (0, 1 :: Double) evt
+randSkipBy  prob evt = attachWithMay f prob $ withRandomR (0, 1 :: Double) evt
   where
     f getProb (curProb, a)
       | curProb < getProb a  = Nothing
@@ -1287,4 +1392,142 @@ instance Frp m => Compose (Evt m a) where
 
 instance Frp m => Loop (Evt m a) where
   loop evt = Evt $ \go -> forever (runEvt evt go)
+
+-- | Takes an event and repeats it all the time.
+foreverE :: Frp m => Evt m a -> Evt m a
+foreverE evt = Evt $ \go -> forever (runEvt evt go)
+
+type instance DurOf (Evt m a) = NominalDiffTime
+
+instance Frp m => Limit (Evt m a) where
+  lim t evt = Evt $ \go ->
+    race_ (runEvt evt go) (sleep t)
+
+--------------------------------------------------------------------------------
+-- Parser
+
+data St a = Final a | Cont a
+  deriving (Functor)
+
+data Parser m a b = forall s . Parser
+  { parser'init   :: s
+  , parser'modify :: (a -> s -> m (Maybe (St s)))
+  , parser'get    :: s -> m (Maybe b)
+  }
+
+runParser :: Frp m => Parser m a b -> Evt m a -> m (Maybe b)
+runParser (Parser init modify get) evt = do
+  ref <- proxyNewRef evt (Cont init)
+
+  waitAsync $ do
+    runEvt evt $ \x -> do
+      st <- liftIO $ readRef ref
+      case st of
+        Final s -> stopSelf
+        Cont s  -> do
+          mS' <- modify x s
+          forM_ mS' $ \case
+            Cont s  -> liftIO $ writeRef ref (Cont s)
+            Final s -> liftIO $ do
+              writeRef ref (Final s)
+              stopSelf
+
+  st <- liftIO (readRef ref)
+  case st of
+    Final s -> get s
+    _       -> pure Nothing
+
+headE :: Frp m => Evt m a -> m a
+headE evt = do
+  ref <- proxyNewRef evt Nothing
+  waitAsync $ do
+    runEvt evt $ \x -> do
+      liftIO $ writeRef ref (Just x)
+      stopSelf
+  fromJust <$> liftIO (readRef ref)
+
+-- | Reads single event
+takeP :: Frp m => Parser m a b -> Evt m a -> Evt m b
+takeP (Parser init modify get) evt = Evt $ \go -> do
+  ref <- proxyNewRef evt init
+  waitAsync $ do
+    runEvt evt $ \x -> do
+      s <- liftIO $ readRef ref
+      mS' <- modify x s
+      forM_ mS' $ \case
+        Cont s'  -> liftIO $ writeRef ref s'
+        Final s' -> do
+          mapM_ go =<< get s'
+          stopSelf
+
+cycleP :: Frp m => Parser m a b -> Evt m a -> Evt m b
+cycleP (Parser init modify get) evt = Evt $ \go -> do
+  ref <- proxyNewRef evt init
+  waitAsync $ do
+    runEvt evt $ \x -> do
+      s <- liftIO $ readRef ref
+      mS' <- modify x s
+      forM_ mS' $ \case
+        Cont s'  -> liftIO $ writeRef ref s'
+        Final s' -> do
+          mapM_ go =<< get s'
+          liftIO $ writeRef ref init
+
+-- | Takes first element of the event stream and shuts the stream down.
+headP :: Frp m => Parser m a a
+headP = Parser init modify get
+  where
+    init = Nothing
+    modify a _ = pure $ Just (Final (Just a))
+    get = pure
+
+maybeP :: Frp m => (a -> Maybe b) -> Parser m a b
+maybeP f = Parser init modify get
+  where
+    init = Nothing
+    modify a _ = pure $ fmap (Final . Just) $ f a
+    get = pure
+
+instance Frp m => Functor (Parser m a) where
+  fmap f (Parser init modify get) = Parser init modify (fmap (fmap f) . get)
+
+instance Frp m => Applicative (Parser m a) where
+  pure a = Parser () (\_ _ -> pure (Just (Final ()))) (const $ pure $ Just a)
+  (Parser initF modifyF getF) <*> (Parser initA modifyA getA) = Parser initRes modifyRes getRes
+    where
+      initRes = (Cont initF, Cont initA)
+
+      modifyRes inp (sf, sa) = case sf of
+        Cont f -> do
+          mF' <- modifyF inp f
+          pure $ fmap (Cont . (, sa)) mF'
+        Final f ->
+          case sa of
+            Cont a -> do
+              mA' <- modifyA inp a
+              pure $ flip fmap mA' $ \case
+                  Cont a'  -> Cont (Final f, Cont a')
+                  Final a' -> Final (Final f, Final a')
+            Final a -> pure (Just (Final (sf, sa)))
+
+      getRes = \case
+        (Final f, Final a) -> do
+          mf <- getF f
+          ma <- getA a
+          pure (mf <*> ma)
+        _                  -> pure Nothing
+
+
+
+
+{-
+
+instance Frp m => Applicative (Parser m) where
+  pure a = Parser
+
+-}
+
+
+
+
 

@@ -109,7 +109,12 @@ instance D.Frp Run where
 --
 -- In this example event streams @a@ and @b@ will have the same events during execution.
 newtype Evt a = Evt { unEvt :: D.Evt Run a }
-  deriving (Functor, Semigroup, Monoid, Melody, Harmony, Compose, Loop)
+  deriving (Functor, Semigroup, Monoid, Applicative, Monad, Melody, Harmony, Compose, Loop)
+
+type instance DurOf (Evt a) = Float
+
+instance Limit (Evt a) where
+  lim t (Evt evt) = Evt $ lim (realToFrac t) evt
 
 -- | Dynamic step-wise continuous process
 newtype Dyn a = Dyn { unDyn :: D.Dyn Run a }

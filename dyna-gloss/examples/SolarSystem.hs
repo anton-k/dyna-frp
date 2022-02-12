@@ -49,7 +49,7 @@ move = liftA2 (.) displace scaleWheel
 
 -- | Scale picture on mouse wheel event
 scaleWheel :: Dyn (Picture -> Picture)
-scaleWheel = (\n -> scale (Vec n n)) <$> foldD updateScale 1 mouseWheel
+scaleWheel = (\n -> scale (Vec n n)) <$> scanD updateScale 1 mouseWheel
   where
     updateScale a s = min maxBound $ max minBound (s + a * step)
       where
@@ -59,7 +59,7 @@ scaleWheel = (\n -> scale (Vec n n)) <$> foldD updateScale 1 mouseWheel
 
 -- | Displace picture on drag by righ mouse button event
 displace :: Dyn (Picture -> Picture)
-displace = fmap translate $ foldD const 0 $ whenE (isDrag RightButton) (snap mouse $ pulse 0.01)
+displace = fmap translate $ scanD const 0 $ whenE (isDrag RightButton) (snap mouse $ pulse 0.01)
 
 --------------------------------------------------------------------------------
 

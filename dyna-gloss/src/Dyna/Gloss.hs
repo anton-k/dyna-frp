@@ -7,6 +7,7 @@ import Data.AffineSpace as X
 import Data.Basis as X
 import Data.Cross as X
 import Data.VectorSpace as X
+import Temporal.Class as X
 
 import Graphics.Gloss.Data.Bitmap as X
 import Graphics.Gloss.Data.Color as X

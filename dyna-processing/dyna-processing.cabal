@@ -1,13 +1,17 @@
 cabal-version: 1.12
 
-name:           dyna-gloss
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           dyna-processing
 version:        0.1.0.0
-description:    FRP for gloss graphics and animation library
-homepage:       https://github.com/anton-k/dyna-gloss#readme
-bug-reports:    https://github.com/anton-k/dyna-gloss/issues
-author:         Anton Kholomiov
-maintainer:     anton.kholomiov@gmail.com
-copyright:      2022 Anton Kholomiov
+description:    Please see the README on GitHub at <https://github.com/githubuser/dyna-processing#readme>
+homepage:       https://github.com/githubuser/dyna-processing#readme
+bug-reports:    https://github.com/githubuser/dyna-processing/issues
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2022 Author name here
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -17,27 +21,23 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/anton-k/dyna-frp/dyna-gloss
+  location: https://github.com/githubuser/dyna-processing
 
 library
   exposed-modules:
-      Dyna.Gloss
-      Dyna.Gloss.Data.Picture
-      Dyna.Gloss.Data.Point
-      Dyna.Gloss.Data.Vec
-      Dyna.Gloss.Geometry.Line
-      Dyna.Gloss.Frp
-      Dyna.Gloss.Run
+      Dyna.Proc
+      Dyna.Proc.Frp
+      Dyna.Proc.Run
+      Dyna.Proc.Types
   other-modules:
-      Dyna.Gloss.Types
-      Paths_dyna_gloss
+      Paths_dyna_processing
   hs-source-dirs:
       src
   build-depends:
       base >=4.7 && <5
     , Boolean
     , dyna
-    , gloss
+    , processing-for-haskell
     , lifted-base
     , monad-control
     , mtl
@@ -66,16 +66,15 @@ library
     ImportQualifiedPost
     RecordWildCards
 
-
-test-suite dyna-gloss-test
+test-suite dyna-processing-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      Paths_dyna_gloss
+      Paths_dyna_processing
   hs-source-dirs:
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
-    , dyna-gloss
+    , dyna-processing
   default-language: Haskell2010
