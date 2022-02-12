@@ -7,7 +7,7 @@ behavior over time.
 
 In this repo there are several libraries:
 
-* `dyna` - core FRP library ([tutorial](https://github.com/anton-k/dyna-frp/tree/main/dyna), [docs](https://hackage.haskell.org/package/dyna))
+* `dyna` - core FRP library ([tutorial](https://github.com/anton-k/dyna-frp/tree/main/dyna), [docs](https://hackage.haskell.org/package/dyna), [quick reference](https://github.com/anton-k/dyna-frp/blob/main/dyna/tutorial/101-reference.md))
 * `dyna-brick` - binding to `brick` library for terminal user interfaces ([tutorial](https://github.com/anton-k/dyna-frp/tree/main/dyna-brick), [docs](https://hackage.haskell.org/package/dyna-brick))
 * `dyna-gloss` - binding to `gloss` library for declarative 2D animation and games ([tutorial](https://github.com/anton-k/dyna-frp/tree/main/dyna-gloss), [docs](https://hackage.haskell.org/package/dyna-gloss))
 * `dyna-processing` - binding to `processing-for-haskell` library for imperative 
