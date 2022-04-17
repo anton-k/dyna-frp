@@ -61,11 +61,11 @@ total = 5
 
 game :: Evt IO String
 game =
-  once getLine |> foreverE |>           -- read user input
+  once getLine |> forevers |>           -- read user input
   mapMay (readMaybe @Move) |>           -- take only valid moves
-  takeE total |>                        -- take only so many moves
+  takes total |>                        -- take only so many moves
   withOneOf [Rock, Paper, Scissors] |>  -- add random AI move as first element of the tuple
-  foldMapE (uncurry $ flip toScore) |>  -- get the score and accumulate scores
+  foldMaps (uncurry $ flip toScore) |>  -- get the score and accumulate scores
   withCount |>                          -- append the round number
   fmap (printScore total)               -- print the current score
 
@@ -73,7 +73,7 @@ main :: IO ()
 main = do
   hSetBuffering stdout LineBuffering
   greet
-  putStrLnE game
+  putStrLns game
 
 greet :: IO ()
 greet = putStrLn $ unlines

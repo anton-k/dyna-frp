@@ -53,8 +53,8 @@ readPassport x = case x of
 --
 -- In this case parser @maybeP@ takes in input until the function returns @Just result@.
 inputBy :: String -> (String -> Maybe a) -> IO a
-inputBy field f = headE $ takeP (maybeP f) $
-  foreverE (once $ putStr (field <> ": ") >> getLine)
+inputBy field f = heads $ takeP (maybeP f) $
+  forevers (once $ putStr (field <> ": ") >> getLine)
 
 -- | Read the whole form from parts
 inputForm =

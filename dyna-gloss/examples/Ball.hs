@@ -33,7 +33,7 @@ pointer = liftA2 Ball ballColor mouse
 
 -- | Colors alterate on mouse left clicks
 ballColor :: Dyn Color
-ballColor = hold green $ cycleE [red, green] mouseLeft
+ballColor = hold green $ cycles [red, green] mouseLeft
 
 -- | Count the mouse clicks so far (so many balls we have placed on the screen)
 countBalls :: Dyn Picture

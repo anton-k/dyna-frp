@@ -116,7 +116,9 @@ mouseA = Dyn $ D.constDyn (liftIO . readIORef =<< asks env'mouseDif2)
 
 -- | Reads generic click events
 getClicks :: Evt Click
-getClicks = Evt $ D.uchanEvt $ fst <$> asks env'clicks
+getClicks = Evt $ D.Evt $ \go -> do
+  clickChan <- asks env'clicks
+  D.runEvt (D.uchanEvt $ fst clickChan) go
 
 -- | Generic mouse click event
 mouseButton :: MouseButton -> Evt P2

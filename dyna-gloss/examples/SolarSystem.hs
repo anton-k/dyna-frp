@@ -59,7 +59,7 @@ scaleWheel = (\n -> scale (Vec n n)) <$> scanD updateScale 1 mouseWheel
 
 -- | Displace picture on drag by righ mouse button event
 displace :: Dyn (Picture -> Picture)
-displace = fmap translate $ scanD const 0 $ whenE (isDrag RightButton) (snap mouse $ pulse 0.01)
+displace = fmap translate $ scanD const 0 $ whens (isDrag RightButton) (snap mouse $ pulse 0.01)
 
 --------------------------------------------------------------------------------
 

@@ -188,19 +188,21 @@ mouseWheel = Evt $ D.mapMay go $ unEvt getClicks
 
 -- | Reads generic click events
 getClicks :: Evt Click
-getClicks = Evt $ D.uchanEvt $ fst <$> asks env'keyChan
+getClicks = Evt $ D.Evt $ \go -> do
+  keyChan <- asks env'keyChan
+  D.runEvt (D.uchanEvt (fst keyChan)) go
 
 -- | Reads frame updates. Value of the event is a time that has passed since the previous frame.
 --
 -- Note that if we want to use the sort of event stream as a timeline for the game or simulation
 -- we can also use time utilities from the FRP library: @clock@, @pulse@, @ticks@, @timer@.
 getFrames :: Evt Float
-getFrames = Evt $ D.uchanEvt $ fst <$> asks env'frameChan
+getFrames = Evt $ D.Evt $ \go -> do
+  frameChan <- asks env'frameChan
+  D.runEvt (D.uchanEvt (fst frameChan)) go
 
 -- | Reads window resize events
 getResize :: Evt (Int, Int)
-getResize = Evt $ D.uchanEvt $ fst <$> asks env'resizeChan
-
-
-
-
+getResize = Evt $ D.Evt $ \go -> do
+  resizeChan <- asks env'resizeChan
+  D.runEvt (D.uchanEvt $ fst resizeChan) go

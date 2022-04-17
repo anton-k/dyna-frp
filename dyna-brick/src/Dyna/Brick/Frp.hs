@@ -19,58 +19,58 @@ module Dyna.Brick.Frp(
 
   -- * API
   -- * Event API
-  scanE,
-  scanMayE,
+  scan,
+  scanMay,
   mapMay,
-  foldMapE,
-  accumE,
+  foldMaps,
+  accum,
   accumB,
-  accumMayE,
-  filterE,
+  accumMay,
+  filters,
   filterJust,
-  whenE,
-  splitE,
-  leftE,
-  rightE,
-  iterateE,
-  withIterateE,
+  whens,
+  splits,
+  lefts,
+  rights,
+  iterates,
+  withIterates,
 
-  fixE,
-  fixE2,
-  fixE3,
-  fixE4,
-  switchE,
-  joinE,
+  fix1,
+  fix2,
+  fix3,
+  fix4,
+  switch,
+  joins,
 
   delay,
   delayFork,
 
-  sumE,
+  sums,
   sumD,
   integrate,
   integrate2,
-  productE,
+  products,
   count,
   withCount,
-  appendE,
-  takeE,
-  dropE,
-  takeWhileE,
-  dropWhileE,
-  cycleE,
+  appends,
+  takes,
+  drops,
+  takesWhile,
+  dropsWhile,
+  cycles,
   listAt,
   toToggle,
 
-  raceE,
-  forkE,
-  foreverE,
-  foldE,
-  foldlE,
-  foldlE',
-  foldrE,
-  foldrE',
-  printE,
-  putStrLnE,
+  races,
+  forks,
+  forevers,
+  folds,
+  foldls,
+  foldls',
+  foldrs,
+  foldrs',
+  prints,
+  putStrLns,
   -- * Event/Dynamic interaction
   hold,
   unhold,
@@ -90,12 +90,12 @@ module Dyna.Brick.Frp(
   RunFunctor(..),
   foreach,
   posteach,
-  iterateE',
-  scanE',
-  scanMayE',
-  accumE',
-  accumMayE',
-  filterE',
+  iterates',
+  scan',
+  scanMay',
+  accum',
+  accumMay',
+  filters',
   mapMay',
   apply',
   applyMay',
@@ -188,67 +188,67 @@ newDyn :: Dyn a -> Run (Dyn a)
 newDyn (Dyn dyn) = Dyn <$> D.newDyn dyn
 
 -- | Accumulate over event stream.
-accumE :: (a -> s -> (b, s)) -> s -> Evt a -> Evt b
-accumE f s (Evt evt) = Evt $ D.accumE f s evt
+accum :: (a -> s -> (b, s)) -> s -> Evt a -> Evt b
+accum f s (Evt evt) = Evt $ D.accum f s evt
 
 -- | Accumulate over event stream.
-accumE' :: (a -> s -> Run (b, s)) -> s -> Evt a -> Evt b
-accumE' f s (Evt evt) = Evt $ D.accumE' f s evt
+accum' :: (a -> s -> Run (b, s)) -> s -> Evt a -> Evt b
+accum' f s (Evt evt) = Evt $ D.accum' f s evt
 
 -- | Accumulate over event stream.
-accumMayE :: (a -> s -> Maybe (b, s)) -> s -> Evt a -> Evt b
-accumMayE f s (Evt evt) = Evt $ D.accumMayE f s evt
+accumMay :: (a -> s -> Maybe (b, s)) -> s -> Evt a -> Evt b
+accumMay f s (Evt evt) = Evt $ D.accumMay f s evt
 
 -- | Accumulate over event stream.
-accumMayE' :: (a -> s -> Run (Maybe (b, s))) -> s -> Evt a -> Evt b
-accumMayE' f s (Evt evt) = Evt $ D.accumMayE' f s evt
+accumMay' :: (a -> s -> Run (Maybe (b, s))) -> s -> Evt a -> Evt b
+accumMay' f s (Evt evt) = Evt $ D.accumMay' f s evt
 
 -- | scan over event stream. Example:
 --
--- > naturals = scanE (+) 0 pulse
-scanE :: (a -> b -> b) -> b -> Evt a -> Evt b
-scanE f s (Evt evt) = Evt $ D.scanE f s  evt
+-- > naturals = scan (+) 0 pulse
+scan :: (a -> b -> b) -> b -> Evt a -> Evt b
+scan f s (Evt evt) = Evt $ D.scan f s  evt
 
 -- | scan over event stream with effectful function.
-scanE' :: (a -> b -> Run b) -> b -> Evt a -> Evt b
-scanE' f s (Evt evt) = Evt $ D.scanE' f s evt
+scan' :: (a -> b -> Run b) -> b -> Evt a -> Evt b
+scan' f s (Evt evt) = Evt $ D.scan' f s evt
 
 -- | scan combined with filter. If accumulator function produces @Nothing@ on event then
 -- that event is ignored and state is kept to previous state.
-scanMayE :: (a -> b -> Maybe b) -> b -> Evt a -> Evt b
-scanMayE f s (Evt evt) = Evt $ D.scanMayE f s evt
+scanMay :: (a -> b -> Maybe b) -> b -> Evt a -> Evt b
+scanMay f s (Evt evt) = Evt $ D.scanMay f s evt
 
 -- | scan combined with filter for effectful function. See @scanMayE@ for details.
-scanMayE' :: (a -> b -> Run (Maybe b)) -> b -> Evt a -> Evt b
-scanMayE' f s (Evt evt) = Evt $ D.scanMayE' f s evt
+scanMay' :: (a -> b -> Run (Maybe b)) -> b -> Evt a -> Evt b
+scanMay' f s (Evt evt) = Evt $ D.scanMay' f s evt
 
 -- | Combo of @fmap@ and @appendE@
-foldMapE :: Monoid b => (a -> b) -> Evt a -> Evt b
-foldMapE f evt = appendE (fmap f evt)
+foldMaps :: Monoid b => (a -> b) -> Evt a -> Evt b
+foldMaps f evt = appends (fmap f evt)
 
 -- | Repeatedly executes the same event stream
-raceE :: Evt a -> Evt a -> Evt a
-raceE (Evt evtA) (Evt evtB) = Evt (D.raceE evtA evtB)
+races :: Evt a -> Evt a -> Evt a
+races (Evt evtA) (Evt evtB) = Evt (D.races evtA evtB)
 
 -- | Repeatedly executes the same event stream
-forkE :: Evt a -> Evt a
-forkE (Evt evt) = Evt (D.forkE evt)
+forks :: Evt a -> Evt a
+forks (Evt evt) = Evt (D.forks evt)
 
 -- | Repeatedly executes the same event stream
-foreverE :: Evt a -> Evt a
-foreverE (Evt evt) = Evt (D.foreverE evt)
+forevers :: Evt a -> Evt a
+forevers (Evt evt) = Evt (D.forevers evt)
 
--- | Iterates over event stream. It's like scanE but it ignores the values of underying stream
+-- | Iterates over event stream. It's like scan but it ignores the values of underying stream
 -- and starts with initial value as first element.
-iterateE :: (a -> a) -> a -> Evt b -> Evt a
-iterateE f val (Evt evt) = Evt $ D.iterateE f val evt
+iterates :: (a -> a) -> a -> Evt b -> Evt a
+iterates f val (Evt evt) = Evt $ D.iterates f val evt
 
-withIterateE :: (a -> a) -> a -> Evt b -> Evt (a, b)
-withIterateE f val (Evt evt) = Evt $ D.withIterateE f val evt
+withIterates :: (a -> a) -> a -> Evt b -> Evt (a, b)
+withIterates f val (Evt evt) = Evt $ D.withIterates f val evt
 
 -- | Effectful version for @iterateE@.
-iterateE' :: (a -> Run a) -> a -> Evt b -> Evt a
-iterateE' f val (Evt evt) = Evt $ D.iterateE' f val evt
+iterates' :: (a -> Run a) -> a -> Evt b -> Evt a
+iterates' f val (Evt evt) = Evt $ D.iterates' f val evt
 
 -- | Reads current dynamic value.
 readDyn :: DynRef  a -> Run a
@@ -355,12 +355,12 @@ mapMay' f (Evt evt) = Evt $ D.mapMay' f evt
 -- filters
 
 -- | Filtering of the event strewams. Only events that produce True remain in the stream.
-filterE :: (a -> Bool) -> Evt a -> Evt a
-filterE f (Evt evt) = Evt $ D.filterE f evt
+filters :: (a -> Bool) -> Evt a -> Evt a
+filters f (Evt evt) = Evt $ D.filters f evt
 
 -- | Effectful filtering for event streams.
-filterE' :: (a -> Run Bool) -> Evt a -> Evt a
-filterE' f (Evt evt) = Evt $ D.filterE' f evt
+filters' :: (a -> Run Bool) -> Evt a -> Evt a
+filters' f (Evt evt) = Evt $ D.filters' f evt
 
 -- | Filters based on Maybe. If @Nothing@ is produced forthe event it is omitted from the stream.
 filterJust :: Evt (Maybe a) -> Evt a
@@ -368,36 +368,36 @@ filterJust (Evt evt) = Evt $ D.filterJust evt
 
 -- | Filters with dynamic. When dynamic is true events pass through and when it's false
 -- events are omitted.
-whenE :: Dyn Bool -> Evt a -> Evt a
-whenE (Dyn dyn) (Evt evt) = Evt $ D.whenE dyn evt
+whens :: Dyn Bool -> Evt a -> Evt a
+whens (Dyn dyn) (Evt evt) = Evt $ D.whens dyn evt
 
 -- | Splits the either event stream.
-splitE :: Evt (Either a b) -> (Evt a, Evt b)
-splitE evt = (leftE evt, rightE evt)
+splits :: Evt (Either a b) -> (Evt a, Evt b)
+splits evt = (lefts evt, rights evt)
 
 -- | Gets all left events from the stream
-leftE :: Evt (Either a b) -> Evt a
-leftE (Evt evt) = Evt $ D.leftE evt
+lefts :: Evt (Either a b) -> Evt a
+lefts (Evt evt) = Evt $ D.lefts evt
 
 -- | Gets all right events from the stream
-rightE :: Evt (Either a b) -> Evt b
-rightE (Evt evt) = Evt $ D.rightE evt
+rights :: Evt (Either a b) -> Evt b
+rights (Evt evt) = Evt $ D.rights evt
 
 -- | Takes only so many events from the stream
-takeE :: Int -> Evt a -> Evt a
-takeE n (Evt evt) = Evt $ D.takeE n evt
+takes :: Int -> Evt a -> Evt a
+takes n (Evt evt) = Evt $ D.takes n evt
 
 -- | Takes only so many events from the stream
-dropE :: Int -> Evt a -> Evt a
-dropE n (Evt evt) = Evt $ D.dropE n evt
+drops :: Int -> Evt a -> Evt a
+drops n (Evt evt) = Evt $ D.drops n evt
 
 -- | Takes events only while predicate is true.
-takeWhileE :: (a -> Bool) -> Evt a -> Evt a
-takeWhileE pred (Evt evt) = Evt $ D.takeWhileE pred evt
+takesWhile :: (a -> Bool) -> Evt a -> Evt a
+takesWhile pred (Evt evt) = Evt $ D.takesWhile pred evt
 
 -- | Takes events only while predicate is true.
-dropWhileE :: (a -> Bool) -> Evt a -> Evt a
-dropWhileE pred (Evt evt) = Evt $ D.dropWhileE pred evt
+dropsWhile :: (a -> Bool) -> Evt a -> Evt a
+dropsWhile pred (Evt evt) = Evt $ D.dropsWhile pred evt
 
 -- | Takes elements from the list by index. If index is out of bounds the event is omitted.
 listAt :: [a] -> Evt Int -> Evt a
@@ -408,12 +408,12 @@ toToggle :: Evt a -> Evt Bool
 toToggle (Evt evt) = Evt (D.toToggle evt)
 
 -- | Cycles the values in the list over event sream.
-cycleE :: [a] -> Evt b -> Evt a
-cycleE vals (Evt evt) = Evt (D.cycleE vals evt)
+cycles :: [a] -> Evt b -> Evt a
+cycles vals (Evt evt) = Evt (D.cycles vals evt)
 
 -- | Sums all the elements in the event stream
-sumE :: (Num a) => Evt a -> Evt a
-sumE = scanE (+) 0
+sums :: (Num a) => Evt a -> Evt a
+sums = scan (+) 0
 
 -- | Sums all the elements in the event stream
 sumD :: (Num a) => Float -> Dyn a -> Dyn a
@@ -426,60 +426,60 @@ integrate2 :: (VectorSpace v, Scalar v ~ Float) => Float -> Dyn v -> Dyn v
 integrate2 dt (Dyn dyn) = Dyn $ D.integrate2 dt dyn
 
 -- | Finds the product of all elements in the event stream.
-productE :: (Num a) => Evt a -> Evt a
-productE = scanE (*) 1
+products :: (Num a) => Evt a -> Evt a
+products = scan (*) 1
 
 -- | Monoidal append of all elements in the stream
-appendE :: (Monoid a) => Evt a -> Evt a
-appendE (Evt evt) = Evt (D.appendE evt)
+appends :: (Monoid a) => Evt a -> Evt a
+appends (Evt evt) = Evt (D.appends evt)
 
 -- | Monoidal fold for event streams, note that stream have to be finite for
 -- the function to complete
-foldE :: Monoid a => Evt a -> Run a
-foldE = foldlE (<>) mempty
+folds :: Monoid a => Evt a -> Run a
+folds = foldls (<>) mempty
 
 -- | Left fold for event streams, note that stream have to be finite for
 -- the function to complete
-foldlE :: (b -> a -> b) -> b -> Evt a -> Run b
-foldlE f s (Evt evt) = D.foldlE f s evt
+foldls :: (b -> a -> b) -> b -> Evt a -> Run b
+foldls f s (Evt evt) = D.foldls f s evt
 
 -- | Effectful left fold
-foldlE' :: (b -> a -> Run b) -> b -> Evt a -> Run b
-foldlE' f s (Evt evt) = D.foldlE' f s evt
+foldls' :: (b -> a -> Run b) -> b -> Evt a -> Run b
+foldls' f s (Evt evt) = D.foldls' f s evt
 
 -- | Right fold for event streams, note that stream have to be finite for
 -- the function to complete
-foldrE :: (a -> b -> b) -> b -> Evt a -> Run b
-foldrE f s (Evt evt) = D.foldrE f s evt
+foldrs :: (a -> b -> b) -> b -> Evt a -> Run b
+foldrs f s (Evt evt) = D.foldrs f s evt
 
 -- | Effectful right fold
-foldrE' :: (a -> b -> Run b) -> b -> Evt a -> Run b
-foldrE' f s (Evt evt) = D.foldrE' f s evt
+foldrs' :: (a -> b -> Run b) -> b -> Evt a -> Run b
+foldrs' f s (Evt evt) = D.foldrs' f s evt
 
 -- | Starts event stream process and as callback prints it values.
-printE :: (Show a) => Evt a -> Run ()
-printE (Evt evt) = D.printE evt
+prints :: (Show a) => Evt a -> Run ()
+prints (Evt evt) = D.prints evt
 
 -- | Starts event stream process and as callback prints it values.
-putStrLnE :: Evt String -> Run ()
-putStrLnE (Evt evt) = D.putStrLnE evt
+putStrLns :: Evt String -> Run ()
+putStrLns (Evt evt) = D.putStrLns evt
 
 -- | Queries the event stream form dynamic and runs it all next event streams are ignored.
 switchDyn :: Dyn (Evt a) -> Evt a
 switchDyn (Dyn dyn) = Evt $ D.switchDyn $ fmap unEvt dyn
 
 -- | Joins event stream of streams. If stream is started it runs until the end.
-joinE :: Evt (Evt a) -> Evt a
-joinE (Evt evt) = Evt $ D.joinE $ fmap unEvt evt
+joins :: Evt (Evt a) -> Evt a
+joins (Evt evt) = Evt $ D.joins $ fmap unEvt evt
 
 -- | Recursion on event streams. As event streams are functions we can not use
 -- normal recursion that haskell provides. It will stuck the execution.
--- But we can use @fixE@ to create event stream that feeds back the events to itself.
+-- But we can use @fix1@ to create event stream that feeds back the events to itself.
 --
--- Note that any sort of recursion can be implemented with @fixE@.
+-- Note that any sort of recursion can be implemented with @fix1@.
 -- For example if we need 3-recursive event stream:
 --
---  > fixE3 ::
+--  > fix3 ::
 --  >      (Evt a -> Evt b -> Evt c -> (Evt a, Evt b, Evt c))
 --  >   -> (Evt a, Evt b, Evt c)
 --
@@ -488,7 +488,7 @@ joinE (Evt evt) = Evt $ D.joinE $ fmap unEvt evt
 --
 -- > data Tag a b c = TagA a | TagB b | TagC c
 --
--- > fixE3 f = unwrap $ fixE g
+-- > fix3 f = unwrap $ fix1 g
 -- >   where
 -- >      g x = wrap (f (unwrapA x) (unwrapB x) (unwrapC x))
 -- >
@@ -499,36 +499,36 @@ joinE (Evt evt) = Evt $ D.joinE $ fmap unEvt evt
 -- >                                  TagA a -> Just a
 -- >                                  _      -> Nothing
 --
--- We can use this trck with any number of streams. There are helper functions: @fixE2@, @fixE3@, @fixE4@
-fixE :: (Evt a -> Run (Evt a)) -> Evt a
-fixE f = Evt $ D.fixE (fmap unEvt . f . Evt)
+-- We can use this trck with any number of streams. There are helper functions: @fix2@, @fix3@, @fix4@
+fix1 :: (Evt a -> Run (Evt a)) -> Evt a
+fix1 f = Evt $ D.fix1 (fmap unEvt . f . Evt)
 
 -- | Recursion for binary functions
-fixE2 :: (Evt a -> Evt b -> Run (Evt a, Evt b)) -> (Evt a, Evt b)
-fixE2 f = bimap Evt Evt $ D.fixE2 (\a b -> bimap unEvt unEvt <$> f (Evt a) (Evt b))
+fix2 :: (Evt a -> Evt b -> Run (Evt a, Evt b)) -> (Evt a, Evt b)
+fix2 f = bimap Evt Evt $ D.fix2 (\a b -> bimap unEvt unEvt <$> f (Evt a) (Evt b))
 
 -- | Recursion for ternary functions
-fixE3 ::
+fix3 ::
      (Evt a -> Evt b -> Evt c -> Run (Evt a, Evt b, Evt c))
   -> (Evt a, Evt b, Evt c)
-fixE3 f = wrap $ D.fixE3 (\a b c -> unwrap <$> f (Evt a) (Evt b) (Evt c))
+fix3 f = wrap $ D.fix3 (\a b c -> unwrap <$> f (Evt a) (Evt b) (Evt c))
   where
     wrap (a, b, c) = (Evt a, Evt b, Evt c)
     unwrap (a, b, c) = (unEvt a, unEvt b, unEvt c)
 
 -- | Recursion for functions of four arguments
-fixE4 ::
+fix4 ::
      (Evt a -> Evt b -> Evt c -> Evt d -> Run (Evt a, Evt b, Evt c, Evt d))
   -> (Evt a, Evt b, Evt c, Evt d)
-fixE4 f = wrap $ D.fixE4 (\a b c d -> unwrap <$> f (Evt a) (Evt b) (Evt c) (Evt d))
+fix4 f = wrap $ D.fix4 (\a b c d -> unwrap <$> f (Evt a) (Evt b) (Evt c) (Evt d))
   where
     wrap (a, b, c, d) = (Evt a, Evt b, Evt c, Evt d)
     unwrap (a, b, c, d) = (unEvt a, unEvt b, unEvt c, unEvt d)
 
 -- | Flattens event stream producer by switching between event streams.
 -- When next event stream happens it shuts down the previous one.
-switchE :: Evt (Evt a) -> Evt a
-switchE (Evt evt) = Evt $ D.switchE $ fmap unEvt evt
+switch :: Evt (Evt a) -> Evt a
+switch (Evt evt) = Evt $ D.switch $ fmap unEvt evt
 
 -- | Switches between dynamic producers.
 switchD :: Dyn a -> Evt (Dyn a) -> Dyn a
@@ -540,17 +540,17 @@ switchD (Dyn d) (Evt evts) = Dyn $ D.switchD d (fmap unDyn evts)
 -- | Creates the event stream that listens to MVar based channel.
 -- If any value is put chan the event stream fires the callback.
 mchanEvt :: M.Chan a -> Evt a
-mchanEvt mchan = Evt $ D.mchanEvt (pure mchan)
+mchanEvt mchan = Evt $ D.mchanEvt mchan
 
 -- | Creates the event stream that listens to MVar based channel.
 -- If any value is put chan the event stream fires the callback.
 tchanEvt :: TChan a -> Evt a
-tchanEvt tchan = Evt $ D.tchanEvt (pure tchan)
+tchanEvt tchan = Evt $ D.tchanEvt tchan
 
 -- | Creates the event stream that listens to unagi channel (package @unagi-chan@).
 -- If any value is put chan the event stream fires the callback.
 uchanEvt :: InChan a -> Evt a
-uchanEvt uchan = Evt $ D.uchanEvt (pure uchan)
+uchanEvt uchan = Evt $ D.uchanEvt uchan
 
 ---------------------------------------------------------------------------
 -- utilities

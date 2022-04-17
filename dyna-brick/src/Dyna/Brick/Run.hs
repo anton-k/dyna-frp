@@ -99,13 +99,19 @@ runApp Spec{..} dynActs = do
 -- event sensors
 
 vtyEvents :: Evt Vty.Event
-vtyEvents = Evt $ D.uchanEvt $ fst <$> asks env'eventChan
+vtyEvents = Evt $ D.Evt $ \go -> do
+  eventChan <- fst <$> asks env'eventChan
+  D.runEvt (D.uchanEvt eventChan) go
 
 mouseDown :: Evt MouseDownEvent
-mouseDown = Evt $ D.uchanEvt $ fst <$> asks env'mouseDownChan
+mouseDown = Evt $ D.Evt $ \go -> do
+  mouseDownChan <- fst <$> asks env'mouseDownChan
+  D.runEvt (D.uchanEvt mouseDownChan) go
 
 mouseUp :: Evt MouseUpEvent
-mouseUp = Evt $ D.uchanEvt $ fst <$> asks env'mouseUpChan
+mouseUp = Evt $ D.Evt $ \go -> do
+  mouseUpChan <- fst <$> asks env'mouseUpChan
+  D.runEvt (D.uchanEvt mouseUpChan) go
 
 keyEvents :: Evt (Key, [Modifier])
 keyEvents = Evt $ D.mapMay go (unEvt vtyEvents)

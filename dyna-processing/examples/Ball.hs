@@ -36,7 +36,7 @@ pointer = liftA2 Ball ballCol mouse
 
 -- | Cols alterate on mouse left clicks
 ballCol :: Dyn Col
-ballCol = hold green $ cycleE [red, green] mouseLeft
+ballCol = hold green $ cycles [red, green] mouseLeft
 
 {-
 -- | Count the mouse clicks so far (so many balls we have placed on the screen)
