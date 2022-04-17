@@ -2,11 +2,13 @@ cabal-version: 1.12
 
 name:           dyna-gloss
 version:        0.1.0.0
-description:    FRP for gloss graphics and animation library
+synopsis:       FRP for gloss graphics and animation library
+description:    Defines FRP for gloss graphics and animation library
 homepage:       https://github.com/anton-k/dyna-gloss#readme
 bug-reports:    https://github.com/anton-k/dyna-gloss/issues
 author:         Anton Kholomiov
 maintainer:     anton.kholomiov@gmail.com
+category:       Graphics, FRP
 copyright:      2022 Anton Kholomiov
 license:        BSD3
 license-file:   LICENSE

@@ -6,7 +6,8 @@ cabal-version: 1.12
 
 name:           dyna-processing
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/dyna-processing#readme>
+synopsis:       FRP library for processing-for-haskell package
+description:    Defines FRP library for processing-for-haskell package (see examples in the repo's source)
 homepage:       https://github.com/githubuser/dyna-processing#readme
 bug-reports:    https://github.com/githubuser/dyna-processing/issues
 author:         Author name here
@@ -14,6 +15,7 @@ maintainer:     example@example.com
 copyright:      2022 Author name here
 license:        BSD3
 license-file:   LICENSE
+category:       Graphics, FRP
 build-type:     Simple
 extra-source-files:
     README.md

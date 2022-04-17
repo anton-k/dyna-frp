@@ -2,11 +2,13 @@ cabal-version: 1.12
 
 name:           dyna-brick
 version:        0.1.0.0
-description:    FRP for brick Terminal user interface library
+synopsis:       FRP for brick Terminal user interface library
+description:    Defines FRP for brick Terminal user interface library (see dir examples at the repo's source)
 homepage:       https://github.com/anton-k/dyna-brick#readme
 bug-reports:    https://github.com/anton-k/dyna-brick/issues
 author:         Anton Kholomiov
 maintainer:     anton.kholomiov@gmail.com
+category:       TUI, FRP
 copyright:      2022 Anton Kholomiov
 license:        BSD3
 license-file:   LICENSE
