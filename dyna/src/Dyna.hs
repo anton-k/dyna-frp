@@ -363,13 +363,13 @@ instance Frp m => Applicative (Dyn m) where
 -- It just gets the value right away and applies callback to it.
 -- We can try it out in the interpreter:
 --
--- > putStrLnE $ fmap ("Your message: " <> ) $ once getLine
+-- > putStrLns $ fmap ("Your message: " <> ) $ once getLine
 --
--- We have useful functions to print out the events: @putStrLnE@ and @printE@.
+-- We have useful functions to print out the events: @putStrLns@ and @prints@.
 --
 -- Also we have event streams that happen periodically:
 --
--- > printE $ clock 1  -- prints time every second
+-- > prints $ clock 1  -- prints time every second
 --
 -- ## Duplication of the events.
 --
@@ -936,12 +936,12 @@ joins evt = Evt $ \go ->
 
 -- | Recursion on event streams. As event streams are functions we can not use
 -- normal recursion that haskell provides. It will stuck the execution.
--- But we can use @fixE@ to create event stream that feeds back the events to itself.
+-- But we can use @fix1@ to create event stream that feeds back the events to itself.
 --
--- Note that any sort of recursion can be implemented with @fixE@.
+-- Note that any sort of recursion can be implemented with @fix1@.
 -- For example if we need 3-recursive event stream:
 --
---  > fixE3 ::
+--  > fix3 ::
 --  >      (Evt m a -> Evt m b -> Evt m c -> m (Evt m a, Evt m b, Evt m c))
 --  >   -> (Evt m a, Evt m b, Evt m c)
 --
@@ -950,7 +950,7 @@ joins evt = Evt $ \go ->
 --
 -- > data Tag a b c = TagA a | TagB b | TagC c
 --
--- > fixE3 f = unwrap $ fixE g
+-- > fix3 f = unwrap $ fix1 g
 -- >   where
 -- >      g x = wrap <$> f (unwrapA x) (unwrapB x) (unwrapC x)
 -- >
@@ -961,7 +961,7 @@ joins evt = Evt $ \go ->
 -- >                                  TagA a -> Just a
 -- >                                  _      -> Nothing
 --
--- We can use this trck with any number of streams. There are helper functions: @fixE2@, @fixE3@, @fixE4@
+-- We can use this trck with any number of streams. There are helper functions: @fix2@, @fix3@, @fix4@
 fix1 :: Frp m => (Evt m a -> m (Evt m a)) -> Evt m a
 fix1 f = Evt $ \go -> do
   chan <- liftIO U.newChan
@@ -1143,7 +1143,7 @@ ticks t = Evt $ \go -> do
 --
 -- It can be though of as:
 --
--- > sumE ticks
+-- > sums ticks
 timer :: Frp m => NominalDiffTime -> Evt m NominalDiffTime
 timer t = Evt $ \go -> do
   start <- liftIO getCurrentTime

@@ -218,7 +218,7 @@ scan' f s (Evt evt) = Evt $ D.scan' f s evt
 scanMay :: (a -> b -> Maybe b) -> b -> Evt a -> Evt b
 scanMay f s (Evt evt) = Evt $ D.scanMay f s evt
 
--- | scan combined with filter for effectful function. See @scanMayE@ for details.
+-- | scan combined with filter for effectful function. See @scanMay@ for details.
 scanMay' :: (a -> b -> Run (Maybe b)) -> b -> Evt a -> Evt b
 scanMay' f s (Evt evt) = Evt $ D.scanMay' f s evt
 
