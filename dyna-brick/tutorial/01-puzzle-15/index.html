@@ -1,0 +1,691 @@
+<!doctype html><html lang=en-us>
+<head>
+<meta property="og:title" content="Puzzle 15">
+<meta property="og:description" content="In this example we will implement &ldquo;Puzzle 15&rdquo; game in dyna-brick. Here is what end point position look like:
+The player tries to arrange numbers on the board. By pressing arrow keys we can substitute some number with an empty box. We win when all numbers are placed in ascending order like it is shown on the picture.
+You can find the complete example in the examples of the dyna-brick directory.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://anton-k.github.io/dyna-frp/dyna-brick/tutorial/01-puzzle-15/"><meta property="article:section" content="dyna-brick">
+<meta name=description content="Hardcoded description; the author should update :)">
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta http-equiv=x-ua-compatible content="ie=edge">
+<title>Dyna FRP</title>
+<link rel=icon type=image/png href=/dyna-frp/images/favicon.png>
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel=stylesheet>
+<link rel=stylesheet type=text/css href=/dyna-frp/css/style.min.e783507bb360b9f98a5ed4a121403993a693ea14a1af9420b35e040e776c22f8.css integrity="sha256-54NQe7NgufmKXtShIUA5k6aT6hShr5Qgs14EDndsIvg=">
+<link rel=stylesheet type=text/css href=/dyna-frp/css/icons.css>
+</head>
+<body>
+<div id=preloader>
+<div id=status></div>
+</div>
+<nav class="navbar is-fresh is-transparent no-shadow" role=navigation aria-label="main navigation">
+<div class=container>
+<div class=navbar-brand>
+<a class=navbar-item href=/>
+<img src=/dyna-frp/images/logos/dyna-logo-2.png alt width=112 height=28>
+</a>
+<a class="navbar-item is-hidden-desktop is-hidden-tablet">
+<div id=menu-icon-wrapper class=menu-icon-wrapper style=visibility:visible><svg width="1e3" height="1e3"><path class="path1" d="M3e2 4e2H7e2c2e2.0 2e2 350-1e2 450A4e2 4e2.0 012e2 2e2L8e2 8e2"/><path class="path2" d="M3e2 5e2H7e2"/><path class="path3" d="M7e2 6e2H3e2c-2e2.0-2e2-4e2 1e2-450A4e2 380 0 112e2 8e2L8e2 2e2"/></svg>
+<button id=menu-icon-trigger class=menu-icon-trigger></button>
+</div>
+</a>
+<a role=button class=navbar-burger aria-label=menu aria-expanded=false data-target=navbar-menu>
+<span aria-hidden=true></span>
+<span aria-hidden=true></span>
+<span aria-hidden=true></span>
+</a>
+</div>
+<div id=navbar-menu class="navbar-menu is-static">
+<div class=navbar-start>
+<a class="navbar-item is-hidden-mobile">
+<div id=menu-icon-wrapper class=menu-icon-wrapper style=visibility:visible><svg width="1e3" height="1e3"><path class="path1" d="M3e2 4e2H7e2c2e2.0 2e2 350-1e2 450A4e2 4e2.0 012e2 2e2L8e2 8e2"/><path class="path2" d="M3e2 5e2H7e2"/><path class="path3" d="M7e2 6e2H3e2c-2e2.0-2e2-4e2 1e2-450A4e2 380 0 112e2 8e2L8e2 2e2"/></svg>
+<button id=menu-icon-trigger class=menu-icon-trigger></button>
+</div>
+</a>
+</div>
+<div class=navbar-end>
+<a href=/ class="navbar-item is-secondary">
+Home
+</a>
+<a href=/dyna-core/get-started class="navbar-item is-secondary">
+Get started
+</a>
+<div class="navbar-item has-dropdown is-hoverable">
+<a class=navbar-link>
+Tutorial
+</a>
+<div class=navbar-dropdown>
+<a href=/paper class=navbar-item>
+Paper
+</a>
+<a href=/dyna-core/tutorial-toc class=navbar-item>
+Core FRP
+</a>
+<a href=/dyna-gloss/tutorial-toc class=navbar-item>
+Gloss
+</a>
+<a href=/dyna-brick/tutorial-toc class=navbar-item>
+Brick
+</a>
+<a href=/dyna-processing/tutorial-toc class=navbar-item>
+Processing
+</a>
+</div>
+</div>
+<div class="navbar-item has-dropdown is-hoverable">
+<a class=navbar-link>
+Reference
+</a>
+<div class=navbar-dropdown>
+<a href=/dyna-core/tutorial/101-reference class=navbar-item>
+Core FRP
+</a>
+<a href=/dyna-gloss/tutorial/101-reference class=navbar-item>
+Gloss
+</a>
+<a href=/dyna-brick/tutorial/101-reference class=navbar-item>
+Brick
+</a>
+<a href=/dyna-processing/tutorial/101-reference class=navbar-item>
+Processing
+</a>
+</div>
+</div>
+<a href=https://github.com/anton-k/dyna-frp class=navbar-item>
+<span class="button signup-button rounded secondary-btn raised">
+Github
+</span>
+</a>
+</div>
+</div>
+</div>
+</nav>
+<nav id=navbar-clone class="navbar is-fresh is-transparent" role=navigation aria-label="main navigation">
+<div class=container>
+<div class=navbar-brand>
+<a class=navbar-item href=/>
+<img src=/dyna-frp/images/logos/dyna-logo-2.png alt width=112 height=28>
+</a>
+<a class="navbar-item is-hidden-desktop is-hidden-tablet">
+<div id=menu-icon-wrapper class=menu-icon-wrapper style=visibility:visible><svg width="1e3" height="1e3"><path class="path1" d="M3e2 4e2H7e2c2e2.0 2e2 350-1e2 450A4e2 4e2.0 012e2 2e2L8e2 8e2"/><path class="path2" d="M3e2 5e2H7e2"/><path class="path3" d="M7e2 6e2H3e2c-2e2.0-2e2-4e2 1e2-450A4e2 380 0 112e2 8e2L8e2 2e2"/></svg>
+<button id=menu-icon-trigger class=menu-icon-trigger></button>
+</div>
+</a>
+<a role=button class=navbar-burger aria-label=menu aria-expanded=false data-target=cloned-navbar-menu>
+<span aria-hidden=true></span>
+<span aria-hidden=true></span>
+<span aria-hidden=true></span>
+</a>
+</div>
+<div id=cloned-navbar-menu class="navbar-menu is-fixed">
+<div class=navbar-start>
+<a class="navbar-item is-hidden-mobile">
+<div id=cloned-menu-icon-wrapper class=menu-icon-wrapper style=visibility:visible><svg width="1e3" height="1e3"><path class="path1" d="M3e2 4e2H7e2c2e2.0 2e2 350-1e2 450A4e2 4e2.0 012e2 2e2L8e2 8e2"/><path class="path2" d="M3e2 5e2H7e2"/><path class="path3" d="M7e2 6e2H3e2c-2e2.0-2e2-4e2 1e2-450A4e2 380 0 112e2 8e2L8e2 2e2"/></svg>
+<button id=cloned-menu-icon-trigger class=menu-icon-trigger></button>
+</div>
+</a>
+</div>
+<div class=navbar-end>
+<a href=/ class="navbar-item is-secondary">
+Home
+</a>
+<a href=/dyna-core/get-started class="navbar-item is-secondary">
+Get started
+</a>
+<div class="navbar-item has-dropdown is-hoverable">
+<a class=navbar-link>
+Tutorial
+</a>
+<div class=navbar-dropdown>
+<a href=/paper class=navbar-item>
+Paper
+</a>
+<a href=/dyna-core/tutorial-toc class=navbar-item>
+Core FRP
+</a>
+<a href=/dyna-gloss/tutorial-toc class=navbar-item>
+Gloss
+</a>
+<a href=/dyna-brick/tutorial-toc class=navbar-item>
+Brick
+</a>
+<a href=/dyna-processing/tutorial-toc class=navbar-item>
+Processing
+</a>
+</div>
+</div>
+<div class="navbar-item has-dropdown is-hoverable">
+<a class=navbar-link>
+Reference
+</a>
+<div class=navbar-dropdown>
+<a href=/dyna-core/tutorial/101-reference class=navbar-item>
+Core FRP
+</a>
+<a href=/dyna-gloss/tutorial/101-reference class=navbar-item>
+Gloss
+</a>
+<a href=/dyna-brick/tutorial/101-reference class=navbar-item>
+Brick
+</a>
+<a href=/dyna-processing/tutorial/101-reference class=navbar-item>
+Processing
+</a>
+</div>
+</div>
+<a href=https://github.com/anton-k/dyna-frp class=navbar-item>
+<span class="button signup-button rounded secondary-btn raised">
+Github
+</span>
+</a>
+</div>
+</div>
+</div>
+</nav>
+<section class="section is-medium">
+<div class=container>
+<div class=columns>
+<div class="column is-centered-tablet-portrait">
+<h1 class="title section-title">Puzzle 15</h1>
+<h5 class="subtitle is-5 is-muted"></h5>
+<div class=divider></div>
+</div>
+</div>
+<div class=content>
+<p>In this example we will implement &ldquo;Puzzle 15&rdquo; game in <code>dyna-brick</code>.
+Here is what end point position look like:</p>
+<p><img src=/images/puzzle-15.png alt="Puzzle 15"></p>
+<p>The player tries to arrange numbers on the board.
+By pressing arrow keys we can substitute some number with
+an empty box. We win when all numbers are placed in ascending order
+like it is shown on the picture.</p>
+<p>You can find the complete example in the examples of the <code>dyna-brick</code> directory.</p>
+<h2 id=types-for-the-game>Types for the game</h2>
+<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>Data.Vector</span> (<span style=color:#00688b;font-weight:700>Vector</span>)
+
+<span style=color:#8b008b;font-weight:700>newtype</span> <span style=color:#00688b;font-weight:700>Board</span> <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Board</span> (<span style=color:#00688b;font-weight:700>Vector</span> <span style=color:#00688b;font-weight:700>Int</span>)
+  <span style=color:#8b008b;font-weight:700>deriving</span> (<span style=color:#00688b;font-weight:700>Eq</span>)
+
+<span style=color:#8b008b;font-weight:700>data</span> <span style=color:#00688b;font-weight:700>Move</span> <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>UpMove</span> | <span style=color:#00688b;font-weight:700>DownMove</span> | <span style=color:#00688b;font-weight:700>LeftMove</span> | <span style=color:#00688b;font-weight:700>RightMove</span>
+
+<span style=color:#8b008b;font-weight:700>data</span> <span style=color:#00688b;font-weight:700>Game</span> <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Game</span>
+  { game&#39;board <span style=color:#8b008b>::</span> !<span style=color:#00688b;font-weight:700>Board</span>
+  , game&#39;empty <span style=color:#8b008b>::</span> !<span style=color:#00688b;font-weight:700>Int</span>
+  , game&#39;count <span style=color:#8b008b>::</span> !<span style=color:#00688b;font-weight:700>Int</span>
+  }
+</code></pre></div><p>We represent our board as one dimensional vector of numbers.
+An empty box holds the <code>0</code>-number. For the game we will store
+the board the place of empty box and number of steps so far.
+We store the empty field once again because all moves
+happen with this field and if we store it&rsquo;s identifier we
+can find it faster on the board. No need to filter the vector of fields.</p>
+<p>We have four possible moves: up, down, right and left.</p>
+<h2 id=logic-of-the-game>Logic of the game</h2>
+<p>The logic is simple we can update the board with the move and we should be able to check
+weather we have reached the final state. This code is not going to be ralted to FRP.
+It is just a logic of the game update per single step.</p>
+<h3 id=the-final-state-of-the-game>The final state of the game</h3>
+<p>Let&rsquo;s check for the final state first:</p>
+<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#8b008b;font-weight:700>qualified</span> <span style=color:#008b45;text-decoration:underline>Data.Vector</span> <span style=color:#8b008b;font-weight:700>as</span> V
+
+<span style=color:#008b45>finBoard</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Board</span>
+<span style=color:#008b45>finBoard</span> <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Board</span> $ <span style=color:#00688b;font-weight:700>V</span>.fromList $ [<span style=color:#b452cd>1</span>..<span style=color:#b452cd>15</span>] ++ [<span style=color:#b452cd>0</span>]
+
+<span style=color:#008b45>isGameOver</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Game</span> <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Bool</span>
+<span style=color:#008b45>isGameOver</span> (<span style=color:#00688b;font-weight:700>Game</span> board <span style=color:#8b008b;font-weight:700>_</span> <span style=color:#8b008b;font-weight:700>_</span>) <span style=color:#8b008b>=</span> board == finBoard
+</code></pre></div><p>So we have defined the ordered state of the board <code>initGame</code></p>
+<h3 id=update-on-the-move>Update on the move</h3>
+<p>On the move update we are going to swap some adjacent nummeric field
+with empty field. By the move we give direction of swap.
+In this function we convert from 1D coordinate representation to 2D one.
+We make a swap and check weather direction is within the field.
+For example if empty field is on the upper corner we can not move
+it further up. We should watch out for such moves and prohibit them.
+Here is the code that does the update:</p>
+<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>move</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Move</span> <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Game</span> <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Game</span>
+<span style=color:#008b45>move</span> m game@(<span style=color:#00688b;font-weight:700>Game</span> (<span style=color:#00688b;font-weight:700>Board</span> board) emptyPos count)
+  | within2d nextPos2d <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Game</span> (<span style=color:#00688b;font-weight:700>Board</span> board&#39;) nextPos (succ count)
+  | otherwise          <span style=color:#8b008b>=</span> game
+  <span style=color:#8b008b;font-weight:700>where</span>
+    orient <span style=color:#8b008b>=</span> <span style=color:#8b008b;font-weight:700>case</span> m <span style=color:#8b008b;font-weight:700>of</span>
+      <span style=color:#00688b;font-weight:700>UpMove</span>    <span style=color:#8b008b>-&gt;</span> (<span style=color:#b452cd>1</span>, <span style=color:#b452cd>0</span>)
+      <span style=color:#00688b;font-weight:700>DownMove</span>  <span style=color:#8b008b>-&gt;</span> (-<span style=color:#b452cd>1</span>, <span style=color:#b452cd>0</span>)
+      <span style=color:#00688b;font-weight:700>LeftMove</span>  <span style=color:#8b008b>-&gt;</span> (<span style=color:#b452cd>0</span>, <span style=color:#b452cd>1</span>)
+      <span style=color:#00688b;font-weight:700>RightMove</span> <span style=color:#8b008b>-&gt;</span> (<span style=color:#b452cd>0</span>, -<span style=color:#b452cd>1</span>)
+
+    nextPos <span style=color:#8b008b>=</span> from2d nextPos2d
+    nextPos2d <span style=color:#8b008b>=</span> orient + to2d emptyPos
+    within2d (x, y) <span style=color:#8b008b>=</span> within x &amp;&amp; within y
+    within a <span style=color:#8b008b>=</span> <span style=color:#b452cd>0</span> &lt;= a &amp;&amp; a &lt; <span style=color:#b452cd>4</span>
+    board&#39; <span style=color:#8b008b>=</span> board <span style=color:#00688b;font-weight:700>V</span>.// [(emptyPos, board <span style=color:#00688b;font-weight:700>V</span>.! nextPos), (nextPos, <span style=color:#b452cd>0</span>)]
+
+<span style=color:#008b45>to2d</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Int</span> <span style=color:#8b008b>-&gt;</span> (<span style=color:#00688b;font-weight:700>Int</span>, <span style=color:#00688b;font-weight:700>Int</span>)
+<span style=color:#008b45>to2d</span> n <span style=color:#8b008b>=</span> n `divMod` <span style=color:#b452cd>4</span>
+
+<span style=color:#008b45>from2d</span> <span style=color:#8b008b>::</span> (<span style=color:#00688b;font-weight:700>Int</span>, <span style=color:#00688b;font-weight:700>Int</span>) <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Int</span>
+<span style=color:#008b45>from2d</span> (x, y) <span style=color:#8b008b>=</span> x * <span style=color:#b452cd>4</span> + y
+</code></pre></div><h3 id=get-random-shuffle-for-the-puzzle>Get random shuffle for the puzzle</h3>
+<p>Also for the game we need to be able to present user with random permutation.
+It turns out that it can not be completely random. As some permutations can
+not be ordered to the final state. To solve this problem we generate a sequence
+of moves and apply them to the final state to make a valid suffle that
+can be solved:</p>
+<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>System.Random</span>
+
+<span style=color:#008b45>shuffle</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Int</span> <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Game</span> <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>IO</span> <span style=color:#00688b;font-weight:700>Game</span>
+<span style=color:#008b45>shuffle</span> n g
+  | n == <span style=color:#b452cd>0</span>    <span style=color:#8b008b>=</span> pure $ g { game&#39;count <span style=color:#8b008b>=</span> <span style=color:#b452cd>0</span> }
+  | otherwise <span style=color:#8b008b>=</span> <span style=color:#8b008b;font-weight:700>do</span>
+      m <span style=color:#8b008b>&lt;-</span> randomMove
+      <span style=color:#8b008b;font-weight:700>let</span> g&#39; <span style=color:#8b008b>=</span> (move m g)
+      <span style=color:#8b008b;font-weight:700>if</span> game&#39;board g == game&#39;board g&#39;
+        <span style=color:#8b008b;font-weight:700>then</span> shuffle n g
+        <span style=color:#8b008b;font-weight:700>else</span> shuffle (n - <span style=color:#b452cd>1</span>) g&#39;
+  <span style=color:#8b008b;font-weight:700>where</span>
+    randomMove <span style=color:#8b008b>=</span> (moves <span style=color:#00688b;font-weight:700>V</span>.! ) . (`mod` <span style=color:#b452cd>4</span>) &lt;$&gt; randomIO
+    moves <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>V</span>.fromList [<span style=color:#00688b;font-weight:700>UpMove</span>, <span style=color:#00688b;font-weight:700>DownMove</span>, <span style=color:#00688b;font-weight:700>LeftMove</span>, <span style=color:#00688b;font-weight:700>RightMove</span>]
+</code></pre></div><p>Also we check that each move updates the position. Because some
+moves can be invalid as we have discussed that in the previous section.
+For example if we try to move empty field away from the board&rsquo;s boundaries.</p>
+<p>Ok we are done with the logic let us move to to the brick part of it.
+First we need to be able to draw the game state on the screen</p>
+<h2 id=draw-game-state>Draw game state</h2>
+<p>Let&rsquo;s first draw a count of moves and state how many moves
+already was done. For a while we leave the drawing of the board unimplemented:</p>
+<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>drawGame</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Game</span> <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Box</span>
+<span style=color:#008b45>drawGame</span> game@(<span style=color:#00688b;font-weight:700>Game</span> board <span style=color:#8b008b;font-weight:700>_</span> count) <span style=color:#8b008b>=</span> vBox
+  [ padBottom (<span style=color:#00688b;font-weight:700>Pad</span> <span style=color:#b452cd>2</span>) $ drawBoard board
+  , <span style=color:#8b008b;font-weight:700>if</span> isGameOver game
+      <span style=color:#8b008b;font-weight:700>then</span> vBox [ str $ unwords [<span style=color:#cd5555>&#34;Hurray! You win in&#34;</span>, show count, <span style=color:#cd5555>&#34;steps!&#34;</span>], endGameHint]
+      <span style=color:#8b008b;font-weight:700>else</span> vBox [ str $ unwords [<span style=color:#cd5555>&#34;Steps:&#34;</span>, show count], inGameHint]
+  ]
+  <span style=color:#8b008b;font-weight:700>where</span>
+    inGameHint  <span style=color:#8b008b>=</span> str <span style=color:#cd5555>&#34;Press arrows to move and Esc to exit&#34;</span>
+    endGameHint <span style=color:#8b008b>=</span> str <span style=color:#cd5555>&#34;Press Esc to exit&#34;</span>
+
+<span style=color:#008b45>drawBoard</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Board</span> <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Box</span>
+<span style=color:#008b45>drawBoard</span> <span style=color:#8b008b;font-weight:700>_</span> <span style=color:#8b008b>=</span> emptyWidget
+</code></pre></div><p>To draw a board we need to draw a four lines of numbers
+each contains four cells with digits from 1 to 15 or
+one empty field. If the number is zero we treat it as an empty field.</p>
+<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>drawBoard</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Board</span> <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Box</span>
+<span style=color:#008b45>drawBoard</span> (<span style=color:#00688b;font-weight:700>Board</span> vs) <span style=color:#8b008b>=</span> vBox $ fmap drawLine [<span style=color:#b452cd>0</span>..<span style=color:#b452cd>3</span>]
+  <span style=color:#8b008b;font-weight:700>where</span>
+    drawLine n <span style=color:#8b008b>=</span> hBox $ fmap (cell n) [<span style=color:#b452cd>0</span>..<span style=color:#b452cd>3</span>]
+
+    cell x y <span style=color:#8b008b>=</span> withBorderStyle unicodeBold $ border $
+      padTopBottom <span style=color:#b452cd>1</span> $ padLeftRight <span style=color:#b452cd>2</span> $ str $ toStr $ vs <span style=color:#00688b;font-weight:700>V</span>.! (from2d (x, y))
+
+    toStr n
+      | n == <span style=color:#b452cd>0</span>    <span style=color:#8b008b>=</span> <span style=color:#cd5555>&#34;  &#34;</span>
+      | otherwise <span style=color:#8b008b>=</span> <span style=color:#8b008b;font-weight:700>let</span> res <span style=color:#8b008b>=</span> show n
+                    <span style=color:#8b008b;font-weight:700>in</span>  <span style=color:#8b008b;font-weight:700>if</span> length res == <span style=color:#b452cd>1</span>
+                          <span style=color:#8b008b;font-weight:700>then</span> <span style=color:#cd5555>&#39; &#39;</span> <span style=color:#00688b;font-weight:700>:</span> res
+                          <span style=color:#8b008b;font-weight:700>else</span> res
+</code></pre></div><h2 id=frp-part>FRP part</h2>
+<p>Ok now we have all parts in place and we are ready to define a game loop
+for the game. To play the game we are going to receive arrow presses
+for the moves and press on Esc button to quit the game.
+As we receive a move we will updat the current state of the game.</p>
+<p>We start with initialisation of the random puzzle with given complexity
+which is encoded to numers of steps per initial shuffle:</p>
+<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>main</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>IO</span> <span style=color:#658b00>()</span>
+<span style=color:#008b45>main</span> <span style=color:#8b008b>=</span> <span style=color:#8b008b;font-weight:700>do</span>
+  newGame <span style=color:#8b008b>&lt;-</span> shuffle complexity (<span style=color:#00688b;font-weight:700>Game</span> finBoard <span style=color:#b452cd>15</span> <span style=color:#b452cd>0</span>)
+  runApp (defSpec emptyAttrMap) $ pure $
+    <span style=color:#00688b;font-weight:700>Win</span> (pure . drawGame &lt;$&gt; games newGame) quit
+  <span style=color:#8b008b;font-weight:700>where</span>
+    complexity <span style=color:#8b008b>=</span> <span style=color:#b452cd>100</span>
+    quit <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Quit</span> &lt;$ onKey <span style=color:#00688b;font-weight:700>KEsc</span>
+
+<span style=color:#008b45>games</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Game</span> <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> <span style=color:#00688b;font-weight:700>Game</span>
+<span style=color:#008b45>games</span> <span style=color:#8b008b>=</span> undefined
+</code></pre></div><p>Recall that brick application for <code>dyna-brick</code> is a <code>Win</code> type
+which is a pair of <code>Dyn Box</code> and <code>Evt Act</code>. The <code>Box</code> is a widget
+and <code>Act</code> signals when to quit the application. In this example
+we show that we quit when user presses <code>Esc</code>:</p>
+<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell>    quit <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Quit</span> &lt;$ onKey <span style=color:#00688b;font-weight:700>KEsc</span>
+</code></pre></div><p>The <code>onKey</code> is a standard function from the <code>dyna-brick</code> library
+that creates event stream that responsible for a single Key press.
+The missing part is to read moves and update the game state.
+Let&rsquo;s read the moves first:</p>
+<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>moves</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Evt</span> <span style=color:#00688b;font-weight:700>Move</span>
+<span style=color:#008b45>moves</span> <span style=color:#8b008b>=</span> mconcat
+  [ <span style=color:#00688b;font-weight:700>UpMove</span>    &lt;$ onKey <span style=color:#00688b;font-weight:700>KUp</span>
+  , <span style=color:#00688b;font-weight:700>DownMove</span>  &lt;$ onKey <span style=color:#00688b;font-weight:700>KDown</span>
+  , <span style=color:#00688b;font-weight:700>LeftMove</span>  &lt;$ onKey <span style=color:#00688b;font-weight:700>KLeft</span>
+  , <span style=color:#00688b;font-weight:700>RightMove</span> &lt;$ onKey <span style=color:#00688b;font-weight:700>KRight</span>
+  ]
+</code></pre></div><p>Here we are using the <code>Monoid</code> instance to join
+moves of four different types to a single stream of events.
+Recall that <code>(a &lt;$ )</code> operator is a convenient shortcut for <code>fmap (const a)</code>.
+With this event stream of moves we can update the initial state of the game:</p>
+<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>games</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Game</span> <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Dyn</span> <span style=color:#00688b;font-weight:700>Game</span>
+<span style=color:#008b45>games</span> g <span style=color:#8b008b>=</span> hold g $ scan step g moves
+  <span style=color:#8b008b;font-weight:700>where</span>
+    step m g
+      | isGameOver g <span style=color:#8b008b>=</span> g
+      | otherwise    <span style=color:#8b008b>=</span> move m g
+</code></pre></div><p>Let&rsquo;s remind the core FRP functions that are used in this definition:</p>
+<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>hold</span>  <span style=color:#8b008b>::</span> a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Dyn</span> a
+<span style=color:#008b45>scan</span> <span style=color:#8b008b>::</span> (a <span style=color:#8b008b>-&gt;</span> s <span style=color:#8b008b>-&gt;</span> s) <span style=color:#8b008b>-&gt;</span> s <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> s
+</code></pre></div><p>So in this definition we are going to respond to moves until the
+game reaches the final state. After that we can only quit application.
+And we do not respond to arrows anymore.</p>
+<p>Also we could use the function:</p>
+<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>scanD</span> <span style=color:#8b008b>::</span> (a <span style=color:#8b008b>-&gt;</span> s <span style=color:#8b008b>-&gt;</span> s) <span style=color:#8b008b>-&gt;</span> s <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Dyn</span> s
+</code></pre></div><p>It uses the combo of <code>hold</code> and <code>scan</code> functions. That&rsquo;s it!
+we have defined the game. The FRP part is very succint but it does what we need:</p>
+<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>main</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>IO</span> <span style=color:#658b00>()</span>
+<span style=color:#008b45>main</span> <span style=color:#8b008b>=</span> <span style=color:#8b008b;font-weight:700>do</span>
+  newGame <span style=color:#8b008b>&lt;-</span> shuffle complexity (<span style=color:#00688b;font-weight:700>Game</span> finBoard <span style=color:#b452cd>15</span> <span style=color:#b452cd>0</span>)
+  runApp (defSpec emptyAttrMap) $ pure $
+    <span style=color:#00688b;font-weight:700>Win</span> (pure . drawGame &lt;$&gt; games newGame) quit
+  <span style=color:#8b008b;font-weight:700>where</span>
+    complexity <span style=color:#8b008b>=</span> <span style=color:#b452cd>100</span>
+    quit <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Quit</span> &lt;$ onKey <span style=color:#00688b;font-weight:700>KEsc</span>
+
+<span style=color:#008b45>games</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Game</span> <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Dyn</span> <span style=color:#00688b;font-weight:700>Game</span>
+<span style=color:#008b45>games</span> g <span style=color:#8b008b>=</span> hold g $ scan step g moves
+  <span style=color:#8b008b;font-weight:700>where</span>
+    step m g
+      | isGameOver g <span style=color:#8b008b>=</span> g
+      | otherwise    <span style=color:#8b008b>=</span> move m g
+
+<span style=color:#008b45>moves</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Evt</span> <span style=color:#00688b;font-weight:700>Move</span>
+<span style=color:#008b45>moves</span> <span style=color:#8b008b>=</span> mconcat
+  [ <span style=color:#00688b;font-weight:700>UpMove</span>    &lt;$ onKey <span style=color:#00688b;font-weight:700>KUp</span>
+  , <span style=color:#00688b;font-weight:700>DownMove</span>  &lt;$ onKey <span style=color:#00688b;font-weight:700>KDown</span>
+  , <span style=color:#00688b;font-weight:700>LeftMove</span>  &lt;$ onKey <span style=color:#00688b;font-weight:700>KLeft</span>
+  , <span style=color:#00688b;font-weight:700>RightMove</span> &lt;$ onKey <span style=color:#00688b;font-weight:700>KRight</span>
+  ]
+</code></pre></div><hr>
+<ul>
+<li><code>&lt;=</code> <a href=/dyna-brick/tutorial/00-intro>Introduction</a></li>
+<li><code>=></code> <a href=/dyna-brick/tutorial/101-reference>Quick reference</a></li>
+<li>Up: <a href=/dyna-brick/tutorial-toc>Table of contents</a></li>
+</ul>
+</div>
+</div>
+</section>
+<footer class="footer footer-dark">
+<div class=container>
+<div class=columns>
+<div class=column>
+<div class=footer-logo>
+<a href=/>
+<img src=/dyna-frp/images/logos/dyna-logo-white-2.png>
+</a>
+</div>
+</div>
+<div class=column>
+<div class=footer-column>
+<div class=footer-header>
+<h3>Docs</h3>
+</div>
+<ul class=link-list>
+<li>
+<a href=/dyna-core/get-started>
+Get started
+</a>
+</li>
+<li>
+<a href=/dyna-core/tutorial-toc>
+Tutorial
+</a>
+</li>
+<li>
+<a href=/paper>
+Paper
+</a>
+</li>
+<li>
+<a href=https://hackage.haskell.org/package/dyna>
+Hackage
+</a>
+</li>
+</ul>
+</div>
+</div>
+<div class=column>
+<div class=footer-column>
+<div class=footer-header>
+<h3>Bindings</h3>
+</div>
+<ul class=link-list>
+<li>
+<a href=/dyna-brick/tutorial-toc>
+Brick
+</a>
+</li>
+<li>
+<a href=/dyna-gloss/tutorial-toc>
+Gloss
+</a>
+</li>
+<li>
+<a href=/dyna-processing/tutorial-toc>
+Processing
+</a>
+</li>
+</ul>
+</div>
+</div>
+<div class=column>
+<div class=footer-column>
+<div class=footer-header>
+<h3>Hackage</h3>
+</div>
+<ul class=link-list>
+<li>
+<a href=https://hackage.haskell.org/package/dyna>
+Core FRP
+</a>
+</li>
+<li>
+<a href=https://hackage.haskell.org/package/dyna-brick>
+Brick
+</a>
+</li>
+<li>
+<a href=https://hackage.haskell.org/package/dyna-gloss>
+Gloss
+</a>
+</li>
+<li>
+<a href=https://hackage.haskell.org/package/dyna-processing>
+Processing
+</a>
+</li>
+</ul>
+</div>
+</div>
+<div class=column>
+<div class=footer-column>
+<div class=footer-header>
+<h3>Follow Us</h3>
+<nav class="level is-mobile">
+<div class=level-left>
+<a class=level-item href=https://github.com/anton-k/dyna-frp/>
+<span class=icon><i class="fa fa-github"></i></span>
+</a>
+</div>
+</nav>
+</div>
+</div>
+</div>
+</div>
+</div>
+</footer>
+<div id=backtotop><a href=#></a></div>
+<div class=sidebar>
+<div class=sidebar-header>
+<img src=/dyna-frp/images/logos/fresh-square.svg>
+<a class=sidebar-close href=javascript:void(0);>
+<i data-feather=x></i>
+</a>
+</div>
+<div class=inner>
+<ul class=sidebar-menu>
+<li class=have-children>
+<a href=#>
+<span class="fa fa-user"></span>
+Core
+</a>
+<ul>
+<li>
+<a href=/dyna-core/tutorial/01-intro>
+Introduction
+</a>
+</li>
+<li>
+<a href=/dyna-core/tutorial/02-event-streams>
+Event streams
+</a>
+</li>
+<li>
+<a href=/dyna-core/tutorial/03-event-game-example>
+Console game example
+</a>
+</li>
+<li>
+<a href=/dyna-core/tutorial/04-dynamics>
+Dynamic values
+</a>
+</li>
+<li>
+<a href=/dyna-core/tutorial/05-backbone-monad>
+Main FRP monad
+</a>
+</li>
+<li>
+<a href=/dyna-core/tutorial/06-control-flow>
+Control flow. Sharing and Recursion
+</a>
+</li>
+<li>
+<a href=/dyna-core/tutorial/07-make-bindings>
+Bindings to imperative libraries
+</a>
+</li>
+<li>
+<a href=/dyna-core/tutorial/08-parser>
+Parsers of event streams
+</a>
+</li>
+<li>
+<a href=/dyna-core/tutorial/09-conclusion>
+Conclusion
+</a>
+</li>
+<li>
+<a href=/dyna-core/tutorial/101-reference>
+Quick reference
+</a>
+</li>
+</ul>
+</li>
+<li class=have-children>
+<a href=#>
+<span class="fa fa-envelope"></span>
+Brick
+</a>
+<ul>
+<li>
+<a href=/dyna-brick/tutorial/00-intro>
+Introduction
+</a>
+</li>
+<li>
+<a href=/dyna-brick/tutorial/01-puzzle-15>
+Example: Puzzle 15
+</a>
+</li>
+<li>
+<a href=/dyna-brick/tutorial/101-reference>
+Quick reference
+</a>
+</li>
+</ul>
+</li>
+<li class=have-children>
+<a href=#>
+<span class="fa fa-image"></span>
+Gloss
+</a>
+<ul>
+<li>
+<a href=/dyna-gloss/tutorial/00-intro>
+Introduction
+</a>
+</li>
+<li>
+<a href=/dyna-gloss/tutorial/01-example>
+Example
+</a>
+</li>
+<li>
+<a href=/dyna-gloss/tutorial/101-reference>
+Quick reference
+</a>
+</li>
+</ul>
+</li>
+<li class=have-children>
+<a href=#>
+<span class="fa fa-image"></span>
+Processing
+</a>
+<ul>
+<li>
+<a href=/dyna-processing/tutorial/00-intro>
+Introduction
+</a>
+</li>
+<li>
+<a href=/dyna-processing/tutorial/01-example>
+Example
+</a>
+</li>
+<li>
+<a href=/dyna-processing/tutorial/101-reference>
+Quick reference
+</a>
+</li>
+</ul>
+</li>
+<li class=have-children>
+<a href=#>
+<span class="fa fa-cog"></span>
+Resources
+</a>
+<ul>
+<li>
+<a href=/>
+Publications
+</a>
+</li>
+<li>
+<a href=/>
+Video
+</a>
+</li>
+<li>
+<a href=/>
+Examples
+</a>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js></script>
+<script src=https://unpkg.com/feather-icons></script>
+<script src=/dyna-frp/js/fresh.js></script>
+<script src=/dyna-frp/js/jquery.panelslider.min.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js></script>
+</body>
+</html>
