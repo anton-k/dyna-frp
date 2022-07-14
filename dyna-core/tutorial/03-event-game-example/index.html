@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    
+
+<meta property="og:title" content="Interactive Game for Rock-Paper-Scissors" />
+<meta property="og:description" content="For now we know what is event stream and how to use it. Let&rsquo;s define a simple game with them. FRP is often associated with UI applications or Graphical games or even Creation of dynamic web pages.
+But I&rsquo;d like to provide a solid understanding of the basic concepts for you with simple example that can be run right in the REPL. For that we can use Rock-Paper-Scissors game and build an application for it as a Haskell function." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://something-fresh.org/dyna-core/tutorial/03-event-game-example/" /><meta property="article:section" content="dyna-core" />
+
+
+
+
+
+<meta name="description" content="Hardcoded description; the author should update :)" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Dyna FRP</title>
+    
+<link rel="icon" type="image/png" href="/images/favicon.png" />
+<link href="https://fonts.googleapis.com/css?family=Open&#43;Sans:400,600" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="/css/style.min.e783507bb360b9f98a5ed4a121403993a693ea14a1af9420b35e040e776c22f8.css" integrity="sha256-54NQe7NgufmKXtShIUA5k6aT6hShr5Qgs14EDndsIvg=">
+<link rel="stylesheet" type="text/css" href="/css/icons.css">
+
+  </head>
+  <body>
+    
+    <div id="preloader">
+      <div id="status"></div>
+    </div>
+
+    
+
+    
+
+<nav class="navbar is-fresh is-transparent no-shadow" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <img src="/images/logos/dyna-logo-2.png" alt="" width="112" height="28">
+      </a>
+      <a class="navbar-item is-hidden-desktop is-hidden-tablet">
+        <div id="menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+          <svg width="1000px" height="1000px">
+            <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+            <path class="path2" d="M 300 500 L 700 500"></path>
+            <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+          </svg>
+          <button id="menu-icon-trigger" class="menu-icon-trigger"></button>
+        </div>
+      </a>
+
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-menu">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+      <div id="navbar-menu" class="navbar-menu is-static">
+        <div class="navbar-start">
+          <a class="navbar-item is-hidden-mobile">
+            <div id="menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+              <svg width="1000px" height="1000px">
+                <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+                <path class="path2" d="M 300 500 L 700 500"></path>
+                <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+              </svg>
+              <button id="menu-icon-trigger" class="menu-icon-trigger"></button>
+            </div>
+          </a>
+        </div>
+
+        <div class="navbar-end">
+          <a href="/" class="navbar-item is-secondary">
+            Home
+          </a>
+          <a href="/dyna-core/get-started" class="navbar-item is-secondary">
+            Get started
+          </a>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">
+              Tutorial
+            </a>
+
+            <div class="navbar-dropdown">
+              <a href="/paper" class="navbar-item">
+                Paper
+              </a>
+              <a href="/dyna-core/tutorial-toc" class="navbar-item">
+                Core FRP
+              </a>
+              <a href="/dyna-gloss/tutorial-toc" class="navbar-item">
+                Gloss
+              </a>
+              <a href="/dyna-brick/tutorial-toc" class="navbar-item">
+                Brick
+              </a>
+              <a href="/dyna-processing/tutorial-toc" class="navbar-item">
+                Processing
+              </a>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">
+              Reference
+            </a>
+
+            <div class="navbar-dropdown">
+              <a href="/dyna-core/tutorial/101-reference" class="navbar-item">
+                Core FRP
+              </a>
+              <a href="/dyna-gloss/tutorial/101-reference" class="navbar-item">
+                Gloss
+              </a>
+              <a href="/dyna-brick/tutorial/101-reference" class="navbar-item">
+                Brick
+              </a>
+              <a href="/dyna-processing/tutorial/101-reference" class="navbar-item">
+                Processing
+              </a>
+            </div>
+          </div>
+          <a href="https://github.com/anton-k/dyna-frp" class="navbar-item">
+            <span class="button signup-button rounded secondary-btn raised">
+              Github
+            </span>
+          </a>
+        </div>
+      </div>
+  </div>
+</nav>
+
+
+
+<nav id="navbar-clone" class="navbar is-fresh is-transparent" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <img src="/images/logos/dyna-logo-2.png" alt="" width="112" height="28">
+      </a>
+      <a class="navbar-item is-hidden-desktop is-hidden-tablet">
+        <div id="menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+          <svg width="1000px" height="1000px">
+            <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+            <path class="path2" d="M 300 500 L 700 500"></path>
+            <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+          </svg>
+          <button id="menu-icon-trigger" class="menu-icon-trigger"></button>
+        </div>
+      </a>
+
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="cloned-navbar-menu">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+    <div id="cloned-navbar-menu" class="navbar-menu is-fixed">
+      <div class="navbar-start">
+        <a class="navbar-item is-hidden-mobile">
+          <div id="cloned-menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+            <svg width="1000px" height="1000px">
+              <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+              <path class="path2" d="M 300 500 L 700 500"></path>
+              <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+            </svg>
+            <button id="cloned-menu-icon-trigger" class="menu-icon-trigger"></button>
+          </div>
+        </a>
+      </div>
+
+      <div class="navbar-end">
+        <a href="/" class="navbar-item is-secondary">
+          Home
+        </a>
+        <a href="/dyna-core/get-started" class="navbar-item is-secondary">
+          Get started
+        </a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            Tutorial
+          </a>
+
+          <div class="navbar-dropdown">
+            <a href="/paper" class="navbar-item">
+              Paper
+            </a>
+            <a href="/dyna-core/tutorial-toc" class="navbar-item">
+              Core FRP
+            </a>
+            <a href="/dyna-gloss/tutorial-toc" class="navbar-item">
+              Gloss
+            </a>
+            <a href="/dyna-brick/tutorial-toc" class="navbar-item">
+              Brick
+            </a>
+            <a href="/dyna-processing/tutorial-toc" class="navbar-item">
+              Processing
+            </a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            Reference
+          </a>
+
+          <div class="navbar-dropdown">
+            <a href="/dyna-core/tutorial/101-reference" class="navbar-item">
+              Core FRP
+            </a>
+            <a href="/dyna-gloss/tutorial/101-reference" class="navbar-item">
+              Gloss
+            </a>
+            <a href="/dyna-brick/tutorial/101-reference" class="navbar-item">
+              Brick
+            </a>
+            <a href="/dyna-processing/tutorial/101-reference" class="navbar-item">
+              Processing
+            </a>
+          </div>
+        </div>
+        <a href="https://github.com/anton-k/dyna-frp" class="navbar-item">
+          <span class="button signup-button rounded secondary-btn raised">
+            Github
+          </span>
+        </a>
+      </div>
+    </div>
+</div>
+</nav>
+
+<section class="section is-medium">
+  <div class="container">
+    <div class="columns">
+      <div class="column is-centered-tablet-portrait">
+        <h1 class="title section-title">Interactive Game for Rock-Paper-Scissors</h1>
+        <h5 class="subtitle is-5 is-muted"></h5>
+        <div class="divider"></div>
+      </div>
+    </div>
+
+    <div class="content">
+      <p>For now we know what is event stream and how to use it.
+Let&rsquo;s define a simple game with them. FRP is often associated with
+UI applications or Graphical games or even Creation of dynamic web pages.</p>
+<p>But I&rsquo;d like to provide a solid understanding of the basic concepts for you with simple example
+that can be run right in the REPL.
+For that we can use Rock-Paper-Scissors game and build an application for it
+as a Haskell function.</p>
+<p>We all used to play Rock-Paper-Scissors (RPS) when we were kids to resolve complicated
+questions. It was universal judge and authority. There is a question and we don&rsquo;t
+know who is right. Let&rsquo;s just solve it with RPS game.</p>
+<p>If you somehow don&rsquo;t know about it. Here is a description. It&rsquo;s a hand game.
+Two or more players say a some proverb and as they say it they hold hands
+and on the last word the show one of three figures with the hands: Rock (closed fist),
+paper (a flat hand), scissors (V-shape with index and middle fingers).
+Rock wins over scissors, paper wins over rock, scissors win over paper and
+if two players show the same figure it&rsquo;s a draw.</p>
+<p>Let&rsquo;s implement that game. We are going to play with AI which randomly chooses
+one of the figures. And we input the figure with <code>getLine</code> event stream.</p>
+<p>Let&rsquo;s look at the types first:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#8b008b;font-weight:bold">data</span> <span style="color:#00688b;font-weight:bold">Move</span> <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Rock</span> | <span style="color:#00688b;font-weight:bold">Paper</span> | <span style="color:#00688b;font-weight:bold">Scissors</span>
+  <span style="color:#8b008b;font-weight:bold">deriving</span> (<span style="color:#00688b;font-weight:bold">Show</span>, <span style="color:#00688b;font-weight:bold">Read</span>, <span style="color:#00688b;font-weight:bold">Eq</span>)
+</code></pre></div><p>So the move is one of the 3 hand figures. Let&rsquo;s describe the result of the game:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#228b22">-- | Result of the rounds</span>
+<span style="color:#8b008b;font-weight:bold">data</span> <span style="color:#00688b;font-weight:bold">Score</span> <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Score</span>
+  { game&#39;first   <span style="color:#8b008b">::</span> !<span style="color:#00688b;font-weight:bold">Int</span>             <span style="color:#228b22">-- ^ first player wins so many times</span>
+  , game&#39;second  <span style="color:#8b008b">::</span> !<span style="color:#00688b;font-weight:bold">Int</span>             <span style="color:#228b22">-- ^ second player wins</span>
+  , game&#39;draw    <span style="color:#8b008b">::</span> !<span style="color:#00688b;font-weight:bold">Int</span>             <span style="color:#228b22">-- ^ it&#39;s a draw</span>
+  , game&#39;moves   <span style="color:#8b008b">::</span> [(<span style="color:#00688b;font-weight:bold">Move</span>, <span style="color:#00688b;font-weight:bold">Move</span>)]   <span style="color:#228b22">-- ^ list of moves</span>
+  }
+</code></pre></div><p>The list of imports that we going to use:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#8b008b;font-weight:bold">import</span> <span style="color:#008b45;text-decoration:underline">Dyna</span>
+<span style="color:#8b008b;font-weight:bold">import</span> <span style="color:#008b45;text-decoration:underline">System.IO</span>
+<span style="color:#8b008b;font-weight:bold">import</span> <span style="color:#008b45;text-decoration:underline">Text.Read</span>
+<span style="color:#8b008b;font-weight:bold">import</span> <span style="color:#008b45;text-decoration:underline">Data.Tuple</span> (<span style="color:#008b45">swap</span>)
+</code></pre></div><p>We are going to play several rounds and we will have only two players.
+As we go along we will count the number of each player&rsquo;s victories
+and also we will keep the record of the moves.</p>
+<p>Let&rsquo;s calculate the results for a single round:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#228b22">-- | Collect scores</span>
+<span style="color:#008b45">toScore</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Move</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Move</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Score</span>
+<span style="color:#008b45">toScore</span> a b <span style="color:#8b008b">=</span> <span style="color:#8b008b;font-weight:bold">case</span> (a, b) <span style="color:#8b008b;font-weight:bold">of</span>
+  (<span style="color:#00688b;font-weight:bold">Rock</span>, <span style="color:#00688b;font-weight:bold">Paper</span>)     <span style="color:#8b008b">-&gt;</span> secondWin
+  (<span style="color:#00688b;font-weight:bold">Rock</span>, <span style="color:#00688b;font-weight:bold">Scissors</span>)  <span style="color:#8b008b">-&gt;</span> firstWin
+  (<span style="color:#00688b;font-weight:bold">Paper</span>, <span style="color:#00688b;font-weight:bold">Scissors</span>) <span style="color:#8b008b">-&gt;</span> secondWin
+  <span style="color:#8b008b;font-weight:bold">_</span> | a == b        <span style="color:#8b008b">-&gt;</span> draw
+  otherwise         <span style="color:#8b008b">-&gt;</span> swapWin $ toScore b a
+  <span style="color:#8b008b;font-weight:bold">where</span>
+    firstWin  <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Score</span> <span style="color:#b452cd">1</span> <span style="color:#b452cd">0</span> <span style="color:#b452cd">0</span> [(a, b)]
+    secondWin <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Score</span> <span style="color:#b452cd">0</span> <span style="color:#b452cd">1</span> <span style="color:#b452cd">0</span> [(a, b)]
+    draw      <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Score</span> <span style="color:#b452cd">0</span> <span style="color:#b452cd">0</span> <span style="color:#b452cd">1</span> [(a, b)]
+    swapWin (<span style="color:#00688b;font-weight:bold">Score</span> a b draw moves) <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Score</span> b a draw (fmap swap moves)
+</code></pre></div><p>To make it easy to keep and accumulate the scores we define the obvious monoid instance for it:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#8b008b;font-weight:bold">instance</span> <span style="color:#00688b;font-weight:bold">Semigroup</span> <span style="color:#00688b;font-weight:bold">Score</span> <span style="color:#8b008b;font-weight:bold">where</span>
+  (&lt;&gt;) (<span style="color:#00688b;font-weight:bold">Score</span> a1 b1 c1 d1) (<span style="color:#00688b;font-weight:bold">Score</span> a2 b2 c2 d2) <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Score</span> (a1 + a2) (b1 + b2) (c1 + c2) (d1 ++ d2)
+
+<span style="color:#8b008b;font-weight:bold">instance</span> <span style="color:#00688b;font-weight:bold">Monoid</span> <span style="color:#00688b;font-weight:bold">Score</span> <span style="color:#8b008b;font-weight:bold">where</span>
+  mempty <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Score</span> <span style="color:#b452cd">0</span> <span style="color:#b452cd">0</span> <span style="color:#b452cd">0</span> <span style="color:#00688b;font-weight:bold">[]</span>
+</code></pre></div><p>Also we need some nice print of the results:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#228b22">-- | Print current state</span>
+<span style="color:#008b45">printScore</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Int</span> <span style="color:#8b008b">-&gt;</span> (<span style="color:#00688b;font-weight:bold">Int</span>, <span style="color:#00688b;font-weight:bold">Score</span>) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">String</span>
+<span style="color:#008b45">printScore</span> totalRounds (roundId, <span style="color:#00688b;font-weight:bold">Score</span> firstWin secondWin draw moves) <span style="color:#8b008b">=</span> unlines
+  [ <span style="color:#cd5555">&#34;Score: round &#34;</span> &lt;&gt; show roundId
+  , <span style="color:#cd5555">&#34;  first  : &#34;</span> &lt;&gt; show firstWin
+  , <span style="color:#cd5555">&#34;  second : &#34;</span> &lt;&gt; show secondWin
+  , <span style="color:#cd5555">&#34;  draw   : &#34;</span> &lt;&gt; show draw
+  , <span style="color:#8b008b;font-weight:bold">if</span> totalRounds == roundId
+      <span style="color:#8b008b;font-weight:bold">then</span> unlines [<span style="color:#cd5555">&#34;  last move: &#34;</span> &lt;&gt; show (last moves), status]
+      <span style="color:#8b008b;font-weight:bold">else</span> <span style="color:#cd5555">&#34;  last move: &#34;</span> &lt;&gt; show (last moves)
+  ]
+  <span style="color:#8b008b;font-weight:bold">where</span>
+    status
+      | firstWin &gt; secondWin <span style="color:#8b008b">=</span> <span style="color:#cd5555">&#34;You win!&#34;</span>
+      | firstWin &lt; secondWin <span style="color:#8b008b">=</span> <span style="color:#cd5555">&#34;You lose!&#34;</span>
+      | otherwise            <span style="color:#8b008b">=</span> <span style="color:#cd5555">&#34;It&#39;s a Draw&#34;</span>
+</code></pre></div><p>We keep showing the state for all rounds and for the last round
+we calculate the final verdict who won the whole game.</p>
+<p>With this in place we are ready to define a game in FRP-style.
+Let&rsquo;s describe first the algorithm of the game.</p>
+<ul>
+<li>read user input</li>
+<li>take only valid moves</li>
+<li>take only so many moves as the number of rounds</li>
+<li>add random AI move as first element of the tuple</li>
+<li>get the score and accumulate scores</li>
+<li>append the round number</li>
+<li>print the current score for each round</li>
+</ul>
+<p>Each of the step can be expressed as an event stream processing function.
+For convenience we will use the pipe operator (hello Elixir).
+It&rsquo;s just reversed Haskell&rsquo;s application operator:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">(|&gt;) <span style="color:#8b008b">::</span> a <span style="color:#8b008b">-&gt;</span> (a <span style="color:#8b008b">-&gt;</span> b) <span style="color:#8b008b">-&gt;</span> b
+(|&gt;) x f <span style="color:#8b008b">=</span> f x
+</code></pre></div><p>Let&rsquo;s turn our description into application line by line:</p>
+<ul>
+<li>
+<p>read user input</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">once</span> getLine |&gt; forevers |&gt; 
+</code></pre></div><p>We repeatedly query user for input.</p>
+</li>
+<li>
+<p>take only valid moves. We use the same trick as we used with <code>readInts</code>. The function
+<code>readMaybe</code> comes from the standard module <code>Text.Read</code></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">mapMay</span> (readMaybe @<span style="color:#00688b;font-weight:bold">Move</span>) |&gt; 
+</code></pre></div></li>
+<li>
+<p>take only so many moves as the number of rounds</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">takes</span> total |&gt;
+</code></pre></div><p>Note the clever trick to skip all invalid user inputs prior to <code>takes</code> function. Underlying stream will
+query for the next move forever but for the game we will count only valid moves.</p>
+</li>
+<li>
+<p>add random AI move as a first element of the tuple</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">withOneOf</span> [<span style="color:#00688b;font-weight:bold">Rock</span>, <span style="color:#00688b;font-weight:bold">Paper</span>, <span style="color:#00688b;font-weight:bold">Scissors</span>] |&gt;  
+</code></pre></div><p>We append to the user&rsquo;s move some random move.
+Note that random move goes first in the result tuple pair.</p>
+</li>
+<li>
+<p>get the score and accumulate scores</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">foldMaps</span> (uncurry $ flip toScore) |&gt;  <span style="color:#228b22">-- get the score and accumulate scores</span>
+</code></pre></div><p>The <code>foldMaps</code> function is a combo of <code>fmap</code> and <code>appends</code>. It transforms
+the event values to something monoidable and appends them all.
+For our example we calculate the score for a single round and
+accumulate the score across all the rounds.
+We use flip to reverse user&rsquo;s and AI&rsquo;s moves.
+As we want to show user as a first player and AI as second one.</p>
+</li>
+<li>
+<p>append the round number</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">withCount</span> |&gt;    
+</code></pre></div><p>To print the number of the current round we count all the events.</p>
+</li>
+<li>
+<p>Show the results:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">fmap</span> (printScore total)               <span style="color:#228b22">-- print the current score</span>
+</code></pre></div><p>The final step.</p>
+</li>
+</ul>
+<p>Here is the complete code for the FRP-part of the application:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">game</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#00688b;font-weight:bold">IO</span> <span style="color:#00688b;font-weight:bold">String</span>
+<span style="color:#008b45">game</span> <span style="color:#8b008b">=</span>
+  once getLine |&gt; forevers |&gt;           <span style="color:#228b22">-- read user input</span>
+  mapMay (readMaybe @<span style="color:#00688b;font-weight:bold">Move</span>) |&gt;           <span style="color:#228b22">-- take only valid moves</span>
+  takes total |&gt;                        <span style="color:#228b22">-- take only so many moves</span>
+  withOneOf [<span style="color:#00688b;font-weight:bold">Rock</span>, <span style="color:#00688b;font-weight:bold">Paper</span>, <span style="color:#00688b;font-weight:bold">Scissors</span>] |&gt;  <span style="color:#228b22">-- add random AI move as first element of the tuple</span>
+  foldMaps (uncurry $ flip toScore) |&gt;  <span style="color:#228b22">-- get the score and accumulate scores</span>
+  withCount |&gt;                          <span style="color:#228b22">-- append the round number</span>
+  fmap (printScore total)               <span style="color:#228b22">-- print the current score</span>
+</code></pre></div><p>The pipe operator is defined in the <code>dyna</code> lib.</p>
+<p>The final parts to give our game a shape:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#8b008b;font-weight:bold">import</span> <span style="color:#008b45;text-decoration:underline">Dyna</span>
+<span style="color:#8b008b;font-weight:bold">import</span> <span style="color:#008b45;text-decoration:underline">System.IO</span>
+<span style="color:#8b008b;font-weight:bold">import</span> <span style="color:#008b45;text-decoration:underline">Text.Read</span>
+<span style="color:#8b008b;font-weight:bold">import</span> <span style="color:#008b45;text-decoration:underline">Data.Tuple</span> (<span style="color:#008b45">swap</span>)
+
+<span style="color:#008b45">main</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">IO</span> <span style="color:#658b00">()</span>
+<span style="color:#008b45">main</span> <span style="color:#8b008b">=</span> <span style="color:#8b008b;font-weight:bold">do</span>
+  hSetBuffering stdout <span style="color:#00688b;font-weight:bold">LineBuffering</span>
+  greet
+  putStrLns game
+
+<span style="color:#008b45">greet</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">IO</span> <span style="color:#658b00">()</span>
+<span style="color:#008b45">greet</span> <span style="color:#8b008b">=</span> putStrLn $ unlines
+  [ <span style="color:#cd5555">&#34;Welcome to Rock-paper-scissors game!&#34;</span>
+  , unwords [<span style="color:#cd5555">&#34;Let&#39;s play for&#34;</span>, show total, <span style="color:#cd5555">&#34;rounds&#34;</span>]
+  , <span style="color:#cd5555">&#34;Type: Rock, Paper or Scissors to make a move.&#34;</span>
+  ]
+</code></pre></div><p>We can find out the complete code in the directory <code>dyna/examples/</code>.
+Wow the FRP-part of the game was just 7 lines of code.
+And it looks very declarative although we have used imperative
+functions under the hood. We combined callback processor functions in neat way
+to achieve that.</p>
+<hr>
+<ul>
+<li><code>&lt;=</code> <a href="/dyna-core/tutorial/02-event-streams">Event streams</a></li>
+<li><code>=&gt;</code> <a href="/dyna-core/tutorial/04-dynamics">Dynamics - continuous processes</a></li>
+<li>Up: <a href="/dyna-core/tutorial-toc">Table of contents</a></li>
+</ul>
+
+    </div>
+  </div>
+</section>
+
+
+
+    
+<footer class="footer footer-dark">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        <div class="footer-logo">
+          <a href="/">
+            <img src="/images/logos/dyna-logo-white-2.png">
+          </a>
+        </div>
+      </div>
+        <div class="column">
+          <div class="footer-column">
+            <div class="footer-header">
+                <h3>Docs</h3>
+            </div>
+            <ul class="link-list">
+              <li>
+                <a href="/dyna-core/get-started">
+                  Get started
+                </a>
+              </li>
+              <li>
+                <a href="/dyna-core/tutorial-toc">
+                  Tutorial
+                </a>
+              </li>
+              <li>
+                <a href="/paper">
+                  Paper
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna">
+                  Hackage
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="column">
+          <div class="footer-column">
+            <div class="footer-header">
+                <h3>Bindings</h3>
+            </div>
+            <ul class="link-list">
+              <li>
+                <a href="/dyna-brick/tutorial-toc">
+                  Brick
+                </a>
+              </li>
+              <li>
+                <a href="/dyna-gloss/tutorial-toc">
+                  Gloss
+                </a>
+              </li>
+              <li>
+                <a href="/dyna-processing/tutorial-toc">
+                  Processing
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="column">
+          <div class="footer-column">
+            <div class="footer-header">
+                <h3>Hackage</h3>
+            </div>
+            <ul class="link-list">
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna">
+                  Core FRP
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna-brick">
+                  Brick
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna-gloss">
+                  Gloss
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna-processing">
+                  Processing
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      <div class="column">
+        <div class="footer-column">
+          <div class="footer-header">
+            <h3>Follow Us</h3>
+            <nav class="level is-mobile">
+              <div class="level-left">
+                <a class="level-item" href="https://github.com/anton-k/dyna-frp/">
+                  <span class="icon"><i class="fa fa-github"></i></span>
+                </a>
+              </div>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    
+    <div id="backtotop"><a href="#"></a></div>
+
+    
+<div class="sidebar">
+  <div class="sidebar-header">
+    <img src="/images/logos/fresh-square.svg">
+    <a class="sidebar-close" href="javascript:void(0);">
+      <i data-feather="x"></i>
+    </a>
+  </div>
+  <div class="inner">
+    <ul class="sidebar-menu">
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-user"></span>
+          Core
+        </a>
+        <ul>
+          <li>
+            <a href="/dyna-core/tutorial/01-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/02-event-streams">
+              Event streams
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/03-event-game-example">
+              Console game example
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/04-dynamics">
+              Dynamic values
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/05-backbone-monad">
+              Main FRP monad
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/06-control-flow">
+              Control flow. Sharing and Recursion
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/07-make-bindings">
+              Bindings to imperative libraries
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/08-parser">
+              Parsers of event streams
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/09-conclusion">
+              Conclusion
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-envelope"></span>
+          Brick
+        </a>
+        <ul>
+          <li>
+            <a href="/dyna-brick/tutorial/00-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-brick/tutorial/01-puzzle-15">
+              Example: Puzzle 15
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-brick/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-image"></span>
+          Gloss
+        </a>
+        <ul>
+          <li>
+            <a href="/dyna-gloss/tutorial/00-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-gloss/tutorial/01-example">
+              Example
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-gloss/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-image"></span>
+          Processing
+        </a>
+        <ul>
+          <li>
+            <a href="/dyna-processing/tutorial/00-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-processing/tutorial/01-example">
+              Example
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-processing/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-cog"></span>
+          Resources
+        </a>
+        <ul>
+          <li>
+            <a href="/">
+              Publications
+            </a>
+          </li>
+          <li>
+            <a href="/">
+              Video
+            </a>
+          </li>
+          <li>
+            <a href="/">
+              Examples
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</div>
+
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+<script src="/js/fresh.js"></script>
+<script src="/js/jquery.panelslider.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+  </body>
+</html>

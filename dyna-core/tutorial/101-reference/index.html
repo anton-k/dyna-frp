@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    
+
+<meta property="og:title" content="Quick reference to the core FRP functions" />
+<meta property="og:description" content="There are two core data types:
+ Evt m a - for event streams Dyn m a - for dynamic processes  The Evt is a callback processor. Giving some callback procedure it can run it each time some event happens.
+The Dyn is an observation of an event. It&rsquo;s stepwise constant continuous signal of values that starts with some initial value. It produces that value until the next value happen on the event stream then it produces that value until the next value will come." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://something-fresh.org/dyna-core/tutorial/101-reference/" /><meta property="article:section" content="dyna-core" />
+
+
+
+
+
+<meta name="description" content="Hardcoded description; the author should update :)" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Dyna FRP</title>
+    
+<link rel="icon" type="image/png" href="/images/favicon.png" />
+<link href="https://fonts.googleapis.com/css?family=Open&#43;Sans:400,600" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="/css/style.min.e783507bb360b9f98a5ed4a121403993a693ea14a1af9420b35e040e776c22f8.css" integrity="sha256-54NQe7NgufmKXtShIUA5k6aT6hShr5Qgs14EDndsIvg=">
+<link rel="stylesheet" type="text/css" href="/css/icons.css">
+
+  </head>
+  <body>
+    
+    <div id="preloader">
+      <div id="status"></div>
+    </div>
+
+    
+
+    
+
+<nav class="navbar is-fresh is-transparent no-shadow" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <img src="/images/logos/dyna-logo-2.png" alt="" width="112" height="28">
+      </a>
+      <a class="navbar-item is-hidden-desktop is-hidden-tablet">
+        <div id="menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+          <svg width="1000px" height="1000px">
+            <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+            <path class="path2" d="M 300 500 L 700 500"></path>
+            <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+          </svg>
+          <button id="menu-icon-trigger" class="menu-icon-trigger"></button>
+        </div>
+      </a>
+
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-menu">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+      <div id="navbar-menu" class="navbar-menu is-static">
+        <div class="navbar-start">
+          <a class="navbar-item is-hidden-mobile">
+            <div id="menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+              <svg width="1000px" height="1000px">
+                <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+                <path class="path2" d="M 300 500 L 700 500"></path>
+                <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+              </svg>
+              <button id="menu-icon-trigger" class="menu-icon-trigger"></button>
+            </div>
+          </a>
+        </div>
+
+        <div class="navbar-end">
+          <a href="/" class="navbar-item is-secondary">
+            Home
+          </a>
+          <a href="/dyna-core/get-started" class="navbar-item is-secondary">
+            Get started
+          </a>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">
+              Tutorial
+            </a>
+
+            <div class="navbar-dropdown">
+              <a href="/paper" class="navbar-item">
+                Paper
+              </a>
+              <a href="/dyna-core/tutorial-toc" class="navbar-item">
+                Core FRP
+              </a>
+              <a href="/dyna-gloss/tutorial-toc" class="navbar-item">
+                Gloss
+              </a>
+              <a href="/dyna-brick/tutorial-toc" class="navbar-item">
+                Brick
+              </a>
+              <a href="/dyna-processing/tutorial-toc" class="navbar-item">
+                Processing
+              </a>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">
+              Reference
+            </a>
+
+            <div class="navbar-dropdown">
+              <a href="/dyna-core/tutorial/101-reference" class="navbar-item">
+                Core FRP
+              </a>
+              <a href="/dyna-gloss/tutorial/101-reference" class="navbar-item">
+                Gloss
+              </a>
+              <a href="/dyna-brick/tutorial/101-reference" class="navbar-item">
+                Brick
+              </a>
+              <a href="/dyna-processing/tutorial/101-reference" class="navbar-item">
+                Processing
+              </a>
+            </div>
+          </div>
+          <a href="https://github.com/anton-k/dyna-frp" class="navbar-item">
+            <span class="button signup-button rounded secondary-btn raised">
+              Github
+            </span>
+          </a>
+        </div>
+      </div>
+  </div>
+</nav>
+
+
+
+<nav id="navbar-clone" class="navbar is-fresh is-transparent" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <img src="/images/logos/dyna-logo-2.png" alt="" width="112" height="28">
+      </a>
+      <a class="navbar-item is-hidden-desktop is-hidden-tablet">
+        <div id="menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+          <svg width="1000px" height="1000px">
+            <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+            <path class="path2" d="M 300 500 L 700 500"></path>
+            <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+          </svg>
+          <button id="menu-icon-trigger" class="menu-icon-trigger"></button>
+        </div>
+      </a>
+
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="cloned-navbar-menu">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+    <div id="cloned-navbar-menu" class="navbar-menu is-fixed">
+      <div class="navbar-start">
+        <a class="navbar-item is-hidden-mobile">
+          <div id="cloned-menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+            <svg width="1000px" height="1000px">
+              <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+              <path class="path2" d="M 300 500 L 700 500"></path>
+              <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+            </svg>
+            <button id="cloned-menu-icon-trigger" class="menu-icon-trigger"></button>
+          </div>
+        </a>
+      </div>
+
+      <div class="navbar-end">
+        <a href="/" class="navbar-item is-secondary">
+          Home
+        </a>
+        <a href="/dyna-core/get-started" class="navbar-item is-secondary">
+          Get started
+        </a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            Tutorial
+          </a>
+
+          <div class="navbar-dropdown">
+            <a href="/paper" class="navbar-item">
+              Paper
+            </a>
+            <a href="/dyna-core/tutorial-toc" class="navbar-item">
+              Core FRP
+            </a>
+            <a href="/dyna-gloss/tutorial-toc" class="navbar-item">
+              Gloss
+            </a>
+            <a href="/dyna-brick/tutorial-toc" class="navbar-item">
+              Brick
+            </a>
+            <a href="/dyna-processing/tutorial-toc" class="navbar-item">
+              Processing
+            </a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            Reference
+          </a>
+
+          <div class="navbar-dropdown">
+            <a href="/dyna-core/tutorial/101-reference" class="navbar-item">
+              Core FRP
+            </a>
+            <a href="/dyna-gloss/tutorial/101-reference" class="navbar-item">
+              Gloss
+            </a>
+            <a href="/dyna-brick/tutorial/101-reference" class="navbar-item">
+              Brick
+            </a>
+            <a href="/dyna-processing/tutorial/101-reference" class="navbar-item">
+              Processing
+            </a>
+          </div>
+        </div>
+        <a href="https://github.com/anton-k/dyna-frp" class="navbar-item">
+          <span class="button signup-button rounded secondary-btn raised">
+            Github
+          </span>
+        </a>
+      </div>
+    </div>
+</div>
+</nav>
+
+<section class="section is-medium">
+  <div class="container">
+    <div class="columns">
+      <div class="column is-centered-tablet-portrait">
+        <h1 class="title section-title">Quick reference to the core FRP functions</h1>
+        <h5 class="subtitle is-5 is-muted"></h5>
+        <div class="divider"></div>
+      </div>
+    </div>
+
+    <div class="content">
+      <p>There are two core data types:</p>
+<ul>
+<li><code>Evt m a</code> - for event streams</li>
+<li><code>Dyn m a</code> - for dynamic processes</li>
+</ul>
+<p>The <code>Evt</code> is a callback processor. Giving some callback procedure
+it can run it each time some event happens.</p>
+<p>The <code>Dyn</code> is an observation of an event. It&rsquo;s stepwise constant continuous
+signal of values that starts with some initial value. It produces
+that value until the next value happen on the event stream then
+it produces that value until the next value will come.</p>
+<p>Both events and dynamics are parametrised by some monad <code>m</code>
+which allows us to run IO-actions (instance of <code>MonadIO</code>)
+and allows us to run things in parallel (instance of <code>MonadBaseControl</code>).
+Together those instances form a <code>Frp</code> class.
+In all signatures we omit ubiquitous constraint for instance
+of that class <code>fun :: Frp m =&gt; ...</code>
+Also we omit the parameter from the <code>Evt</code> and <code>Dyn</code>.</p>
+<h2 id="functions-producing-evt">Functions producing Evt</h2>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#228b22">-- basic building blocks:</span>
+
+<span style="color:#228b22">-- no events</span>
+<span style="color:#008b45">never</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+
+<span style="color:#228b22">-- single event that happens right away</span>
+<span style="color:#008b45">once</span> <span style="color:#8b008b">::</span> m a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a
+
+<span style="color:#228b22">-- extract event from dynamic</span>
+<span style="color:#008b45">unhold</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Dyn</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+
+<span style="color:#228b22">-- Transform Evt to Evt using function  </span>
+<span style="color:#008b45">fmap</span>    <span style="color:#8b008b">::</span> (a       <span style="color:#8b008b">-&gt;</span> b) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> b
+<span style="color:#008b45">mapMay</span>  <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Maybe</span> b) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> b
+<span style="color:#008b45">filters</span> <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Bool</span>)    <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+&lt;$      <span style="color:#8b008b">::</span>             a  <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#8b008b;font-weight:bold">_</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+
+<span style="color:#228b22">-- Transform event to event by sampling the dynamic</span>
+<span style="color:#008b45">whenE</span>         <span style="color:#8b008b">::</span>                        <span style="color:#00688b;font-weight:bold">Dyn</span> <span style="color:#00688b;font-weight:bold">Bool</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+<span style="color:#008b45">snap</span>          <span style="color:#8b008b">::</span>                        <span style="color:#00688b;font-weight:bold">Dyn</span> a    <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#8b008b;font-weight:bold">_</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+&lt;@            <span style="color:#8b008b">::</span>                        <span style="color:#00688b;font-weight:bold">Dyn</span> a    <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#8b008b;font-weight:bold">_</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a 
+<span style="color:#008b45">attach</span>        <span style="color:#8b008b">::</span>                        <span style="color:#00688b;font-weight:bold">Dyn</span> a    <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> (a, b)
+<span style="color:#008b45">attachWith</span>    <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> b <span style="color:#8b008b">-&gt;</span> c)       <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> a    <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> c
+<span style="color:#008b45">attachWithMay</span> <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Maybe</span> c) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> a    <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> c
+<span style="color:#008b45">apply</span>         <span style="color:#8b008b">::</span>                    <span style="color:#00688b;font-weight:bold">Dyn</span> (a <span style="color:#8b008b">-&gt;</span> b) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> b
+&lt;@&gt;           <span style="color:#8b008b">::</span>                    <span style="color:#00688b;font-weight:bold">Dyn</span> (a <span style="color:#8b008b">-&gt;</span> b) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> b
+<span style="color:#008b45">applyMay</span>      <span style="color:#8b008b">::</span>              <span style="color:#00688b;font-weight:bold">Dyn</span> (a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Maybe</span> b) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> b
+
+<span style="color:#228b22">-- Combine multiple Events</span>
+&lt;&gt;            <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+<span style="color:#008b45">mconcat</span>       <span style="color:#8b008b">::</span> [<span style="color:#00688b;font-weight:bold">Evt</span> a] <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+<span style="color:#008b45">switch</span>        <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> (<span style="color:#00688b;font-weight:bold">Evt</span> a) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+<span style="color:#008b45">switchDyn</span>     <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Dyn</span> (<span style="color:#00688b;font-weight:bold">Evt</span> a) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+
+<span style="color:#228b22">-- list-like functions</span>
+<span style="color:#008b45">scan</span>     <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> b <span style="color:#8b008b">-&gt;</span>       b) <span style="color:#8b008b">-&gt;</span> b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> b 
+<span style="color:#008b45">scanMay</span>  <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Maybe</span> b) <span style="color:#8b008b">-&gt;</span> b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> b
+
+<span style="color:#008b45">accum</span>    <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> s <span style="color:#8b008b">-&gt;</span>       (b, s)) <span style="color:#8b008b">-&gt;</span> s <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> b 
+<span style="color:#008b45">accumMay</span> <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> s <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Maybe</span> (b, s)) <span style="color:#8b008b">-&gt;</span> s <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> b 
+
+<span style="color:#008b45">iterates</span>     <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> a) <span style="color:#8b008b">-&gt;</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#8b008b;font-weight:bold">_</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a 
+<span style="color:#008b45">withIterates</span> <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> a) <span style="color:#8b008b">-&gt;</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> (a, b)
+
+<span style="color:#008b45">sums</span>, products <span style="color:#8b008b">::</span> (<span style="color:#00688b;font-weight:bold">Num</span> a) <span style="color:#8b008b">=&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+<span style="color:#008b45">count</span>          <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#00688b;font-weight:bold">Int</span>
+<span style="color:#008b45">withCount</span>      <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> (<span style="color:#00688b;font-weight:bold">Int</span>, a)
+<span style="color:#008b45">appends</span>        <span style="color:#8b008b">::</span> (<span style="color:#00688b;font-weight:bold">Monoid</span> a) <span style="color:#8b008b">=&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a 
+<span style="color:#008b45">foldMaps</span>       <span style="color:#8b008b">::</span> (<span style="color:#00688b;font-weight:bold">Monoid</span> b) <span style="color:#8b008b">=&gt;</span> (a <span style="color:#8b008b">-&gt;</span> b) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> b
+
+<span style="color:#008b45">takes</span>, drops <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Int</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+<span style="color:#008b45">takesWhile</span>, dropsWhile <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Bool</span>) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+
+<span style="color:#008b45">cycles</span> <span style="color:#8b008b">::</span> [a] <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#8b008b;font-weight:bold">_</span>   <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a 
+<span style="color:#008b45">listAt</span> <span style="color:#8b008b">::</span> [a] <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#00688b;font-weight:bold">Int</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+
+<span style="color:#008b45">toToggle</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#00688b;font-weight:bold">Bool</span>
+
+<span style="color:#008b45">filters</span>    <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Bool</span>) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+<span style="color:#008b45">filterJust</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> (<span style="color:#00688b;font-weight:bold">Maybe</span> a) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a 
+
+<span style="color:#228b22">-- either events</span>
+<span style="color:#008b45">splits</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> (<span style="color:#00688b;font-weight:bold">Either</span> a b) <span style="color:#8b008b">-&gt;</span> (<span style="color:#00688b;font-weight:bold">Evt</span> a, <span style="color:#00688b;font-weight:bold">Evt</span> b)
+<span style="color:#008b45">lefts</span>  <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> (<span style="color:#00688b;font-weight:bold">Either</span> a b) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+<span style="color:#008b45">rights</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> (<span style="color:#00688b;font-weight:bold">Either</span> a b) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> b
+
+<span style="color:#228b22">-- recursion for events</span>
+<span style="color:#008b45">fix1</span> <span style="color:#8b008b">::</span> (<span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> m (<span style="color:#00688b;font-weight:bold">Evt</span> m a)) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a
+<span style="color:#008b45">fix2</span> <span style="color:#8b008b">::</span> 
+     (<span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m b <span style="color:#8b008b">-&gt;</span> m (<span style="color:#00688b;font-weight:bold">Evt</span> m a, <span style="color:#00688b;font-weight:bold">Evt</span> m b)) 
+  <span style="color:#8b008b">-&gt;</span> (<span style="color:#00688b;font-weight:bold">Evt</span> m a, <span style="color:#00688b;font-weight:bold">Evt</span> m b)
+<span style="color:#008b45">fix3</span> <span style="color:#8b008b">::</span> 
+     (<span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m c <span style="color:#8b008b">-&gt;</span> m (<span style="color:#00688b;font-weight:bold">Evt</span> m a, <span style="color:#00688b;font-weight:bold">Evt</span> m b, <span style="color:#00688b;font-weight:bold">Evt</span> m c)) 
+  <span style="color:#8b008b">-&gt;</span> (<span style="color:#00688b;font-weight:bold">Evt</span> m a, <span style="color:#00688b;font-weight:bold">Evt</span> m b, <span style="color:#00688b;font-weight:bold">Evt</span> m c)
+<span style="color:#008b45">fix4</span> <span style="color:#8b008b">::</span> 
+     (<span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m c <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m d <span style="color:#8b008b">-&gt;</span> m (<span style="color:#00688b;font-weight:bold">Evt</span> m a, <span style="color:#00688b;font-weight:bold">Evt</span> m b, <span style="color:#00688b;font-weight:bold">Evt</span> m c, <span style="color:#00688b;font-weight:bold">Evt</span> m d)) 
+  <span style="color:#8b008b">-&gt;</span> (<span style="color:#00688b;font-weight:bold">Evt</span> m a, <span style="color:#00688b;font-weight:bold">Evt</span> m b, <span style="color:#00688b;font-weight:bold">Evt</span> m c, <span style="color:#00688b;font-weight:bold">Evt</span> m d)
+
+<span style="color:#228b22">-- share execution of the event</span>
+<span style="color:#008b45">newEvt</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> m (<span style="color:#00688b;font-weight:bold">Evt</span> m a)
+
+<span style="color:#228b22">-- control of execution functions</span>
+<span style="color:#008b45">forevers</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+<span style="color:#008b45">forks</span>    <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+<span style="color:#008b45">races</span>    <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a 
+
+<span style="color:#228b22">-- IO input</span>
+<span style="color:#008b45">getLines</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#00688b;font-weight:bold">String</span>
+
+<span style="color:#228b22">-- call procedures pre/post event execution</span>
+<span style="color:#008b45">foreach</span>  <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> m <span style="color:#658b00">()</span>) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+<span style="color:#008b45">posteach</span> <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> m <span style="color:#658b00">()</span>) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+
+<span style="color:#228b22">-- Time utilities</span>
+<span style="color:#008b45">clock</span>, timer, ticks, pulse <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">NominalDiffTime</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#00688b;font-weight:bold">UTCTime</span>
+
+<span style="color:#008b45">delay</span>     <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">NominalDiffTime</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+<span style="color:#008b45">delayFork</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">NominalDiffTime</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+
+<span style="color:#228b22">-- Random events</span>
+<span style="color:#008b45">toRandom</span>    <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Random</span> a <span style="color:#8b008b">=&gt;</span>           <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#8b008b;font-weight:bold">_</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+<span style="color:#008b45">toRandomR</span>   <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Random</span> a <span style="color:#8b008b">=&gt;</span> (a, a) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#8b008b;font-weight:bold">_</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+
+<span style="color:#008b45">withRandom</span>  <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Random</span> b <span style="color:#8b008b">=&gt;</span>           <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> (b, a)
+<span style="color:#008b45">withRandomR</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Random</span> b <span style="color:#8b008b">=&gt;</span> (a, a) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> (b, a)
+
+<span style="color:#008b45">oneOf</span>       <span style="color:#8b008b">::</span> [a] <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+<span style="color:#008b45">withOneOf</span>   <span style="color:#8b008b">::</span> [a] <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> (a, b) 
+
+<span style="color:#008b45">freqOf</span> <span style="color:#8b008b">::</span> (<span style="color:#00688b;font-weight:bold">MonadRandom</span> m) <span style="color:#8b008b">=&gt;</span> 
+    <span style="color:#00688b;font-weight:bold">Dyn</span> m [(a, <span style="color:#00688b;font-weight:bold">Rational</span>)] <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a
+
+<span style="color:#008b45">withFreqOf</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">MonadRandom</span> m <span style="color:#8b008b">=&gt;</span> 
+    <span style="color:#00688b;font-weight:bold">Dyn</span> m [(a, <span style="color:#00688b;font-weight:bold">Rational</span>)] <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m (a, b)
+
+<span style="color:#008b45">randSkip</span>   <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Dyn</span> <span style="color:#00688b;font-weight:bold">Double</span>          <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a 
+<span style="color:#008b45">randSkipBy</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Dyn</span> m (a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Double</span>) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a 
+</code></pre></div><h3 id="render-event-streams">Render event streams</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">runEvt</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> (a <span style="color:#8b008b">-&gt;</span> m <span style="color:#658b00">()</span>) <span style="color:#8b008b">-&gt;</span> m <span style="color:#658b00">()</span>
+<span style="color:#008b45">heads</span>  <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> m a 
+<span style="color:#008b45">prints</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Show</span> a <span style="color:#8b008b">=&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> m <span style="color:#658b00">()</span>
+<span style="color:#008b45">putStrLns</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> m <span style="color:#00688b;font-weight:bold">String</span> <span style="color:#8b008b">-&gt;</span> m <span style="color:#658b00">()</span> 
+
+<span style="color:#008b45">folds</span>  <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Monoid</span> a <span style="color:#8b008b">=&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> m a
+<span style="color:#008b45">foldls</span> <span style="color:#8b008b">::</span> (b <span style="color:#8b008b">-&gt;</span> a <span style="color:#8b008b">-&gt;</span> b) <span style="color:#8b008b">-&gt;</span> b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> m b
+<span style="color:#008b45">foldrs</span> <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> b <span style="color:#8b008b">-&gt;</span> b) <span style="color:#8b008b">-&gt;</span> b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> m b 
+</code></pre></div><h2 id="functions-producing-dyn">Functions producing Dyn</h2>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#228b22">-- basic functions</span>
+<span style="color:#008b45">constDyn</span> <span style="color:#8b008b">::</span> m a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> m a
+<span style="color:#008b45">pure</span>     <span style="color:#8b008b">::</span>   a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> a
+
+<span style="color:#228b22">-- mapping over dynamics</span>
+<span style="color:#008b45">fmap</span> <span style="color:#8b008b">::</span>     (a <span style="color:#8b008b">-&gt;</span> b) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> b
+&lt;*&gt;  <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Dyn</span> (a <span style="color:#8b008b">-&gt;</span> b) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> b
+
+<span style="color:#008b45">liftA2</span> <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> b <span style="color:#8b008b">-&gt;</span> c)      <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> c
+<span style="color:#008b45">liftA3</span> <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> b <span style="color:#8b008b">-&gt;</span> c <span style="color:#8b008b">-&gt;</span> d) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> c <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> d
+
+<span style="color:#228b22">-- lifted interfaces</span>
+<span style="color:#228b22">-- Dyn is Num, Fractional, IsString, Monoid, VectorSpace, AffineSpace, Boolean, EqB, OrdB</span>
+<span style="color:#228b22">-- if it&#39;s argument is from the clas</span>
+
+<span style="color:#228b22">-- evt/dyn interaction</span>
+<span style="color:#008b45">hold</span>     <span style="color:#8b008b">::</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> a
+<span style="color:#008b45">scanD</span>    <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> b <span style="color:#8b008b">-&gt;</span>       b) <span style="color:#8b008b">-&gt;</span> b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> b
+<span style="color:#008b45">scanMayD</span> <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Maybe</span> b) <span style="color:#8b008b">-&gt;</span> b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> b 
+
+<span style="color:#008b45">switchD</span>  <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Dyn</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> (<span style="color:#00688b;font-weight:bold">Dyn</span> a) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> a
+
+<span style="color:#228b22">-- time utils</span>
+<span style="color:#008b45">timerD</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">NominalDiffTime</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> <span style="color:#00688b;font-weight:bold">NominalDiffTime</span>
+
+<span style="color:#228b22">-- solution of differential equations</span>
+<span style="color:#008b45">sumD</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Num</span> a <span style="color:#8b008b">=&gt;</span> <span style="color:#00688b;font-weight:bold">NominalDiffTime</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> a
+
+<span style="color:#008b45">integrate</span> <span style="color:#8b008b">::</span> (<span style="color:#00688b;font-weight:bold">VectorSpace</span> v, <span style="color:#00688b;font-weight:bold">Real</span> (<span style="color:#00688b;font-weight:bold">Scalar</span> v), <span style="color:#00688b;font-weight:bold">Fractional</span> (<span style="color:#00688b;font-weight:bold">Scalar</span> v)) <span style="color:#8b008b">=&gt;</span> 
+  <span style="color:#00688b;font-weight:bold">Scalar</span> v <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> v <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> v 
+
+<span style="color:#008b45">integrate2</span> <span style="color:#8b008b">::</span> (<span style="color:#00688b;font-weight:bold">VectorSpace</span> v, <span style="color:#00688b;font-weight:bold">Real</span> (<span style="color:#00688b;font-weight:bold">Scalar</span> v), <span style="color:#00688b;font-weight:bold">Fractional</span> (<span style="color:#00688b;font-weight:bold">Scalar</span> v)) <span style="color:#8b008b">=&gt;</span> 
+  <span style="color:#00688b;font-weight:bold">Scalar</span> v <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> v <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> v 
+</code></pre></div><h3 id="render-dynamic-processes">Render dynamic processes</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#228b22">-- get reference to the running dynamic process</span>
+<span style="color:#008b45">runDyn</span>    <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Dyn</span> m a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">DynRef</span> m a
+
+<span style="color:#228b22">-- query current value or cancel the process</span>
+<span style="color:#008b45">readDyn</span>   <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">DynRef</span> m a <span style="color:#8b008b">-&gt;</span> m a
+<span style="color:#008b45">cancelDyn</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">DynRef</span> m a <span style="color:#8b008b">-&gt;</span> m <span style="color:#658b00">()</span>
+</code></pre></div><h2 id="sharing-events-and-dynamics">Sharing events and dynamics</h2>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">newEvt</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> m (<span style="color:#00688b;font-weight:bold">Evt</span> m a)
+<span style="color:#008b45">newDyn</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Dyn</span> m a <span style="color:#8b008b">-&gt;</span> m (<span style="color:#00688b;font-weight:bold">Dyn</span> m a)
+
+<span style="color:#008b45">withDyn</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Dyn</span> m a <span style="color:#8b008b">-&gt;</span> (m a <span style="color:#8b008b">-&gt;</span> m b) <span style="color:#8b008b">-&gt;</span> m b 
+</code></pre></div><h2 id="effectful-dirty-api">Effectful dirty API</h2>
+<p>If you see any transformation with pure function there is
+also function to do it with dirty function. By convention
+we use suffix tick <code>'</code> to turn it to such a function.
+Some examples:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">filters&#39;</span> <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> m <span style="color:#00688b;font-weight:bold">Bool</span>)    <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a 
+<span style="color:#008b45">apply&#39;</span>   <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Dyn</span> m (a <span style="color:#8b008b">-&gt;</span> m b) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m b 
+
+<span style="color:#008b45">fmap&#39;</span>    <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> m b) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m b 
+<span style="color:#008b45">fmap&#39;</span>    <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> m b) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> m a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> m b 
+</code></pre></div><h2 id="parsers">Parsers</h2>
+<p>Parsers accumulate compound values from event stream.
+It can be though of as simple parsec combinators library for event streams
+as input.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#228b22">-- basic parsers</span>
+<span style="color:#008b45">headP</span>  <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Parser</span> m a b
+<span style="color:#008b45">maybeP</span> <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Maybe</span> b) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Parser</span> m a b
+
+<span style="color:#228b22">-- combination of parsers (Functor and Applicative)</span>
+<span style="color:#008b45">fmap</span> <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> b) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Parser</span> m x a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Parser</span> m x b
+<span style="color:#008b45">pure</span> <span style="color:#8b008b">::</span> a        <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Parser</span> m x a
+&lt;*&gt;     <span style="color:#00688b;font-weight:bold">Parser</span> m x (a <span style="color:#8b008b">-&gt;</span> b) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Parser</span> m x a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Parser</span> m x b
+
+<span style="color:#228b22">-- functions on events:</span>
+<span style="color:#008b45">takeP</span>  <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Parser</span> m a b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m b
+<span style="color:#008b45">cycleP</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Parser</span> m a b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m b
+</code></pre></div><h3 id="render-parsers">Render parsers</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">runParser</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Parser</span> m a b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> m (<span style="color:#00688b;font-weight:bold">Maybe</span> b)
+</code></pre></div>
+    </div>
+  </div>
+</section>
+
+
+
+    
+<footer class="footer footer-dark">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        <div class="footer-logo">
+          <a href="/">
+            <img src="/images/logos/dyna-logo-white-2.png">
+          </a>
+        </div>
+      </div>
+        <div class="column">
+          <div class="footer-column">
+            <div class="footer-header">
+                <h3>Docs</h3>
+            </div>
+            <ul class="link-list">
+              <li>
+                <a href="/dyna-core/get-started">
+                  Get started
+                </a>
+              </li>
+              <li>
+                <a href="/dyna-core/tutorial-toc">
+                  Tutorial
+                </a>
+              </li>
+              <li>
+                <a href="/paper">
+                  Paper
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna">
+                  Hackage
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="column">
+          <div class="footer-column">
+            <div class="footer-header">
+                <h3>Bindings</h3>
+            </div>
+            <ul class="link-list">
+              <li>
+                <a href="/dyna-brick/tutorial-toc">
+                  Brick
+                </a>
+              </li>
+              <li>
+                <a href="/dyna-gloss/tutorial-toc">
+                  Gloss
+                </a>
+              </li>
+              <li>
+                <a href="/dyna-processing/tutorial-toc">
+                  Processing
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="column">
+          <div class="footer-column">
+            <div class="footer-header">
+                <h3>Hackage</h3>
+            </div>
+            <ul class="link-list">
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna">
+                  Core FRP
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna-brick">
+                  Brick
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna-gloss">
+                  Gloss
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna-processing">
+                  Processing
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      <div class="column">
+        <div class="footer-column">
+          <div class="footer-header">
+            <h3>Follow Us</h3>
+            <nav class="level is-mobile">
+              <div class="level-left">
+                <a class="level-item" href="https://github.com/anton-k/dyna-frp/">
+                  <span class="icon"><i class="fa fa-github"></i></span>
+                </a>
+              </div>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    
+    <div id="backtotop"><a href="#"></a></div>
+
+    
+<div class="sidebar">
+  <div class="sidebar-header">
+    <img src="/images/logos/fresh-square.svg">
+    <a class="sidebar-close" href="javascript:void(0);">
+      <i data-feather="x"></i>
+    </a>
+  </div>
+  <div class="inner">
+    <ul class="sidebar-menu">
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-user"></span>
+          Core
+        </a>
+        <ul>
+          <li>
+            <a href="/dyna-core/tutorial/01-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/02-event-streams">
+              Event streams
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/03-event-game-example">
+              Console game example
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/04-dynamics">
+              Dynamic values
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/05-backbone-monad">
+              Main FRP monad
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/06-control-flow">
+              Control flow. Sharing and Recursion
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/07-make-bindings">
+              Bindings to imperative libraries
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/08-parser">
+              Parsers of event streams
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/09-conclusion">
+              Conclusion
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-envelope"></span>
+          Brick
+        </a>
+        <ul>
+          <li>
+            <a href="/dyna-brick/tutorial/00-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-brick/tutorial/01-puzzle-15">
+              Example: Puzzle 15
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-brick/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-image"></span>
+          Gloss
+        </a>
+        <ul>
+          <li>
+            <a href="/dyna-gloss/tutorial/00-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-gloss/tutorial/01-example">
+              Example
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-gloss/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-image"></span>
+          Processing
+        </a>
+        <ul>
+          <li>
+            <a href="/dyna-processing/tutorial/00-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-processing/tutorial/01-example">
+              Example
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-processing/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-cog"></span>
+          Resources
+        </a>
+        <ul>
+          <li>
+            <a href="/">
+              Publications
+            </a>
+          </li>
+          <li>
+            <a href="/">
+              Video
+            </a>
+          </li>
+          <li>
+            <a href="/">
+              Examples
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</div>
+
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+<script src="/js/fresh.js"></script>
+<script src="/js/jquery.panelslider.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+  </body>
+</html>

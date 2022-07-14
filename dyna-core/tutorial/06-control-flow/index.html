@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    
+
+<meta property="og:title" content="Functions to control the flow of application" />
+<meta property="og:description" content="In this section we discuss some peculiarities of the library. How to make recursive definitions with event streams and how to share effectful event streams and dynamic values.
+Grain of salt. Sharing event streams If all it was so cool and dandy. But there is grain of salt to it It is better to be aware of. All event streams perform dirty operations under the hood. So in some sense they are like IO () and this means that we can not share the values by means valid for pure values." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://something-fresh.org/dyna-core/tutorial/06-control-flow/" /><meta property="article:section" content="dyna-core" />
+
+
+
+
+
+<meta name="description" content="Hardcoded description; the author should update :)" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Dyna FRP</title>
+    
+<link rel="icon" type="image/png" href="/images/favicon.png" />
+<link href="https://fonts.googleapis.com/css?family=Open&#43;Sans:400,600" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="/css/style.min.e783507bb360b9f98a5ed4a121403993a693ea14a1af9420b35e040e776c22f8.css" integrity="sha256-54NQe7NgufmKXtShIUA5k6aT6hShr5Qgs14EDndsIvg=">
+<link rel="stylesheet" type="text/css" href="/css/icons.css">
+
+  </head>
+  <body>
+    
+    <div id="preloader">
+      <div id="status"></div>
+    </div>
+
+    
+
+    
+
+<nav class="navbar is-fresh is-transparent no-shadow" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <img src="/images/logos/dyna-logo-2.png" alt="" width="112" height="28">
+      </a>
+      <a class="navbar-item is-hidden-desktop is-hidden-tablet">
+        <div id="menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+          <svg width="1000px" height="1000px">
+            <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+            <path class="path2" d="M 300 500 L 700 500"></path>
+            <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+          </svg>
+          <button id="menu-icon-trigger" class="menu-icon-trigger"></button>
+        </div>
+      </a>
+
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-menu">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+      <div id="navbar-menu" class="navbar-menu is-static">
+        <div class="navbar-start">
+          <a class="navbar-item is-hidden-mobile">
+            <div id="menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+              <svg width="1000px" height="1000px">
+                <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+                <path class="path2" d="M 300 500 L 700 500"></path>
+                <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+              </svg>
+              <button id="menu-icon-trigger" class="menu-icon-trigger"></button>
+            </div>
+          </a>
+        </div>
+
+        <div class="navbar-end">
+          <a href="/" class="navbar-item is-secondary">
+            Home
+          </a>
+          <a href="/dyna-core/get-started" class="navbar-item is-secondary">
+            Get started
+          </a>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">
+              Tutorial
+            </a>
+
+            <div class="navbar-dropdown">
+              <a href="/paper" class="navbar-item">
+                Paper
+              </a>
+              <a href="/dyna-core/tutorial-toc" class="navbar-item">
+                Core FRP
+              </a>
+              <a href="/dyna-gloss/tutorial-toc" class="navbar-item">
+                Gloss
+              </a>
+              <a href="/dyna-brick/tutorial-toc" class="navbar-item">
+                Brick
+              </a>
+              <a href="/dyna-processing/tutorial-toc" class="navbar-item">
+                Processing
+              </a>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">
+              Reference
+            </a>
+
+            <div class="navbar-dropdown">
+              <a href="/dyna-core/tutorial/101-reference" class="navbar-item">
+                Core FRP
+              </a>
+              <a href="/dyna-gloss/tutorial/101-reference" class="navbar-item">
+                Gloss
+              </a>
+              <a href="/dyna-brick/tutorial/101-reference" class="navbar-item">
+                Brick
+              </a>
+              <a href="/dyna-processing/tutorial/101-reference" class="navbar-item">
+                Processing
+              </a>
+            </div>
+          </div>
+          <a href="https://github.com/anton-k/dyna-frp" class="navbar-item">
+            <span class="button signup-button rounded secondary-btn raised">
+              Github
+            </span>
+          </a>
+        </div>
+      </div>
+  </div>
+</nav>
+
+
+
+<nav id="navbar-clone" class="navbar is-fresh is-transparent" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <img src="/images/logos/dyna-logo-2.png" alt="" width="112" height="28">
+      </a>
+      <a class="navbar-item is-hidden-desktop is-hidden-tablet">
+        <div id="menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+          <svg width="1000px" height="1000px">
+            <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+            <path class="path2" d="M 300 500 L 700 500"></path>
+            <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+          </svg>
+          <button id="menu-icon-trigger" class="menu-icon-trigger"></button>
+        </div>
+      </a>
+
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="cloned-navbar-menu">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+    <div id="cloned-navbar-menu" class="navbar-menu is-fixed">
+      <div class="navbar-start">
+        <a class="navbar-item is-hidden-mobile">
+          <div id="cloned-menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+            <svg width="1000px" height="1000px">
+              <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+              <path class="path2" d="M 300 500 L 700 500"></path>
+              <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+            </svg>
+            <button id="cloned-menu-icon-trigger" class="menu-icon-trigger"></button>
+          </div>
+        </a>
+      </div>
+
+      <div class="navbar-end">
+        <a href="/" class="navbar-item is-secondary">
+          Home
+        </a>
+        <a href="/dyna-core/get-started" class="navbar-item is-secondary">
+          Get started
+        </a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            Tutorial
+          </a>
+
+          <div class="navbar-dropdown">
+            <a href="/paper" class="navbar-item">
+              Paper
+            </a>
+            <a href="/dyna-core/tutorial-toc" class="navbar-item">
+              Core FRP
+            </a>
+            <a href="/dyna-gloss/tutorial-toc" class="navbar-item">
+              Gloss
+            </a>
+            <a href="/dyna-brick/tutorial-toc" class="navbar-item">
+              Brick
+            </a>
+            <a href="/dyna-processing/tutorial-toc" class="navbar-item">
+              Processing
+            </a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            Reference
+          </a>
+
+          <div class="navbar-dropdown">
+            <a href="/dyna-core/tutorial/101-reference" class="navbar-item">
+              Core FRP
+            </a>
+            <a href="/dyna-gloss/tutorial/101-reference" class="navbar-item">
+              Gloss
+            </a>
+            <a href="/dyna-brick/tutorial/101-reference" class="navbar-item">
+              Brick
+            </a>
+            <a href="/dyna-processing/tutorial/101-reference" class="navbar-item">
+              Processing
+            </a>
+          </div>
+        </div>
+        <a href="https://github.com/anton-k/dyna-frp" class="navbar-item">
+          <span class="button signup-button rounded secondary-btn raised">
+            Github
+          </span>
+        </a>
+      </div>
+    </div>
+</div>
+</nav>
+
+<section class="section is-medium">
+  <div class="container">
+    <div class="columns">
+      <div class="column is-centered-tablet-portrait">
+        <h1 class="title section-title">Functions to control the flow of application</h1>
+        <h5 class="subtitle is-5 is-muted"></h5>
+        <div class="divider"></div>
+      </div>
+    </div>
+
+    <div class="content">
+      <p>In this section we discuss some peculiarities of the library.
+How to make recursive definitions with event streams and
+how to share effectful event streams and dynamic values.</p>
+<h2 id="grain-of-salt-sharing-event-streams">Grain of salt. Sharing event streams</h2>
+<p>If all it was so cool and dandy. But there is grain of salt to it
+It is better to be aware of. All event streams perform dirty operations
+under the hood. So in some sense they are like <code>IO ()</code> and
+this means that we can not share the values by means valid for
+pure values. By using <code>let</code>, <code>where</code> or in the argument definition
+We will share the <strong>description</strong> of a dirty event stream and not
+actual <strong>execution</strong> or stream of events.</p>
+<p>Event stream combinators offer a nice interface to build
+complex streams out of simple ones. But keep in mind that
+the <code>Evt</code> is a function. When we apply combinator we create
+a new <strong>dirty</strong> function out of existing ones. So using it by the same
+name will duplicate the side-effects of the function during execution.</p>
+<p>Under the hood it performs various non-pure operations and
+when we use Haskell&rsquo;s <code>let</code> or <code>where</code> to reuse event stream
+or when we pass it as an argument to the stream the event
+stream <strong>execution</strong> is not shared it will be duplicated.</p>
+<p>Let&rsquo;s illustrate it by example. Let&rsquo;s create a stream
+of random numbers:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">&gt; a <span style="color:#8b008b">=</span> toRandomR (<span style="color:#b452cd">0</span>, <span style="color:#b452cd">9</span>) $ clock <span style="color:#b452cd">1</span>
+&gt; prints a
+</code></pre></div><p>Let&rsquo;s create a duplicate event stream and call it <code>b</code>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">&gt; b <span style="color:#8b008b">=</span> a
+</code></pre></div><p>We might expect that when we will run both of the streams
+they will produce the same values. But it&rsquo;s not the case:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">&gt; b <span style="color:#8b008b">=</span> a
+&gt; prints $ snap (liftA2 (,) (hold <span style="color:#b452cd">0</span> a) (hold <span style="color:#b452cd">0</span> b)) (clock <span style="color:#b452cd">1</span>)
+(<span style="color:#b452cd">0</span>,<span style="color:#b452cd">0</span>)
+(<span style="color:#b452cd">9</span>,<span style="color:#b452cd">4</span>)
+(<span style="color:#b452cd">5</span>,<span style="color:#b452cd">4</span>)
+(<span style="color:#b452cd">5</span>,<span style="color:#b452cd">9</span>)
+(<span style="color:#b452cd">0</span>,<span style="color:#b452cd">4</span>)
+...
+</code></pre></div><p>The same will happen if we use stream as argument to the function.
+For example:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">&gt; f x <span style="color:#8b008b">=</span> prints $ snap (liftA2 (,) (hold <span style="color:#b452cd">0</span> x) (hold <span style="color:#b452cd">0</span> x)) (clock <span style="color:#b452cd">1</span>)
+&gt; f a
+(<span style="color:#b452cd">0</span>,<span style="color:#b452cd">0</span>)
+(<span style="color:#b452cd">5</span>,<span style="color:#b452cd">7</span>)
+(<span style="color:#b452cd">4</span>,<span style="color:#b452cd">4</span>)
+(<span style="color:#b452cd">1</span>,<span style="color:#b452cd">6</span>)
+(<span style="color:#b452cd">0</span>,<span style="color:#b452cd">6</span>)
+(<span style="color:#b452cd">4</span>,<span style="color:#b452cd">9</span>)
+</code></pre></div><p>This can be very counter-intuitive. But what happens is
+that we have two instances of the same dirty function
+and when it&rsquo;s called it produces side effects that are not shared
+even if the name is the same.</p>
+<p>It&rsquo;s like to have the code <code>(IO a)</code> even if we pass it by the
+same name if it&rsquo;s dirty inside we might get different answers
+each time we call it.</p>
+<p>How do we share the execution if we need it?
+To share the actual execution of streams there is function <code>newEvt</code>:</p>
+<figure><img src="/images/new-evt.svg"
+         alt="Monoid events" width="95%"/>
+</figure>
+
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">newEvt</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Frp</span> m <span style="color:#8b008b">=&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> m (<span style="color:#00688b;font-weight:bold">Evt</span> m a)
+</code></pre></div><p>Under the hood it runs the argument event stream and for
+result it creates a channel (form the package <code>unagi-channels</code>)
+and sends events from the argument that runs in background to the
+output channel. This way we can get the same values for both
+random arguments:</p>
+<p>First let&rsquo;s redefine the <code>f</code> so that it takes both event streams:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">&gt; f x y <span style="color:#8b008b">=</span> prints $ snap (liftA2 (,) (hold <span style="color:#b452cd">0</span> x) (hold <span style="color:#b452cd">0</span> y)) (clock <span style="color:#b452cd">1</span>)
+</code></pre></div><p>Let&rsquo;s share the event streams:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">a</span> <span style="color:#8b008b">=</span> toRandomR (<span style="color:#b452cd">0</span>, <span style="color:#b452cd">9</span>) (clock <span style="color:#b452cd">1</span>)
+&gt; b <span style="color:#8b008b">&lt;-</span> newEvt a
+&gt; c <span style="color:#8b008b">&lt;-</span> newEvt b
+&gt; f b c
+(<span style="color:#b452cd">0</span>,<span style="color:#b452cd">0</span>)
+(<span style="color:#b452cd">1</span>,<span style="color:#b452cd">1</span>)
+(<span style="color:#b452cd">0</span>,<span style="color:#b452cd">0</span>)
+(<span style="color:#b452cd">3</span>,<span style="color:#b452cd">3</span>)
+(<span style="color:#b452cd">9</span>,<span style="color:#b452cd">9</span>)
+(<span style="color:#b452cd">8</span>,<span style="color:#b452cd">8</span>)
+</code></pre></div><p>So we see equal numbers for both streams.
+Note that this solution also does not work:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">&gt; b <span style="color:#8b008b">&lt;-</span> newEvt a
+&gt; c <span style="color:#8b008b">&lt;-</span> newEvt a
+&gt; f b c
+</code></pre></div><p>Because in both <code>b</code> and <code>c</code> we create background process
+with two dirty versions of <code>a</code>. And thus we have two replica
+of that process.</p>
+<p>But for the right solution:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">a</span> <span style="color:#8b008b">=</span> toRandomR (<span style="color:#b452cd">0</span>, <span style="color:#b452cd">9</span>) (clock <span style="color:#b452cd">1</span>)
+&gt; b <span style="color:#8b008b">&lt;-</span> newEvt a
+&gt; c <span style="color:#8b008b">&lt;-</span> newEvt b
+&gt; f b c
+</code></pre></div><p>We instantiate (run in background) only one random event stream <code>a</code>
+and we copy events from it to <code>b</code>. And in the line
+<code>c &lt;- newEvt b</code> we copy events from <code>b</code> to <code>c</code>.
+In fact we can save one background process for <code>b</code> to <code>c</code> and
+just reuse the <code>b</code> definition since it&rsquo;s sort of a reference to
+the original event stream <code>a</code>. So this also achieves our goal of sharing
+the random events:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">&gt; b <span style="color:#8b008b">&lt;-</span> newEvt $ toRandomR (<span style="color:#b452cd">0</span>, <span style="color:#b452cd">9</span>) (clock <span style="color:#b452cd">1</span>)
+&gt; c <span style="color:#8b008b">=</span> b
+&gt; f b c
+(<span style="color:#b452cd">0</span>,<span style="color:#b452cd">0</span>)
+(<span style="color:#b452cd">7</span>,<span style="color:#b452cd">7</span>)
+(<span style="color:#b452cd">9</span>,<span style="color:#b452cd">9</span>)
+(<span style="color:#b452cd">9</span>,<span style="color:#b452cd">9</span>)
+(<span style="color:#b452cd">8</span>,<span style="color:#b452cd">8</span>)
+</code></pre></div><p>This is subtle effect of execution model that we need to be aware of.
+For example if you want to share the same clock for all parts of the application.
+Just use this at the top of application definition:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">app</span> <span style="color:#8b008b">=</span> runApp $ <span style="color:#8b008b;font-weight:bold">do</span>
+  sync <span style="color:#8b008b">&lt;-</span> newEvt $ clock <span style="color:#b452cd">1</span>
+  ... use sync <span style="color:#8b008b;font-weight:bold">in</span> the code ... 
+</code></pre></div><p>Some FRP libraries perform memorization under the hood
+or use <code>unsafePerformIO</code> to allocate references for such event streams
+that lexically look the same. But here we take another approach and
+make it explicit to the user.</p>
+<p>This can be inconvenient but this is how it works in the <code>dyna</code> library.</p>
+<h3 id="switching-between-the-event-streams">Switching between the event streams</h3>
+<p>There are king&rsquo;s level functions to structure FRP applications.
+We can flatten the event streams:</p>
+<figure><img src="/images/switch-evts.svg"
+         alt="Monoid events" width="90%"/>
+</figure>
+
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">switch</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> m (<span style="color:#00688b;font-weight:bold">Evt</span> m a) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a
+</code></pre></div><p>So we have the event stream of event streams and produce a flat event stream out of that.
+What should it do? Imagine as it starts nothing happens and the output stream produces nothing.
+But something comes on our way and event produces new event stream as a result. We start to
+listen to that event stream for events and produce them further to the output stream.
+Next on underlying argument the second event happens that brings another event stream into the scope.
+We shut down the process with the first event stream and start to listen for the next current event stream.
+And we start to channel it&rsquo;s events to the output. And so forth with the third, forth and other events.</p>
+<p>The <code>switch</code> function is useful to structure the application on bigger events.
+We have events that produce whole event streams and it&rsquo;s sort of switch between several
+sources of event streams that are triggered with the stream themselves.</p>
+<p>By the way <code>once</code> and <code>switch</code> form a Monad instance for <code>Evt</code>.</p>
+<h3 id="switching-between-the-dynamic-processes">Switching between the dynamic processes</h3>
+<p>Can you recall our conceptual definition of behavior from which we have started the section?
+It turns out that it can be implemented as library function:</p>
+<figure><img src="/images/switch-dyn.svg"
+         alt="Monoid events" width="90%"/>
+</figure>
+
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">switchD</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Dyn</span> m a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m (<span style="color:#00688b;font-weight:bold">Dyn</span> m a) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Dyn</span> m a
+</code></pre></div><p>We can create a compound dynamic with an initial dynamic value
+and event stream of dynamics. Whenever new event fires we shutdown
+the previous dynamic process and substitute it with current dynamic
+that was brought into the scope by the event stream.</p>
+<p>We have defined Monoid instance for dynamics with applicative instance.
+It turns out that plethora of instances can be generated in the same way.
+In the library we have <code>Num</code>, <code>Fractional</code>, <code>IsString</code>, <code>Boolean</code> and many others defined in the same way.</p>
+<h3 id="loops">Loops</h3>
+<p>An advanced usage of event streams is to be able to loop back to the original
+event stream. So we have a function that takes in event stream and as a result it produces
+the event stream. But we want to somehow route the events from the result to the input.</p>
+<p>We can use <code>fix1</code> function:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">fix1</span> <span style="color:#8b008b">::</span> (<span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> m (<span style="color:#00688b;font-weight:bold">Evt</span> m a)) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a 
+</code></pre></div><figure><img src="/images/fix-evt.svg"
+         alt="Monoid events" width="80%"/>
+</figure>
+
+<p>This can be very useful in applications with widgets when user input
+affects the look and feel of the widget with which user interacts.
+Also there are variants for 2, 3 and 4 recursive arguments (<code>fix2</code>, <code>fix3</code>, <code>fix4</code>).
+If you want more recursive arguments it can be easily expressed with <code>fix1</code>. See the
+docs on Hackage on how to achieve that.</p>
+<hr>
+<ul>
+<li><code>&lt;=</code> <a href="/dyna-core/tutorial/05-backbone-monad">Generic FRP monad</a></li>
+<li><code>=&gt;</code> <a href="/dyna-core/tutorial/07-make-bindings">How to make bindings</a></li>
+<li>Up: <a href="/dyna-core/tutorial-toc">Table of contents</a></li>
+</ul>
+
+    </div>
+  </div>
+</section>
+
+
+
+    
+<footer class="footer footer-dark">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        <div class="footer-logo">
+          <a href="/">
+            <img src="/images/logos/dyna-logo-white-2.png">
+          </a>
+        </div>
+      </div>
+        <div class="column">
+          <div class="footer-column">
+            <div class="footer-header">
+                <h3>Docs</h3>
+            </div>
+            <ul class="link-list">
+              <li>
+                <a href="/dyna-core/get-started">
+                  Get started
+                </a>
+              </li>
+              <li>
+                <a href="/dyna-core/tutorial-toc">
+                  Tutorial
+                </a>
+              </li>
+              <li>
+                <a href="/paper">
+                  Paper
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna">
+                  Hackage
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="column">
+          <div class="footer-column">
+            <div class="footer-header">
+                <h3>Bindings</h3>
+            </div>
+            <ul class="link-list">
+              <li>
+                <a href="/dyna-brick/tutorial-toc">
+                  Brick
+                </a>
+              </li>
+              <li>
+                <a href="/dyna-gloss/tutorial-toc">
+                  Gloss
+                </a>
+              </li>
+              <li>
+                <a href="/dyna-processing/tutorial-toc">
+                  Processing
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="column">
+          <div class="footer-column">
+            <div class="footer-header">
+                <h3>Hackage</h3>
+            </div>
+            <ul class="link-list">
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna">
+                  Core FRP
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna-brick">
+                  Brick
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna-gloss">
+                  Gloss
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna-processing">
+                  Processing
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      <div class="column">
+        <div class="footer-column">
+          <div class="footer-header">
+            <h3>Follow Us</h3>
+            <nav class="level is-mobile">
+              <div class="level-left">
+                <a class="level-item" href="https://github.com/anton-k/dyna-frp/">
+                  <span class="icon"><i class="fa fa-github"></i></span>
+                </a>
+              </div>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    
+    <div id="backtotop"><a href="#"></a></div>
+
+    
+<div class="sidebar">
+  <div class="sidebar-header">
+    <img src="/images/logos/fresh-square.svg">
+    <a class="sidebar-close" href="javascript:void(0);">
+      <i data-feather="x"></i>
+    </a>
+  </div>
+  <div class="inner">
+    <ul class="sidebar-menu">
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-user"></span>
+          Core
+        </a>
+        <ul>
+          <li>
+            <a href="/dyna-core/tutorial/01-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/02-event-streams">
+              Event streams
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/03-event-game-example">
+              Console game example
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/04-dynamics">
+              Dynamic values
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/05-backbone-monad">
+              Main FRP monad
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/06-control-flow">
+              Control flow. Sharing and Recursion
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/07-make-bindings">
+              Bindings to imperative libraries
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/08-parser">
+              Parsers of event streams
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/09-conclusion">
+              Conclusion
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-envelope"></span>
+          Brick
+        </a>
+        <ul>
+          <li>
+            <a href="/dyna-brick/tutorial/00-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-brick/tutorial/01-puzzle-15">
+              Example: Puzzle 15
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-brick/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-image"></span>
+          Gloss
+        </a>
+        <ul>
+          <li>
+            <a href="/dyna-gloss/tutorial/00-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-gloss/tutorial/01-example">
+              Example
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-gloss/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-image"></span>
+          Processing
+        </a>
+        <ul>
+          <li>
+            <a href="/dyna-processing/tutorial/00-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-processing/tutorial/01-example">
+              Example
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-processing/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-cog"></span>
+          Resources
+        </a>
+        <ul>
+          <li>
+            <a href="/">
+              Publications
+            </a>
+          </li>
+          <li>
+            <a href="/">
+              Video
+            </a>
+          </li>
+          <li>
+            <a href="/">
+              Examples
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</div>
+
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+<script src="/js/fresh.js"></script>
+<script src="/js/jquery.panelslider.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+  </body>
+</html>

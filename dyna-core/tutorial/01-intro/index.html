@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    
+
+<meta property="og:title" content="Introduction" />
+<meta property="og:description" content="FRP allows us to implement interactive applications with nice and declarative style. We can push IO-interaction to the boundaries of the application. And for some applications it even seems that all functions are pure and no dirty operations happen.
+There are many implementations of the FRP in Haskell. Why do we need yet another one? The main focus of the dyna library is simplicity of implementation. Once you grasp the core data types and concepts it is easy to derive the implementation." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://something-fresh.org/dyna-core/tutorial/01-intro/" /><meta property="article:section" content="dyna-core" />
+
+
+
+
+
+<meta name="description" content="Hardcoded description; the author should update :)" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Dyna FRP</title>
+    
+<link rel="icon" type="image/png" href="/images/favicon.png" />
+<link href="https://fonts.googleapis.com/css?family=Open&#43;Sans:400,600" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="/css/style.min.e783507bb360b9f98a5ed4a121403993a693ea14a1af9420b35e040e776c22f8.css" integrity="sha256-54NQe7NgufmKXtShIUA5k6aT6hShr5Qgs14EDndsIvg=">
+<link rel="stylesheet" type="text/css" href="/css/icons.css">
+
+  </head>
+  <body>
+    
+    <div id="preloader">
+      <div id="status"></div>
+    </div>
+
+    
+
+    
+
+<nav class="navbar is-fresh is-transparent no-shadow" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <img src="/images/logos/dyna-logo-2.png" alt="" width="112" height="28">
+      </a>
+      <a class="navbar-item is-hidden-desktop is-hidden-tablet">
+        <div id="menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+          <svg width="1000px" height="1000px">
+            <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+            <path class="path2" d="M 300 500 L 700 500"></path>
+            <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+          </svg>
+          <button id="menu-icon-trigger" class="menu-icon-trigger"></button>
+        </div>
+      </a>
+
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-menu">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+      <div id="navbar-menu" class="navbar-menu is-static">
+        <div class="navbar-start">
+          <a class="navbar-item is-hidden-mobile">
+            <div id="menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+              <svg width="1000px" height="1000px">
+                <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+                <path class="path2" d="M 300 500 L 700 500"></path>
+                <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+              </svg>
+              <button id="menu-icon-trigger" class="menu-icon-trigger"></button>
+            </div>
+          </a>
+        </div>
+
+        <div class="navbar-end">
+          <a href="/" class="navbar-item is-secondary">
+            Home
+          </a>
+          <a href="/dyna-core/get-started" class="navbar-item is-secondary">
+            Get started
+          </a>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">
+              Tutorial
+            </a>
+
+            <div class="navbar-dropdown">
+              <a href="/paper" class="navbar-item">
+                Paper
+              </a>
+              <a href="/dyna-core/tutorial-toc" class="navbar-item">
+                Core FRP
+              </a>
+              <a href="/dyna-gloss/tutorial-toc" class="navbar-item">
+                Gloss
+              </a>
+              <a href="/dyna-brick/tutorial-toc" class="navbar-item">
+                Brick
+              </a>
+              <a href="/dyna-processing/tutorial-toc" class="navbar-item">
+                Processing
+              </a>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">
+              Reference
+            </a>
+
+            <div class="navbar-dropdown">
+              <a href="/dyna-core/tutorial/101-reference" class="navbar-item">
+                Core FRP
+              </a>
+              <a href="/dyna-gloss/tutorial/101-reference" class="navbar-item">
+                Gloss
+              </a>
+              <a href="/dyna-brick/tutorial/101-reference" class="navbar-item">
+                Brick
+              </a>
+              <a href="/dyna-processing/tutorial/101-reference" class="navbar-item">
+                Processing
+              </a>
+            </div>
+          </div>
+          <a href="https://github.com/anton-k/dyna-frp" class="navbar-item">
+            <span class="button signup-button rounded secondary-btn raised">
+              Github
+            </span>
+          </a>
+        </div>
+      </div>
+  </div>
+</nav>
+
+
+
+<nav id="navbar-clone" class="navbar is-fresh is-transparent" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <img src="/images/logos/dyna-logo-2.png" alt="" width="112" height="28">
+      </a>
+      <a class="navbar-item is-hidden-desktop is-hidden-tablet">
+        <div id="menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+          <svg width="1000px" height="1000px">
+            <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+            <path class="path2" d="M 300 500 L 700 500"></path>
+            <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+          </svg>
+          <button id="menu-icon-trigger" class="menu-icon-trigger"></button>
+        </div>
+      </a>
+
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="cloned-navbar-menu">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+    <div id="cloned-navbar-menu" class="navbar-menu is-fixed">
+      <div class="navbar-start">
+        <a class="navbar-item is-hidden-mobile">
+          <div id="cloned-menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+            <svg width="1000px" height="1000px">
+              <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+              <path class="path2" d="M 300 500 L 700 500"></path>
+              <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+            </svg>
+            <button id="cloned-menu-icon-trigger" class="menu-icon-trigger"></button>
+          </div>
+        </a>
+      </div>
+
+      <div class="navbar-end">
+        <a href="/" class="navbar-item is-secondary">
+          Home
+        </a>
+        <a href="/dyna-core/get-started" class="navbar-item is-secondary">
+          Get started
+        </a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            Tutorial
+          </a>
+
+          <div class="navbar-dropdown">
+            <a href="/paper" class="navbar-item">
+              Paper
+            </a>
+            <a href="/dyna-core/tutorial-toc" class="navbar-item">
+              Core FRP
+            </a>
+            <a href="/dyna-gloss/tutorial-toc" class="navbar-item">
+              Gloss
+            </a>
+            <a href="/dyna-brick/tutorial-toc" class="navbar-item">
+              Brick
+            </a>
+            <a href="/dyna-processing/tutorial-toc" class="navbar-item">
+              Processing
+            </a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            Reference
+          </a>
+
+          <div class="navbar-dropdown">
+            <a href="/dyna-core/tutorial/101-reference" class="navbar-item">
+              Core FRP
+            </a>
+            <a href="/dyna-gloss/tutorial/101-reference" class="navbar-item">
+              Gloss
+            </a>
+            <a href="/dyna-brick/tutorial/101-reference" class="navbar-item">
+              Brick
+            </a>
+            <a href="/dyna-processing/tutorial/101-reference" class="navbar-item">
+              Processing
+            </a>
+          </div>
+        </div>
+        <a href="https://github.com/anton-k/dyna-frp" class="navbar-item">
+          <span class="button signup-button rounded secondary-btn raised">
+            Github
+          </span>
+        </a>
+      </div>
+    </div>
+</div>
+</nav>
+
+<section class="section is-medium">
+  <div class="container">
+    <div class="columns">
+      <div class="column is-centered-tablet-portrait">
+        <h1 class="title section-title">Introduction</h1>
+        <h5 class="subtitle is-5 is-muted"></h5>
+        <div class="divider"></div>
+      </div>
+    </div>
+
+    <div class="content">
+      <p>FRP allows us to implement interactive applications with nice and
+declarative style. We can push IO-interaction to the boundaries of
+the application. And for some applications it even seems that
+all functions are pure and no dirty operations happen.</p>
+<p>There are many implementations of the FRP in Haskell. Why
+do we need yet another one? The main focus of the <code>dyna</code> library is simplicity
+of implementation. Once you grasp the core data types and concepts it is easy to
+derive the implementation.</p>
+<p>The main Zen assumptions:</p>
+<ul>
+<li>There are continuous signals (<code>Dyn</code> short for dynamic) and event
+streams (<code>Evt</code> short for events)</li>
+<li>Everything happens just now for the processes (<code>Dyn</code>)</li>
+<li>We don&rsquo;t know when event (<code>Evt</code>) is going to happen, but when it
+will happen we can call a callback</li>
+<li>Everything happens concurrently</li>
+<li>Every process is an observation of some event stream</li>
+</ul>
+<p>In the following section we describe the basics of FRP.
+Feel free to skip it if you know the concept and move
+to the tutorial for the <code>dyna</code> library.</p>
+<h2 id="introduction-to-frp">Introduction to FRP</h2>
+<p>There is much debate about what functional reactive programming (FRP)
+actually is and what it&rsquo;s not. Some claim that it&rsquo;s essential to use continuous time
+others stress on Map/Reduce-like functional approach to build applications.</p>
+<p>FRP vs state machine/callback approach reminds me of the problem of particles
+from the Physics. When we go deeper to the roots of the basic elements of the matter
+it turns out that the matter is mysterious object.</p>
+<p>It can be viewed as a particle, non-divisible thing, and also it can be viewed
+as a wave, continuous transformation of the matter that interacts
+with other waves. This is called
+<a href="https://en.wikipedia.org/wiki/Wave%E2%80%93particle_duality">Wave–particle duality</a>
+concept.</p>
+<p>I&rsquo;d like to think of Finite state machine (FSM) approach when we describe
+interactive system as transformation of the current state as it reacts
+to events as a particle view of the UI system.</p>
+<p>The only thing we are aware of is our current state and we run
+the <strong>event loop</strong> to query user for events. And when something happen we update
+the state. The current state is sort of indivisible object that is transformed.</p>
+<p>The FRP approach is to think about units of transformations as a whole.
+We don&rsquo;t work with individual events or states but we work with signals or waves
+of events or continuous transformation of the elements from which the application
+is constructed.</p>
+<p>So instead of a single Event like right mouse button was pressed we
+have an event stream of all possible button presses. And we establish relationship
+between those streams and properties of our system. From that stems the interactivity.</p>
+<p>Let&rsquo;s describe a simple application with two models to feel the difference.
+Imagine that we have a circle that is drawn in the mouse position and when user
+clicks on the mouse button the circle changes the color.</p>
+<p>How we can solve that with our particle system view.</p>
+<h4 id="fsm-approach">FSM approach</h4>
+<p>Let&rsquo;s look at finite state machine approach to the task.
+We have the state:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#8b008b;font-weight:bold">data</span> <span style="color:#00688b;font-weight:bold">St</span> <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">St</span>
+  { st&#39;position <span style="color:#8b008b">::</span> (<span style="color:#00688b;font-weight:bold">Float</span>, <span style="color:#00688b;font-weight:bold">Float</span>)   
+     <span style="color:#228b22">-- ^ center of the circle (x, y) coordinates</span>
+  , st&#39;color    <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Color</span>
+     <span style="color:#228b22">-- ^ color of the circle</span>
+  }
+</code></pre></div><p>If position changes or mouse button was pressed we update the state:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">eventLoop</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Event</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">St</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">St</span>
+<span style="color:#008b45">eventLoop</span> event st <span style="color:#8b008b">=</span> 
+  <span style="color:#8b008b;font-weight:bold">case</span> event <span style="color:#8b008b;font-weight:bold">of</span>
+    <span style="color:#00688b;font-weight:bold">MousePosition</span> x y <span style="color:#8b008b">-&gt;</span> st { st&#39;position <span style="color:#8b008b">=</span> (x, y) }  
+    <span style="color:#00688b;font-weight:bold">MouseRightButton</span>  <span style="color:#8b008b">-&gt;</span> st { st&#39;color    <span style="color:#8b008b">=</span> nextColor (st&#39;color st) }
+    <span style="color:#8b008b;font-weight:bold">_</span>                 <span style="color:#8b008b">-&gt;</span> st
+</code></pre></div><p>Where <code>nextColor</code> is some function to update the color.</p>
+<p>And we have some <code>draw</code> or <code>view</code> function that draws the state on the screen:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">draw</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">St</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Picture</span>
+<span style="color:#008b45">draw</span> (<span style="color:#00688b;font-weight:bold">St</span> pos color) <span style="color:#8b008b">=</span> setColor col (circleFill pos)
+</code></pre></div><p>This is function in some imaginary graphics framework. So we
+can draw a circle in the state position with given color.</p>
+<h4 id="frp-apporach">FRP apporach</h4>
+<p>For functional reactive programming we have event stream of all
+mouse button presses and continuous signal (or wave) of mouse positions.
+And we use typical functional programming tools like (<code>map</code>, <code>filter</code>, <code>fold</code>)
+to work with streams and waves as if they are lists.</p>
+<p>To me this is the essence of FRP. Reusing the go-to functional programming
+tools to work with events as if they are infinite streams and establish
+relationships with parts of the application making it dynamic.</p>
+<p>Let&rsquo;s imagine that we have library functions:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">mousePos</span>         <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Signal</span> (<span style="color:#00688b;font-weight:bold">Float</span>, <span style="color:#00688b;font-weight:bold">Float</span>)
+<span style="color:#008b45">mouseButtonClick</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Stream</span> <span style="color:#658b00">()</span>
+</code></pre></div><p>Mouse position is a signal of all positions that user brings
+the mouse into during the life of the application.
+Mouse button clicks contains all possible events of the type mouse click.
+When user clicks on the mouse we put an event to that stream.</p>
+<p>To draw the picture we use <code>Functor</code> instance to map all mouse positions
+to circles:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">circlePicture</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Signal</span> <span style="color:#00688b;font-weight:bold">Picture</span>
+<span style="color:#008b45">circlePicture</span> <span style="color:#8b008b">=</span> fmap (<span style="color:#008b45">\</span>pos <span style="color:#8b008b">-&gt;</span> circleFill pos) mousePos
+</code></pre></div><p>So with <code>fmap</code> we set up a relationship between the picture on the screen
+and current mouse position. Also we can update the colors:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">colors</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Stream</span> <span style="color:#00688b;font-weight:bold">Color</span>
+<span style="color:#008b45">colors</span> <span style="color:#8b008b">=</span> iterateE green nextColor $ mouseButtonClick
+
+<span style="color:#008b45">coloredPicture</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Color</span> <span style="color:#00688b;font-weight:bold">Picture</span>
+<span style="color:#008b45">coloredPicture</span> <span style="color:#8b008b">=</span> liftA2 setColor (hold green colors) circlePicture
+</code></pre></div><p>We use function <code>iterates</code> to update some value with a function
+whenever anything happens on the stream. By convention if function
+is defined on event type and clashes with some function from Prelude
+we append suffix <code>s</code> to the end of the verb (i.e. <code>drops</code>, <code>takes</code>).</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">iterates</span> <span style="color:#8b008b">::</span> a <span style="color:#8b008b">-&gt;</span> (a <span style="color:#8b008b">-&gt;</span> a) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Stream</span> b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Stream</span> a
+</code></pre></div><p>We use function <code>hold</code> to turn streams of events to waves.
+It just remembers the last value that has happened on stream and
+keeps producing it until something new will happen:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">hold</span> <span style="color:#8b008b">::</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Stream</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Signal</span> a
+</code></pre></div><p>To set up the color we use Applicative instance for signals:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">liftA2</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Applicative</span> f <span style="color:#8b008b">=&gt;</span> (a <span style="color:#8b008b">-&gt;</span> b <span style="color:#8b008b">-&gt;</span> c) <span style="color:#8b008b">-&gt;</span> f a <span style="color:#8b008b">-&gt;</span> f b <span style="color:#8b008b">-&gt;</span> f c
+</code></pre></div><p>So the <code>liftA2</code> takes our pure function to set color of the picture
+<code>setColor :: Color -&gt; Picture -&gt; Picture</code> and adapts it to work on signals
+of values.</p>
+<p>And we render the whole app with some root evaluation function
+that expects the signal of pictures:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">runApp</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Signa</span> <span style="color:#00688b;font-weight:bold">Picture</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">IO</span> <span style="color:#658b00">()</span>
+</code></pre></div><p>So for me the essence of FRP is to treat user interactions
+as streams of events and dynamic changes and work with those values
+as a whole. We establish connections between dynamic values with
+standard functional programming interfaces.</p>
+<h2 id="frp-interface">FRP interface</h2>
+<p>FRP often has two types of values:</p>
+<ul>
+<li>Behaviors - continuous signals (it was <code>Signal</code> in our example )</li>
+<li>Event streams - infinite streams of values that happen over time</li>
+</ul>
+<p>Conceptually we can think of Behaviors as functions from time to value
+and about event stream as infinite stream of values tagged with the time of happening:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#8b008b;font-weight:bold">type</span> <span style="color:#00688b;font-weight:bold">Behavior</span> a <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Time</span> <span style="color:#8b008b">-&gt;</span> a
+
+<span style="color:#8b008b;font-weight:bold">type</span> <span style="color:#00688b;font-weight:bold">Events</span> a <span style="color:#8b008b">=</span> [(<span style="color:#00688b;font-weight:bold">Time</span>, a)]
+</code></pre></div><p>For those values in FRP we define standard interfaces.</p>
+<h3 id="behaviors">Behaviors</h3>
+<p>We can map over behaviors with functions of single or multiple arities:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#8b008b;font-weight:bold">instance</span> <span style="color:#00688b;font-weight:bold">Functor</span> <span style="color:#00688b;font-weight:bold">Behavior</span> <span style="color:#8b008b;font-weight:bold">where</span>
+<span style="color:#8b008b;font-weight:bold">instance</span> <span style="color:#00688b;font-weight:bold">Applicative</span> <span style="color:#00688b;font-weight:bold">Behavior</span> <span style="color:#8b008b;font-weight:bold">where</span>
+</code></pre></div><p>The <code>fmap</code> method of <code>Functor</code> let&rsquo;s us to lift single argument function
+to domain of Behaviors:</p>
+<figure><img src="/images/fmap-behavior.svg"
+         alt="Fmap Behavior" width="90%"/>
+</figure>
+
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">fmap</span> <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> b) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Behavior</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Behavior</span> b
+</code></pre></div><p>The applicative instance let us create constant behaviors:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">pure</span> <span style="color:#8b008b">::</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Behavior</span> a
+</code></pre></div><p>And lift pure functions with arbitrary number of arguments to Behaviors:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">liftA2</span> <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> b <span style="color:#8b008b">-&gt;</span> c) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Behavior</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Behavior</span> b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Behavior</span> c
+</code></pre></div><p>This is an example for function of two arguments, but we can achieve that
+for arbitrary number of arguments with combination of two operators:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">f</span> &lt;$&gt; a &lt;*&gt; b &lt;*&gt;  ... &lt;*&gt; z
+</code></pre></div><p>If we have Applicative instance we can derive many useful interfaces for free.
+We can take some specific class an lift all it&rsquo;s methods to <code>Behaviors</code>.
+Take for example monoid:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#8b008b;font-weight:bold">instance</span> <span style="color:#00688b;font-weight:bold">Monoid</span> a <span style="color:#8b008b">=&gt;</span> <span style="color:#00688b;font-weight:bold">Monoid</span> (<span style="color:#00688b;font-weight:bold">Behavior</span> a) <span style="color:#8b008b;font-weight:bold">where</span>
+  mempty <span style="color:#8b008b">=</span> pure mempty
+
+<span style="color:#8b008b;font-weight:bold">instance</span> <span style="color:#00688b;font-weight:bold">Semigroup</span> a <span style="color:#8b008b">=&gt;</span> <span style="color:#00688b;font-weight:bold">Semigroup</span> (<span style="color:#00688b;font-weight:bold">Behavior</span> a) <span style="color:#8b008b;font-weight:bold">where</span>
+  (&lt;&gt;) <span style="color:#8b008b">=</span> liftA2 (&lt;&gt;)
+</code></pre></div><p>The same trick can be done with <code>Num</code>, <code>IsString</code>, <code>Fractional</code> and many other standard classes.</p>
+<h3 id="event-streams">Event streams</h3>
+<p>The event streams should support interface:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#8b008b;font-weight:bold">instance</span> <span style="color:#00688b;font-weight:bold">Functor</span> <span style="color:#00688b;font-weight:bold">Events</span> <span style="color:#8b008b;font-weight:bold">where</span>
+<span style="color:#8b008b;font-weight:bold">instance</span> <span style="color:#00688b;font-weight:bold">Monoid</span> (<span style="color:#00688b;font-weight:bold">Events</span> a) <span style="color:#8b008b;font-weight:bold">where</span>
+</code></pre></div><p>With functor we just map over values of the events and keep the time
+of happening the same.</p>
+<figure><img src="/images/fmap-events.svg"
+         alt="Fmap Event" width="70%"/>
+</figure>
+
+<p>With <code>mappend</code> we merge two lists of event streams together
+into single event stream.</p>
+<figure><img src="/images/monoid-events.svg"
+         alt="Monoid events" width="80%"/>
+</figure>
+
+<p>That&rsquo;s it! Everything we need for the events.
+Usually libraries support many functions that are typically associated with lists.
+Like <code>filter</code>, <code>take</code>, <code>drop</code>, <code>fold</code>, <code>scan</code>, <code>cycle</code>, <code>iterate</code>, <code>takeWhile</code> etc.
+Because it&rsquo;s very convenient to think of event streams as of infinite lists of events.</p>
+<h3 id="interaction-between-behaviors-and-event-streams">Interaction between Behaviors and Event streams</h3>
+<p>FRP library is expected to implement functions that let us convert
+streams to behaviors and back.</p>
+<p>We have function</p>
+<figure><img src="/images/stepper.svg"
+         alt="Stepper" width="80%"/>
+</figure>
+
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">stepper</span> <span style="color:#8b008b">::</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Events</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Behavior</span> a
+<span style="color:#008b45">stepper</span> initial events
+</code></pre></div><p>It makes piecewise-constant function out of event stream.
+It starts with constant initial value and produces it until some event
+happens on the stream. Then that initial value is substituted with
+new taken value from the stream and get&rsquo;s produced until the next event will
+arrive.</p>
+<p>Often we define the dual function:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">changes</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Behavior</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Events</span> a
+</code></pre></div><p>It triggers new event when value on input behavior changes.
+Also some libraries implement more generic <code>stepper</code> function:</p>
+<figure><img src="/images/switch-behavior.svg"
+         alt="Stepper" width="80%"/>
+</figure>
+
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">switch</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Behavior</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Events</span> (<span style="color:#00688b;font-weight:bold">Behavior</span> a) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Behavior</span> a
+</code></pre></div><p>It starts with initial behavior and when event happens it
+carries the next behavior to switch to.</p>
+<p>Also often we have the same function for event streams:</p>
+<figure><img src="/images/switch-events.svg"
+         alt="Stepper" width="80%"/>
+</figure>
+
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">switch</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Events</span> (<span style="color:#00688b;font-weight:bold">Events</span> a) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Events</span> a
+</code></pre></div><p>It produces the event stream from the first event. When the second
+event happens it stops to listen for the events on first event stream
+and starts to listen for the events on the new event stream.
+This is very powerful abstraction.</p>
+<p>In fact together with event stream that contains a single event
+that happens on start of event stream the <code>switch</code> forms
+a <code>Monad</code> instance. For it <code>switch</code> can be though of as <code>join</code>
+for a monad.</p>
+<h3 id="recursive-event-streams">Recursive event streams</h3>
+<p>Sometimes it is useful to have event streams with feedback loop.
+Imagine a button widget and it displays a text that shows
+how many times it was clicked.</p>
+<p>This widget can be created with function:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">newButton</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Behavior</span> <span style="color:#00688b;font-weight:bold">Text</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Events</span> <span style="color:#658b00">()</span>
+</code></pre></div><p>It takes in the dynamic text that is shown on the button
+and produces event stream of clicks. To change the text based
+on the event stream we need to introduce feedback loop:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">clicks</span> <span style="color:#8b008b">=</span> newButton msg 
+<span style="color:#008b45">msg</span> <span style="color:#8b008b">=</span> stepper <span style="color:#cd5555">&#34;Zero clicks&#34;</span> (fmap (<span style="color:#008b45">\</span>n <span style="color:#8b008b">-&gt;</span> <span style="color:#cd5555">&#34;Clicked &#34;</span> &lt;&gt; show n <span style="color:#cd5555">&#34; times&#34;</span>) $ count clicks)
+</code></pre></div><p>So we need to use a recursion. Various libs solve this differently.
+Some allow direct recursion to be defined some introduce special
+fix-like functions to express it. In the <code>dyna</code> we took later approach.
+We have <code>fix1</code> function:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">fix1</span> <span style="color:#8b008b">::</span> (<span style="color:#00688b;font-weight:bold">Events</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Events</span> a) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Events</span> a
+</code></pre></div><p>This is simplified version of it. It takes in a function that expects
+an event stream as argument and produce just event stream.
+The meaning of it is that it sends every output event back to the input
+of the event processor function making a loop.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>This covers the whole repertoire of FRP libraries. FRP is great concept
+that allows us to build declarative interactive applications.
+In the next chapters we will see how those concepts are implemented
+and used in the <code>dyna</code> library and what makes it special.</p>
+<hr>
+<ul>
+<li><code>=&gt;</code> <a href="/dyna-core/tutorial/02-event-streams">Event streams</a></li>
+<li>Up: <a href="/dyna-core/tutorial-toc">Table of Contents</a></li>
+</ul>
+
+    </div>
+  </div>
+</section>
+
+
+
+    
+<footer class="footer footer-dark">
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        <div class="footer-logo">
+          <a href="/">
+            <img src="/images/logos/dyna-logo-white-2.png">
+          </a>
+        </div>
+      </div>
+        <div class="column">
+          <div class="footer-column">
+            <div class="footer-header">
+                <h3>Docs</h3>
+            </div>
+            <ul class="link-list">
+              <li>
+                <a href="/dyna-core/get-started">
+                  Get started
+                </a>
+              </li>
+              <li>
+                <a href="/dyna-core/tutorial-toc">
+                  Tutorial
+                </a>
+              </li>
+              <li>
+                <a href="/paper">
+                  Paper
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna">
+                  Hackage
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="column">
+          <div class="footer-column">
+            <div class="footer-header">
+                <h3>Bindings</h3>
+            </div>
+            <ul class="link-list">
+              <li>
+                <a href="/dyna-brick/tutorial-toc">
+                  Brick
+                </a>
+              </li>
+              <li>
+                <a href="/dyna-gloss/tutorial-toc">
+                  Gloss
+                </a>
+              </li>
+              <li>
+                <a href="/dyna-processing/tutorial-toc">
+                  Processing
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="column">
+          <div class="footer-column">
+            <div class="footer-header">
+                <h3>Hackage</h3>
+            </div>
+            <ul class="link-list">
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna">
+                  Core FRP
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna-brick">
+                  Brick
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna-gloss">
+                  Gloss
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna-processing">
+                  Processing
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      <div class="column">
+        <div class="footer-column">
+          <div class="footer-header">
+            <h3>Follow Us</h3>
+            <nav class="level is-mobile">
+              <div class="level-left">
+                <a class="level-item" href="https://github.com/anton-k/dyna-frp/">
+                  <span class="icon"><i class="fa fa-github"></i></span>
+                </a>
+              </div>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    
+    <div id="backtotop"><a href="#"></a></div>
+
+    
+<div class="sidebar">
+  <div class="sidebar-header">
+    <img src="/images/logos/fresh-square.svg">
+    <a class="sidebar-close" href="javascript:void(0);">
+      <i data-feather="x"></i>
+    </a>
+  </div>
+  <div class="inner">
+    <ul class="sidebar-menu">
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-user"></span>
+          Core
+        </a>
+        <ul>
+          <li>
+            <a href="/dyna-core/tutorial/01-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/02-event-streams">
+              Event streams
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/03-event-game-example">
+              Console game example
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/04-dynamics">
+              Dynamic values
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/05-backbone-monad">
+              Main FRP monad
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/06-control-flow">
+              Control flow. Sharing and Recursion
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/07-make-bindings">
+              Bindings to imperative libraries
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/08-parser">
+              Parsers of event streams
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/09-conclusion">
+              Conclusion
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-core/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-envelope"></span>
+          Brick
+        </a>
+        <ul>
+          <li>
+            <a href="/dyna-brick/tutorial/00-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-brick/tutorial/01-puzzle-15">
+              Example: Puzzle 15
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-brick/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-image"></span>
+          Gloss
+        </a>
+        <ul>
+          <li>
+            <a href="/dyna-gloss/tutorial/00-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-gloss/tutorial/01-example">
+              Example
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-gloss/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-image"></span>
+          Processing
+        </a>
+        <ul>
+          <li>
+            <a href="/dyna-processing/tutorial/00-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-processing/tutorial/01-example">
+              Example
+            </a>
+          </li>
+          <li>
+            <a href="/dyna-processing/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-cog"></span>
+          Resources
+        </a>
+        <ul>
+          <li>
+            <a href="/">
+              Publications
+            </a>
+          </li>
+          <li>
+            <a href="/">
+              Video
+            </a>
+          </li>
+          <li>
+            <a href="/">
+              Examples
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</div>
+
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+<script src="/js/fresh.js"></script>
+<script src="/js/jquery.panelslider.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+  </body>
+</html>
