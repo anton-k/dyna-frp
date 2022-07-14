@@ -1,0 +1,287 @@
+baseURL: https://anton-k.github.io/dyna-frp
+languageCode: en-us
+title: Dyna FRP
+theme: hugo-fresh
+googleAnalytics: # Put in your tracking code without quotes like this: UA-XXXXXX...
+# Disables warnings
+disableKinds:
+- taxonomy
+- taxonomyTerm
+markup:
+  goldmark:
+    renderer:
+      unsafe: true # Allows you to write raw html in your md files
+  highlight:
+    anchorLineNos: false
+    codeFences: true
+    guessSyntax: false
+    hl_Lines: ""
+    lineAnchors: ""
+    lineNoStart: 1
+    lineNos: false
+    lineNumbersInTable: true
+    noClasses: true
+    style: perldoc # pastie perldoc tango vs
+    tabWidth: 4
+      # chroma.Background: "#000000"
+
+params:
+  # Open graph allows easy social sharing. If you don't want it you can set it to false or just delete the variable
+  openGraph: true
+  # Used as meta data; describe your site to make Google Bots happy
+  description:
+  navbarlogo:
+  # Logo (from static/images/logos/___)
+    image: logos/dyna-logo-2.png # logos/fresh.svg
+    link: /
+  font:
+    name: "Open Sans"
+    sizes: [400,600]
+  hero:
+    # Main hero title
+    title: Dyna FRP
+    titleLogo: dyna-big-logo
+    # Hero subtitle (optional)
+    subtitle: Minimal and elegant functional reactive programming library for Haskell
+    # Button text
+    buttontext: Get started
+    # Where the main hero button links to
+    buttonlink: "/dyna-core/get-started"
+    # Hero image (from static/images/___)
+    image: illustrations/infinity-sign.jpg # illustrations/worker.svg
+    # Footer logos (from static/images/logos/clients/___.svg)
+    # clientlogos:
+    # - systek
+    # - tribe
+    # - kromo
+    # - infinite
+    # - gutwork
+  # Customizable navbar. For a dropdown, add a "sublinks" list.
+  navbar:
+  - title: Home
+    url: /
+  - title: Get started
+    url: /dyna-core/get-started
+  - title: Tutorial
+    sublinks:
+    - title: Paper
+      url: /paper
+    - title: Core FRP
+      url: /dyna-core/tutorial-toc
+    - title: Gloss
+      url: /dyna-gloss/tutorial-toc
+    - title: Brick
+      url: /dyna-brick/tutorial-toc
+    - title: Processing
+      url: /dyna-processing/tutorial-toc
+  - title: Reference
+    sublinks:
+    - title: Core FRP
+      url: /dyna-core/tutorial/101-reference
+    - title: Gloss
+      url: /dyna-gloss/tutorial/101-reference
+    - title: Brick
+      url: /dyna-brick/tutorial/101-reference
+    - title: Processing
+      url: /dyna-processing/tutorial/101-reference
+  - title: Github
+    url: https://github.com/anton-k/dyna-frp
+    button: true
+  sidebar:
+    # Logo (from /images/logos/___.svg)
+    logo: fresh-square
+    sections:
+    - title: Core
+      icon: user
+      links:
+      - text: Introduction
+        url: /dyna-core/tutorial/01-intro
+      - text: Event streams
+        url: /dyna-core/tutorial/02-event-streams
+      - text: Console game example
+        url: /dyna-core/tutorial/03-event-game-example
+      - text: Dynamic values
+        url: /dyna-core/tutorial/04-dynamics
+      - text: Main FRP monad
+        url: /dyna-core/tutorial/05-backbone-monad
+      - text: Control flow. Sharing and Recursion
+        url: /dyna-core/tutorial/06-control-flow
+      - text: Bindings to imperative libraries
+        url: /dyna-core/tutorial/07-make-bindings
+      - text: Parsers of event streams
+        url: /dyna-core/tutorial/08-parser
+      - text: Conclusion
+        url: /dyna-core/tutorial/09-conclusion
+      - text: Quick reference
+        url: /dyna-core/tutorial/101-reference
+      # - text: Resources
+      #  url: /dyna-core/tutorial/102-resources
+    - title: Brick
+      icon: envelope
+      links:
+      - text: Introduction
+        url: /dyna-brick/tutorial/00-intro
+      - text: "Example: Puzzle 15"
+        url: /dyna-brick/tutorial/01-puzzle-15
+      - text: Quick reference
+        url: /dyna-brick/tutorial/101-reference
+    - title: Gloss
+      icon: image
+      links:
+      - text: Introduction
+        url: /dyna-gloss/tutorial/00-intro
+      - text: Example
+        url: /dyna-gloss/tutorial/01-example
+      - text: Quick reference
+        url: /dyna-gloss/tutorial/101-reference
+    - title: Processing
+      icon: image
+      links:
+      - text: Introduction
+        url: /dyna-processing/tutorial/00-intro
+      - text: Example
+        url: /dyna-processing/tutorial/01-example
+      - text: Quick reference
+        url: /dyna-processing/tutorial/101-reference
+    - title: Resources
+      icon: cog
+      links:
+      - text: Publications
+        url: /
+      - text: Video
+        url: /
+      - text: Examples
+        url: /
+  section1:
+    title: Callback heaven
+    subtitle: for modern interactive apps
+    tiles:
+    - title: Core FRP library
+      icon: mouse-globe
+      text: Solid FRP library for your next project
+      url: https://hackage.haskell.org/package/dyna
+      buttonText: Hackage docs
+    - title: Create Games
+      icon: laptop-cloud
+      text: Even more declarative gloss graphics on top of Open GL
+      url: https://hackage.haskell.org/package/dyna-gloss
+      buttonText: Hackage docs
+    - title: Make TUIs
+      icon: doc-sync
+      text: Terminal interactive apps with great brick library
+      url: https://hackage.haskell.org/package/dyna-brick
+      buttonText: Hackage docs
+  section2:
+    title: Easy to use and extend
+    subtitle: Key features
+    features:
+    - title: Powerful and elegant interface
+      text: The core of the library is based on simple idea that event stream
+            is a callback consumer function. We define the events not in terms of what
+            it is but in terms of what we want to do with it. If we give a callback function
+            to it it will make something useful with it when event will happen. The dynamic values
+            are observers of the values that happen on imperative streams. A dynamic value is
+            a snapshot of last value that has happened onthe stream.
+      # Icon (from /images/illustrations/icons/___.svg)
+      icon: laptop-globe
+    - title: Efficient implementation
+      text:
+          It turns out that with imperative definition we can implement in efficient way
+          the whole set of combinators thaw we expect from FRP library.
+          The implementation is based on battle tested libraries such as async-lifted
+          and lifted-base. All events happen concurrently and update happens in mutable variables
+          which prevents the system from space leaks.
+      icon: doc-sync
+    - title: Generic implementation
+      text: The event streams and dynamic values are parametrized by the context of the
+            core monad which gives us opportunity to easily extend the core functions
+            with custom contexts suitable for specific applications. It's a breeze to take
+            some imperative library and make FRP-style support for it.
+      icon: mobile-feed
+    - title: Batteries included
+      text: Besides the core library we have implemented libraries that unfold the FRP wings
+            for several great libraries such as gloss (to make animations and games) and brick (to make TUIs).
+            Also we can take them as examples on how to implement our own bindings to our
+            favorite libraries.
+      icon: mobile-feed
+  section3:
+    title: One platform
+    subtitle: To rule them all
+    image: illustrations/mockups/app-mockup.png
+    buttonText: Get started
+    buttonLink: "#"
+  section4:
+    title: Our Clients love us!
+    subtitle: Lorem ipsum sit dolor amet is a dummy text used by typography industry
+    clients:
+    - name: Irma Walters
+      quote: Lorem ipsum dolor sit amet, elit deleniti dissentias quo eu, hinc minim appetere te usu, ea case duis scribentur has. Duo te consequat elaboraret, has quando suavitate at.
+      job: Accountant
+      img: 1
+    - name: John Bradley
+      quote: Lorem ipsum dolor sit amet, elit deleniti dissentias quo eu, hinc minim appetere te usu, ea case duis scribentur has. Duo te consequat elaboraret, has quando suavitate at.
+      job: Financial Analyst
+      img: 2
+    - name: Gary Blackman
+      quote: Lorem ipsum dolor sit amet, elit deleniti dissentias quo eu, hinc minim appetere te usu, ea case duis scribentur has. Duo te consequat elaboraret, has quando suavitate at.
+      job: HR Manager
+      img: 3
+  section5: false
+  footer:
+    # Logo (from /images/logos/___)
+    logo: dyna-logo-white-2.png # fresh-white-alt.svg
+    link: /
+    # Social Media Title
+    socialmediatitle: Follow Us
+    # Social media links (GitHub, Twitter, etc.). All are optional.
+    socialmedia:
+    - link: https://github.com/anton-k/dyna-frp/
+      # Icons are from Font Awesome
+      icon: github
+    quicklinks:
+      #      column1:
+      #        title: "Product"
+      #        links:
+      #        - text: Discover features
+      #          link: /
+      #        - text: Why choose our product?
+      #          link: /
+      #        - text: Compare features
+      #          link: /
+      #        # - text: Our roadmap
+      #        # link: /
+      column2:
+        title: "Docs"
+        links:
+        - text: Get started
+          link: /dyna-core/get-started
+        - text: Tutorial
+          link: /dyna-core/tutorial-toc
+        - text: Paper
+          link: /paper
+        - text: Hackage
+          link: https://hackage.haskell.org/package/dyna
+      # - text: Publications
+      #    link: /
+      #  - text: Resources
+      #    link: /
+      column3:
+        title: "Bindings"
+        links:
+         - text: Brick
+           link: /dyna-brick/tutorial-toc
+         - text: Gloss
+           link: /dyna-gloss/tutorial-toc
+         - text: Processing
+           link: /dyna-processing/tutorial-toc
+      column4:
+        title: "Hackage"
+        links:
+         - text: Core FRP
+           link: https://hackage.haskell.org/package/dyna
+         - text: Brick
+           link: https://hackage.haskell.org/package/dyna-brick
+         - text: Gloss
+           link: https://hackage.haskell.org/package/dyna-gloss
+         - text: Processing
+           link: https://hackage.haskell.org/package/dyna-processing
