@@ -10,10 +10,10 @@ Grain of salt. Sharing event streams If all it was so cool and dandy. But there 
 <meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
 <meta http-equiv=x-ua-compatible content="ie=edge">
 <title>Dyna FRP</title>
-<link rel=icon type=image/png href=/dyna-frp/images/favicon.png>
+<link rel=icon type=image/png href=https://anton-k.github.io/dyna-frp/images/favicon.png>
 <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel=stylesheet>
-<link rel=stylesheet type=text/css href=/dyna-frp/css/style.min.e783507bb360b9f98a5ed4a121403993a693ea14a1af9420b35e040e776c22f8.css integrity="sha256-54NQe7NgufmKXtShIUA5k6aT6hShr5Qgs14EDndsIvg=">
-<link rel=stylesheet type=text/css href=/dyna-frp/css/icons.css>
+<link rel=stylesheet type=text/css href=https://anton-k.github.io/dyna-frp/css/style.min.e783507bb360b9f98a5ed4a121403993a693ea14a1af9420b35e040e776c22f8.css integrity="sha256-54NQe7NgufmKXtShIUA5k6aT6hShr5Qgs14EDndsIvg=">
+<link rel=stylesheet type=text/css href=https://anton-k.github.io/dyna-frp/css/icons.css>
 </head>
 <body>
 <div id=preloader>
@@ -22,8 +22,8 @@ Grain of salt. Sharing event streams If all it was so cool and dandy. But there 
 <nav class="navbar is-fresh is-transparent no-shadow" role=navigation aria-label="main navigation">
 <div class=container>
 <div class=navbar-brand>
-<a class=navbar-item href=/>
-<img src=/dyna-frp/images/logos/dyna-logo-2.png alt width=112 height=28>
+<a class=navbar-item href=https://anton-k.github.io/dyna-frp/>
+<img src=https://anton-k.github.io/dyna-frp/images/logos/dyna-logo-2.png alt width=112 height=28>
 </a>
 <a class="navbar-item is-hidden-desktop is-hidden-tablet">
 <div id=menu-icon-wrapper class=menu-icon-wrapper style=visibility:visible><svg width="1e3" height="1e3"><path class="path1" d="M3e2 4e2H7e2c2e2.0 2e2 350-1e2 450A4e2 4e2.0 012e2 2e2L8e2 8e2"/><path class="path2" d="M3e2 5e2H7e2"/><path class="path3" d="M7e2 6e2H3e2c-2e2.0-2e2-4e2 1e2-450A4e2 380 0 112e2 8e2L8e2 2e2"/></svg>
@@ -45,7 +45,7 @@ Grain of salt. Sharing event streams If all it was so cool and dandy. But there 
 </a>
 </div>
 <div class=navbar-end>
-<a href=/ class="navbar-item is-secondary">
+<a href=https://anton-k.github.io/dyna-frp/ class="navbar-item is-secondary">
 Home
 </a>
 <a href=dyna-core/get-started class="navbar-item is-secondary">
@@ -104,8 +104,8 @@ Github
 <nav id=navbar-clone class="navbar is-fresh is-transparent" role=navigation aria-label="main navigation">
 <div class=container>
 <div class=navbar-brand>
-<a class=navbar-item href=/>
-<img src=/dyna-frp/images/logos/dyna-logo-2.png alt width=112 height=28>
+<a class=navbar-item href=https://anton-k.github.io/dyna-frp/>
+<img src=https://anton-k.github.io/dyna-frp/images/logos/dyna-logo-2.png alt width=112 height=28>
 </a>
 <a class="navbar-item is-hidden-desktop is-hidden-tablet">
 <div id=menu-icon-wrapper class=menu-icon-wrapper style=visibility:visible><svg width="1e3" height="1e3"><path class="path1" d="M3e2 4e2H7e2c2e2.0 2e2 350-1e2 450A4e2 4e2.0 012e2 2e2L8e2 8e2"/><path class="path2" d="M3e2 5e2H7e2"/><path class="path3" d="M7e2 6e2H3e2c-2e2.0-2e2-4e2 1e2-450A4e2 380 0 112e2 8e2L8e2 2e2"/></svg>
@@ -127,7 +127,7 @@ Github
 </a>
 </div>
 <div class=navbar-end>
-<a href=/ class="navbar-item is-secondary">
+<a href=https://anton-k.github.io/dyna-frp/ class="navbar-item is-secondary">
 Home
 </a>
 <a href=dyna-core/get-started class="navbar-item is-secondary">
@@ -248,7 +248,7 @@ same name if it&rsquo;s dirty inside we might get different answers
 each time we call it.</p>
 <p>How do we share the execution if we need it?
 To share the actual execution of streams there is function <code>newEvt</code>:</p>
-<figure><img src=/images/new-evt.svg alt="Monoid events" width=95%>
+<figure><img src=https://anton-k.github.io/dyna-frp/images/new-evt.svg alt="Monoid events" width=95%>
 </figure>
 <div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>newEvt</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Frp</span> m <span style=color:#8b008b>=&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m a <span style=color:#8b008b>-&gt;</span> m (<span style=color:#00688b;font-weight:700>Evt</span> m a)
 </code></pre></div><p>Under the hood it runs the argument event stream and for
@@ -311,7 +311,7 @@ make it explicit to the user.</p>
 <h3 id=switching-between-the-event-streams>Switching between the event streams</h3>
 <p>There are king&rsquo;s level functions to structure FRP applications.
 We can flatten the event streams:</p>
-<figure><img src=/images/switch-evts.svg alt="Monoid events" width=90%>
+<figure><img src=https://anton-k.github.io/dyna-frp/images/switch-evts.svg alt="Monoid events" width=90%>
 </figure>
 <div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>switch</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Evt</span> m (<span style=color:#00688b;font-weight:700>Evt</span> m a) <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m a
 </code></pre></div><p>So we have the event stream of event streams and produce a flat event stream out of that.
@@ -328,7 +328,7 @@ sources of event streams that are triggered with the stream themselves.</p>
 <h3 id=switching-between-the-dynamic-processes>Switching between the dynamic processes</h3>
 <p>Can you recall our conceptual definition of behavior from which we have started the section?
 It turns out that it can be implemented as library function:</p>
-<figure><img src=/images/switch-dyn.svg alt="Monoid events" width=90%>
+<figure><img src=https://anton-k.github.io/dyna-frp/images/switch-dyn.svg alt="Monoid events" width=90%>
 </figure>
 <div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>switchD</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Dyn</span> m a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m (<span style=color:#00688b;font-weight:700>Dyn</span> m a) <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Dyn</span> m a
 </code></pre></div><p>We can create a compound dynamic with an initial dynamic value
@@ -344,7 +344,7 @@ event stream. So we have a function that takes in event stream and as a result i
 the event stream. But we want to somehow route the events from the result to the input.</p>
 <p>We can use <code>fix1</code> function:</p>
 <div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>fix1</span> <span style=color:#8b008b>::</span> (<span style=color:#00688b;font-weight:700>Evt</span> m a <span style=color:#8b008b>-&gt;</span> m (<span style=color:#00688b;font-weight:700>Evt</span> m a)) <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m a 
-</code></pre></div><figure><img src=/images/fix-evt.svg alt="Monoid events" width=80%>
+</code></pre></div><figure><img src=https://anton-k.github.io/dyna-frp/images/fix-evt.svg alt="Monoid events" width=80%>
 </figure>
 <p>This can be very useful in applications with widgets when user input
 affects the look and feel of the widget with which user interacts.
@@ -353,9 +353,9 @@ If you want more recursive arguments it can be easily expressed with <code>fix1<
 docs on Hackage on how to achieve that.</p>
 <hr>
 <ul>
-<li><code>&lt;=</code> <a href=/dyna-core/tutorial/05-backbone-monad>Generic FRP monad</a></li>
-<li><code>=></code> <a href=/dyna-core/tutorial/07-make-bindings>How to make bindings</a></li>
-<li>Up: <a href=/dyna-core/tutorial-toc>Table of contents</a></li>
+<li><code>&lt;=</code> <a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/05-backbone-monad>Generic FRP monad</a></li>
+<li><code>=></code> <a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/07-make-bindings>How to make bindings</a></li>
+<li>Up: <a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial-toc>Table of contents</a></li>
 </ul>
 </div>
 </div>
@@ -365,8 +365,8 @@ docs on Hackage on how to achieve that.</p>
 <div class=columns>
 <div class=column>
 <div class=footer-logo>
-<a href=/>
-<img src=/dyna-frp/images/logos/dyna-logo-white-2.png>
+<a href=https://anton-k.github.io/dyna-frp/>
+<img src=https://anton-k.github.io/dyna-frp/images/logos/dyna-logo-white-2.png>
 </a>
 </div>
 </div>
@@ -377,17 +377,17 @@ docs on Hackage on how to achieve that.</p>
 </div>
 <ul class=link-list>
 <li>
-<a href=/dyna-core/get-started>
+<a href=https://anton-k.github.io/dyna-frp/dyna-core/get-started>
 Get started
 </a>
 </li>
 <li>
-<a href=/dyna-core/tutorial-toc>
+<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial-toc>
 Tutorial
 </a>
 </li>
 <li>
-<a href=/paper>
+<a href=https://anton-k.github.io/dyna-frp/paper>
 Paper
 </a>
 </li>
@@ -406,17 +406,17 @@ Hackage
 </div>
 <ul class=link-list>
 <li>
-<a href=/dyna-brick/tutorial-toc>
+<a href=https://anton-k.github.io/dyna-frp/dyna-brick/tutorial-toc>
 Brick
 </a>
 </li>
 <li>
-<a href=/dyna-gloss/tutorial-toc>
+<a href=https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial-toc>
 Gloss
 </a>
 </li>
 <li>
-<a href=/dyna-processing/tutorial-toc>
+<a href=https://anton-k.github.io/dyna-frp/dyna-processing/tutorial-toc>
 Processing
 </a>
 </li>
@@ -472,7 +472,7 @@ Processing
 <div id=backtotop><a href=#></a></div>
 <div class=sidebar>
 <div class=sidebar-header>
-<img src=/dyna-frp/images/logos/fresh-square.svg>
+<img src=https://anton-k.github.io/dyna-frp/images/logos/fresh-square.svg>
 <a class=sidebar-close href=javascript:void(0);>
 <i data-feather=x></i>
 </a>
@@ -613,17 +613,17 @@ Resources
 </a>
 <ul>
 <li>
-<a href=/>
+<a href=https://anton-k.github.io/dyna-frp/>
 Publications
 </a>
 </li>
 <li>
-<a href=/>
+<a href=https://anton-k.github.io/dyna-frp/>
 Video
 </a>
 </li>
 <li>
-<a href=/>
+<a href=https://anton-k.github.io/dyna-frp/>
 Examples
 </a>
 </li>
@@ -634,8 +634,8 @@ Examples
 </div>
 <script src=https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js></script>
 <script src=https://unpkg.com/feather-icons></script>
-<script src=/dyna-frp/js/fresh.js></script>
-<script src=/dyna-frp/js/jquery.panelslider.min.js></script>
+<script src=https://anton-k.github.io/dyna-frp/js/fresh.js></script>
+<script src=https://anton-k.github.io/dyna-frp/js/jquery.panelslider.min.js></script>
 <script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js></script>
 </body>
 </html>

@@ -11,10 +11,10 @@ type Events event = [(Time, event)] The list is infinite and we can receive even
 <meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
 <meta http-equiv=x-ua-compatible content="ie=edge">
 <title>Dyna FRP</title>
-<link rel=icon type=image/png href=/dyna-frp/images/favicon.png>
+<link rel=icon type=image/png href=https://anton-k.github.io/dyna-frp/images/favicon.png>
 <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel=stylesheet>
-<link rel=stylesheet type=text/css href=/dyna-frp/css/style.min.e783507bb360b9f98a5ed4a121403993a693ea14a1af9420b35e040e776c22f8.css integrity="sha256-54NQe7NgufmKXtShIUA5k6aT6hShr5Qgs14EDndsIvg=">
-<link rel=stylesheet type=text/css href=/dyna-frp/css/icons.css>
+<link rel=stylesheet type=text/css href=https://anton-k.github.io/dyna-frp/css/style.min.e783507bb360b9f98a5ed4a121403993a693ea14a1af9420b35e040e776c22f8.css integrity="sha256-54NQe7NgufmKXtShIUA5k6aT6hShr5Qgs14EDndsIvg=">
+<link rel=stylesheet type=text/css href=https://anton-k.github.io/dyna-frp/css/icons.css>
 </head>
 <body>
 <div id=preloader>
@@ -23,8 +23,8 @@ type Events event = [(Time, event)] The list is infinite and we can receive even
 <nav class="navbar is-fresh is-transparent no-shadow" role=navigation aria-label="main navigation">
 <div class=container>
 <div class=navbar-brand>
-<a class=navbar-item href=/>
-<img src=/dyna-frp/images/logos/dyna-logo-2.png alt width=112 height=28>
+<a class=navbar-item href=https://anton-k.github.io/dyna-frp/>
+<img src=https://anton-k.github.io/dyna-frp/images/logos/dyna-logo-2.png alt width=112 height=28>
 </a>
 <a class="navbar-item is-hidden-desktop is-hidden-tablet">
 <div id=menu-icon-wrapper class=menu-icon-wrapper style=visibility:visible><svg width="1e3" height="1e3"><path class="path1" d="M3e2 4e2H7e2c2e2.0 2e2 350-1e2 450A4e2 4e2.0 012e2 2e2L8e2 8e2"/><path class="path2" d="M3e2 5e2H7e2"/><path class="path3" d="M7e2 6e2H3e2c-2e2.0-2e2-4e2 1e2-450A4e2 380 0 112e2 8e2L8e2 2e2"/></svg>
@@ -46,7 +46,7 @@ type Events event = [(Time, event)] The list is infinite and we can receive even
 </a>
 </div>
 <div class=navbar-end>
-<a href=/ class="navbar-item is-secondary">
+<a href=https://anton-k.github.io/dyna-frp/ class="navbar-item is-secondary">
 Home
 </a>
 <a href=dyna-core/get-started class="navbar-item is-secondary">
@@ -105,8 +105,8 @@ Github
 <nav id=navbar-clone class="navbar is-fresh is-transparent" role=navigation aria-label="main navigation">
 <div class=container>
 <div class=navbar-brand>
-<a class=navbar-item href=/>
-<img src=/dyna-frp/images/logos/dyna-logo-2.png alt width=112 height=28>
+<a class=navbar-item href=https://anton-k.github.io/dyna-frp/>
+<img src=https://anton-k.github.io/dyna-frp/images/logos/dyna-logo-2.png alt width=112 height=28>
 </a>
 <a class="navbar-item is-hidden-desktop is-hidden-tablet">
 <div id=menu-icon-wrapper class=menu-icon-wrapper style=visibility:visible><svg width="1e3" height="1e3"><path class="path1" d="M3e2 4e2H7e2c2e2.0 2e2 350-1e2 450A4e2 4e2.0 012e2 2e2L8e2 8e2"/><path class="path2" d="M3e2 5e2H7e2"/><path class="path3" d="M7e2 6e2H3e2c-2e2.0-2e2-4e2 1e2-450A4e2 380 0 112e2 8e2L8e2 2e2"/></svg>
@@ -128,7 +128,7 @@ Github
 </a>
 </div>
 <div class=navbar-end>
-<a href=/ class="navbar-item is-secondary">
+<a href=https://anton-k.github.io/dyna-frp/ class="navbar-item is-secondary">
 Home
 </a>
 <a href=dyna-core/get-started class="navbar-item is-secondary">
@@ -211,7 +211,7 @@ gonna call it for you. That&rsquo;s nice to have! Thanks <strong>Mr Run Event</s
 <p>So we define not what event is but what we are going to do with it.
 The problem with this approach is that it often leads to a very clumsy code.
 It&rsquo;s even called call-back hell.</p>
-<figure><img src=/images/run-evt.svg alt="Run event" width=90%>
+<figure><img src=https://anton-k.github.io/dyna-frp/images/run-evt.svg alt="Run event" width=90%>
 </figure>
 <p>The main idea of the <code>dyna</code> library is to take this hellish approach and turn it
 into heaven by offering nice interface to combine the callback processors.</p>
@@ -244,7 +244,7 @@ We can even call it in the interpreter:</p>
 &gt; runEvt never putStrLn 
 </code></pre></div><p>So it did nothing. Let&rsquo;s define event stream that does
 something only <code>once</code> and does it right away:</p>
-<figure><img src=/images/once.svg alt="Monoid events" width=95%>
+<figure><img src=https://anton-k.github.io/dyna-frp/images/once.svg alt="Monoid events" width=95%>
 </figure>
 <div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>once</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>IO</span> a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> a
 <span style=color:#008b45>once</span> getter <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Evt</span> $ <span style=color:#008b45>\</span>go <span style=color:#8b008b>-&gt;</span> go =&lt;&lt; getter
@@ -337,7 +337,7 @@ But of course there is no list whatsoever. It&rsquo;s just helpful analogy.</p>
 </code></pre></div><p>Here we use standard function <code>fmap</code> from the functor typeclass:</p>
 <div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#8b008b;font-weight:700>class</span> <span style=color:#00688b;font-weight:700>Functor</span> f <span style=color:#8b008b;font-weight:700>where</span>
   fmap <span style=color:#8b008b>::</span> (a <span style=color:#8b008b>-&gt;</span> b) <span style=color:#8b008b>-&gt;</span> f a <span style=color:#8b008b>-&gt;</span> f b
-</code></pre></div><figure><img src=/images/fmap-evt.svg alt="Monoid events" width=100%>
+</code></pre></div><figure><img src=https://anton-k.github.io/dyna-frp/images/fmap-evt.svg alt="Monoid events" width=100%>
 </figure>
 <p>For the lists it takes in a function and applies it to every element in the list.
 For the list that conceptually contains all possible events it is cool to have opration like <code>fmap</code>.
@@ -377,7 +377,7 @@ Let&rsquo;s define our dubler function as a composition of smaller parts:</p>
 </code></pre></div><p>Notice how we used <code>fmap</code> once to define the input stream of integers
 and another one to double the number and show it to the user.</p>
 <p>There is another useful function:</p>
-<figure><img src=/images/map-maybe-evt.svg alt="Monoid events" width=95%>
+<figure><img src=https://anton-k.github.io/dyna-frp/images/map-maybe-evt.svg alt="Monoid events" width=95%>
 </figure>
 <div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>mapMay</span> <span style=color:#8b008b>::</span> (a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Maybe</span> b) <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> b
 </code></pre></div><p>It has very simple definition:</p>
@@ -408,7 +408,7 @@ stream. Which is exactly what we expect from monoidal neutral element.</p>
 It takes in two procedures and executes them concurrently (or <strong>at the same time</strong>).</p>
 <div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#8b008b;font-weight:700>instance</span> <span style=color:#00688b;font-weight:700>Semigroup</span> <span style=color:#00688b;font-weight:700>Evt</span> <span style=color:#8b008b;font-weight:700>where</span>
   as &lt;&gt; bs <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Evt</span> $ <span style=color:#008b45>\</span>go <span style=color:#8b008b>-&gt;</span> concurrently_ (runEvt as go) (runEvt bs go)
-</code></pre></div><figure><img src=/images/monoid-evt.svg alt="Monoid events" width=95%>
+</code></pre></div><figure><img src=https://anton-k.github.io/dyna-frp/images/monoid-evt.svg alt="Monoid events" width=95%>
 </figure>
 <p>That&rsquo;s it! So in the result we take single callback and execute it on
 both of the event streams concurrently.
@@ -428,7 +428,7 @@ Let&rsquo;s start with simple ones: <code>cycles</code></p>
 <div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>filters</span> <span style=color:#8b008b>::</span> (a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Bool</span>) <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m a
 
 &gt; prints $ filters odd $ cycles [<span style=color:#b452cd>1</span>,<span style=color:#b452cd>2</span>,<span style=color:#b452cd>3</span>,<span style=color:#b452cd>4</span>] (ticks <span style=color:#b452cd>1</span>)
-</code></pre></div><figure><img src=/images/filter-evt.svg alt="Monoid events" width=90%>
+</code></pre></div><figure><img src=https://anton-k.github.io/dyna-frp/images/filter-evt.svg alt="Monoid events" width=90%>
 </figure>
 <p>Notice that the event happens once per two seconds because
 we skip even numbers. We can sum and product with <code>sums</code> and <code>products</code>.
@@ -451,7 +451,7 @@ and use only scan?</p>
 <p>Function that is close to scan is <code>iterates</code>. It ignores the events on the stream
 and just updates the state:</p>
 <div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>iterates</span> <span style=color:#8b008b>::</span> (a <span style=color:#8b008b>-&gt;</span> a) <span style=color:#8b008b>-&gt;</span> a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m b <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m a
-</code></pre></div><figure><img src=/images/iterate-evt.svg alt="Monoid events" width=90%>
+</code></pre></div><figure><img src=https://anton-k.github.io/dyna-frp/images/iterate-evt.svg alt="Monoid events" width=90%>
 </figure>
 <p>Just as count it has special version that keeps the elements of the stream
 alongside with updated state. It&rsquo;s called <code>withIterates</code>.</p>
@@ -507,9 +507,9 @@ We encountered some simple event streams: <code>once</code>, <code>never</code>,
 They can generate various basic event streams.</p>
 <hr>
 <ul>
-<li><code>&lt;=</code> <a href=/dyna-core/tutorial/01-intro>Introduction</a></li>
-<li><code>=></code> <a href=/dyna-core/tutorial/03-event-game-example>Interactive Game example</a></li>
-<li>Up: <a href=/dyna-core/tutorial-toc>Table of Contents</a></li>
+<li><code>&lt;=</code> <a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/01-intro>Introduction</a></li>
+<li><code>=></code> <a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/03-event-game-example>Interactive Game example</a></li>
+<li>Up: <a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial-toc>Table of Contents</a></li>
 </ul>
 </div>
 </div>
@@ -519,8 +519,8 @@ They can generate various basic event streams.</p>
 <div class=columns>
 <div class=column>
 <div class=footer-logo>
-<a href=/>
-<img src=/dyna-frp/images/logos/dyna-logo-white-2.png>
+<a href=https://anton-k.github.io/dyna-frp/>
+<img src=https://anton-k.github.io/dyna-frp/images/logos/dyna-logo-white-2.png>
 </a>
 </div>
 </div>
@@ -531,17 +531,17 @@ They can generate various basic event streams.</p>
 </div>
 <ul class=link-list>
 <li>
-<a href=/dyna-core/get-started>
+<a href=https://anton-k.github.io/dyna-frp/dyna-core/get-started>
 Get started
 </a>
 </li>
 <li>
-<a href=/dyna-core/tutorial-toc>
+<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial-toc>
 Tutorial
 </a>
 </li>
 <li>
-<a href=/paper>
+<a href=https://anton-k.github.io/dyna-frp/paper>
 Paper
 </a>
 </li>
@@ -560,17 +560,17 @@ Hackage
 </div>
 <ul class=link-list>
 <li>
-<a href=/dyna-brick/tutorial-toc>
+<a href=https://anton-k.github.io/dyna-frp/dyna-brick/tutorial-toc>
 Brick
 </a>
 </li>
 <li>
-<a href=/dyna-gloss/tutorial-toc>
+<a href=https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial-toc>
 Gloss
 </a>
 </li>
 <li>
-<a href=/dyna-processing/tutorial-toc>
+<a href=https://anton-k.github.io/dyna-frp/dyna-processing/tutorial-toc>
 Processing
 </a>
 </li>
@@ -626,7 +626,7 @@ Processing
 <div id=backtotop><a href=#></a></div>
 <div class=sidebar>
 <div class=sidebar-header>
-<img src=/dyna-frp/images/logos/fresh-square.svg>
+<img src=https://anton-k.github.io/dyna-frp/images/logos/fresh-square.svg>
 <a class=sidebar-close href=javascript:void(0);>
 <i data-feather=x></i>
 </a>
@@ -767,17 +767,17 @@ Resources
 </a>
 <ul>
 <li>
-<a href=/>
+<a href=https://anton-k.github.io/dyna-frp/>
 Publications
 </a>
 </li>
 <li>
-<a href=/>
+<a href=https://anton-k.github.io/dyna-frp/>
 Video
 </a>
 </li>
 <li>
-<a href=/>
+<a href=https://anton-k.github.io/dyna-frp/>
 Examples
 </a>
 </li>
@@ -788,8 +788,8 @@ Examples
 </div>
 <script src=https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js></script>
 <script src=https://unpkg.com/feather-icons></script>
-<script src=/dyna-frp/js/fresh.js></script>
-<script src=/dyna-frp/js/jquery.panelslider.min.js></script>
+<script src=https://anton-k.github.io/dyna-frp/js/fresh.js></script>
+<script src=https://anton-k.github.io/dyna-frp/js/jquery.panelslider.min.js></script>
 <script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js></script>
 </body>
 </html>
