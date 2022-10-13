@@ -1,200 +1,251 @@
-<!doctype html><html lang=en-us>
-<head>
-<meta property="og:title" content="FRP for processing gaming/animation library">
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    
+
+<meta property="og:title" content="FRP for processing gaming/animation library" />
 <meta property="og:description" content="In this tutorial we will study the FRP binding to the processing-for-haskell library. The processing-for-haskell is suitable to create animations and games. It embeds Processing language into Haskell. The application is run with state-machine like approach. We have a function that renders the state of application on the screen and we have a function that updates the state on events.
-With FRP we use the same functions for drawing as they are defined in the gloss (see the module Graphics.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/00-intro/"><meta property="article:section" content="dyna-processing">
-<meta name=description content="Hardcoded description; the author should update :)">
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta http-equiv=x-ua-compatible content="ie=edge">
-<title>Dyna FRP</title>
-<link rel=icon type=image/png href=https://anton-k.github.io/dyna-frp/images/favicon.png>
-<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel=stylesheet>
-<link rel=stylesheet type=text/css href=https://anton-k.github.io/dyna-frp/css/style.min.e783507bb360b9f98a5ed4a121403993a693ea14a1af9420b35e040e776c22f8.css integrity="sha256-54NQe7NgufmKXtShIUA5k6aT6hShr5Qgs14EDndsIvg=">
-<link rel=stylesheet type=text/css href=https://anton-k.github.io/dyna-frp/css/icons.css>
-</head>
-<body>
-<div id=preloader>
-<div id=status></div>
-</div>
-<nav class="navbar is-fresh is-transparent no-shadow" role=navigation aria-label="main navigation">
-<div class=container>
-<div class=navbar-brand>
-<a class=navbar-item href=https://anton-k.github.io/dyna-frp/>
-<img src=https://anton-k.github.io/dyna-frp/images/logos/dyna-logo-2.png alt width=112 height=28>
-</a>
-<a class="navbar-item is-hidden-desktop is-hidden-tablet">
-<div id=menu-icon-wrapper class=menu-icon-wrapper style=visibility:visible><svg width="1e3" height="1e3"><path class="path1" d="M3e2 4e2H7e2c2e2.0 2e2 350-1e2 450A4e2 4e2.0 012e2 2e2L8e2 8e2"/><path class="path2" d="M3e2 5e2H7e2"/><path class="path3" d="M7e2 6e2H3e2c-2e2.0-2e2-4e2 1e2-450A4e2 380 0 112e2 8e2L8e2 2e2"/></svg>
-<button id=menu-icon-trigger class=menu-icon-trigger></button>
-</div>
-</a>
-<a role=button class=navbar-burger aria-label=menu aria-expanded=false data-target=navbar-menu>
-<span aria-hidden=true></span>
-<span aria-hidden=true></span>
-<span aria-hidden=true></span>
-</a>
-</div>
-<div id=navbar-menu class="navbar-menu is-static">
-<div class=navbar-start>
-<a class="navbar-item is-hidden-mobile">
-<div id=menu-icon-wrapper class=menu-icon-wrapper style=visibility:visible><svg width="1e3" height="1e3"><path class="path1" d="M3e2 4e2H7e2c2e2.0 2e2 350-1e2 450A4e2 4e2.0 012e2 2e2L8e2 8e2"/><path class="path2" d="M3e2 5e2H7e2"/><path class="path3" d="M7e2 6e2H3e2c-2e2.0-2e2-4e2 1e2-450A4e2 380 0 112e2 8e2L8e2 2e2"/></svg>
-<button id=menu-icon-trigger class=menu-icon-trigger></button>
-</div>
-</a>
-</div>
-<div class=navbar-end>
-<a href=https://anton-k.github.io/dyna-frp/ class="navbar-item is-secondary">
-Home
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/get-started class="navbar-item is-secondary">
-Get started
-</a>
-<div class="navbar-item has-dropdown is-hoverable">
-<a class=navbar-link>
-Tutorial
-</a>
-<div class=navbar-dropdown>
-<a href=https://anton-k.github.io/dyna-frp/paper class=navbar-item>
-Paper
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial-toc class=navbar-item>
-Core FRP
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial-toc class=navbar-item>
-Gloss
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-brick/tutorial-toc class=navbar-item>
-Brick
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-processing/tutorial-toc class=navbar-item>
-Processing
-</a>
-</div>
-</div>
-<div class="navbar-item has-dropdown is-hoverable">
-<a class=navbar-link>
-Reference
-</a>
-<div class=navbar-dropdown>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/101-reference class=navbar-item>
-Core FRP
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial/101-reference class=navbar-item>
-Gloss
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-brick/tutorial/101-reference class=navbar-item>
-Brick
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/101-reference class=navbar-item>
-Processing
-</a>
-</div>
-</div>
-<a href=https://github.com/anton-k/dyna-frp class=navbar-item>
-<span class="button signup-button rounded secondary-btn raised">
-Github
-</span>
-</a>
-</div>
-</div>
+With FRP we use the same functions for drawing as they are defined in the gloss (see the module Graphics." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/00-intro/" /><meta property="article:section" content="dyna-processing" />
+
+
+
+
+
+<meta name="description" content="Hardcoded description; the author should update :)" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Dyna FRP</title>
+    
+<link rel="icon" type="image/png" href="https://anton-k.github.io/dyna-frp/images/favicon.png" />
+<link href="https://fonts.googleapis.com/css?family=Open&#43;Sans:400,600" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="https://anton-k.github.io/dyna-frp/css/style.min.e783507bb360b9f98a5ed4a121403993a693ea14a1af9420b35e040e776c22f8.css" integrity="sha256-54NQe7NgufmKXtShIUA5k6aT6hShr5Qgs14EDndsIvg=">
+<link rel="stylesheet" type="text/css" href="https://anton-k.github.io/dyna-frp/css/icons.css">
+
+  </head>
+  <body>
+    
+    <div id="preloader">
+      <div id="status"></div>
+    </div>
+
+    
+
+    
+
+<nav class="navbar is-fresh is-transparent no-shadow" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://anton-k.github.io/dyna-frp/">
+        <img src="https://anton-k.github.io/dyna-frp/images/logos/dyna-logo-2.png" alt="" width="112" height="28">
+      </a>
+      <a class="navbar-item is-hidden-desktop is-hidden-tablet">
+        <div id="menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+          <svg width="1000px" height="1000px">
+            <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+            <path class="path2" d="M 300 500 L 700 500"></path>
+            <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+          </svg>
+          <button id="menu-icon-trigger" class="menu-icon-trigger"></button>
+        </div>
+      </a>
+
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-menu">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+      <div id="navbar-menu" class="navbar-menu is-static">
+        <div class="navbar-start">
+          <a class="navbar-item is-hidden-mobile">
+            <div id="menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+              <svg width="1000px" height="1000px">
+                <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+                <path class="path2" d="M 300 500 L 700 500"></path>
+                <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+              </svg>
+              <button id="menu-icon-trigger" class="menu-icon-trigger"></button>
+            </div>
+          </a>
+        </div>
+
+        <div class="navbar-end">
+          <a href="https://anton-k.github.io/dyna-frp/" class="navbar-item is-secondary">
+            Home
+          </a>
+          <a href="https://anton-k.github.io/dyna-frp/dyna-core/get-started" class="navbar-item is-secondary">
+            Get started
+          </a>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">
+              Tutorial
+            </a>
+
+            <div class="navbar-dropdown">
+              <a href="https://anton-k.github.io/dyna-frp/paper" class="navbar-item">
+                Paper
+              </a>
+              <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial-toc" class="navbar-item">
+                Core FRP
+              </a>
+              <a href="https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial-toc" class="navbar-item">
+                Gloss
+              </a>
+              <a href="https://anton-k.github.io/dyna-frp/dyna-brick/tutorial-toc" class="navbar-item">
+                Brick
+              </a>
+              <a href="https://anton-k.github.io/dyna-frp/dyna-processing/tutorial-toc" class="navbar-item">
+                Processing
+              </a>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">
+              Reference
+            </a>
+
+            <div class="navbar-dropdown">
+              <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/101-reference" class="navbar-item">
+                Core FRP
+              </a>
+              <a href="https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial/101-reference" class="navbar-item">
+                Gloss
+              </a>
+              <a href="https://anton-k.github.io/dyna-frp/dyna-brick/tutorial/101-reference" class="navbar-item">
+                Brick
+              </a>
+              <a href="https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/101-reference" class="navbar-item">
+                Processing
+              </a>
+            </div>
+          </div>
+          <a href="https://github.com/anton-k/dyna-frp" class="navbar-item">
+            <span class="button signup-button rounded secondary-btn raised">
+              Github
+            </span>
+          </a>
+        </div>
+      </div>
+  </div>
+</nav>
+
+
+
+<nav id="navbar-clone" class="navbar is-fresh is-transparent" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://anton-k.github.io/dyna-frp/">
+        <img src="https://anton-k.github.io/dyna-frp/images/logos/dyna-logo-2.png" alt="" width="112" height="28">
+      </a>
+      <a class="navbar-item is-hidden-desktop is-hidden-tablet">
+        <div id="menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+          <svg width="1000px" height="1000px">
+            <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+            <path class="path2" d="M 300 500 L 700 500"></path>
+            <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+          </svg>
+          <button id="menu-icon-trigger" class="menu-icon-trigger"></button>
+        </div>
+      </a>
+
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="cloned-navbar-menu">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+    <div id="cloned-navbar-menu" class="navbar-menu is-fixed">
+      <div class="navbar-start">
+        <a class="navbar-item is-hidden-mobile">
+          <div id="cloned-menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+            <svg width="1000px" height="1000px">
+              <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+              <path class="path2" d="M 300 500 L 700 500"></path>
+              <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+            </svg>
+            <button id="cloned-menu-icon-trigger" class="menu-icon-trigger"></button>
+          </div>
+        </a>
+      </div>
+
+      <div class="navbar-end">
+        <a href="https://anton-k.github.io/dyna-frp/" class="navbar-item is-secondary">
+          Home
+        </a>
+        <a href="https://anton-k.github.io/dyna-frp/dyna-core/get-started" class="navbar-item is-secondary">
+          Get started
+        </a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            Tutorial
+          </a>
+
+          <div class="navbar-dropdown">
+            <a href="https://anton-k.github.io/dyna-frp/paper" class="navbar-item">
+              Paper
+            </a>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial-toc" class="navbar-item">
+              Core FRP
+            </a>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial-toc" class="navbar-item">
+              Gloss
+            </a>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-brick/tutorial-toc" class="navbar-item">
+              Brick
+            </a>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-processing/tutorial-toc" class="navbar-item">
+              Processing
+            </a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            Reference
+          </a>
+
+          <div class="navbar-dropdown">
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/101-reference" class="navbar-item">
+              Core FRP
+            </a>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial/101-reference" class="navbar-item">
+              Gloss
+            </a>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-brick/tutorial/101-reference" class="navbar-item">
+              Brick
+            </a>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/101-reference" class="navbar-item">
+              Processing
+            </a>
+          </div>
+        </div>
+        <a href="https://github.com/anton-k/dyna-frp" class="navbar-item">
+          <span class="button signup-button rounded secondary-btn raised">
+            Github
+          </span>
+        </a>
+      </div>
+    </div>
 </div>
 </nav>
-<nav id=navbar-clone class="navbar is-fresh is-transparent" role=navigation aria-label="main navigation">
-<div class=container>
-<div class=navbar-brand>
-<a class=navbar-item href=https://anton-k.github.io/dyna-frp/>
-<img src=https://anton-k.github.io/dyna-frp/images/logos/dyna-logo-2.png alt width=112 height=28>
-</a>
-<a class="navbar-item is-hidden-desktop is-hidden-tablet">
-<div id=menu-icon-wrapper class=menu-icon-wrapper style=visibility:visible><svg width="1e3" height="1e3"><path class="path1" d="M3e2 4e2H7e2c2e2.0 2e2 350-1e2 450A4e2 4e2.0 012e2 2e2L8e2 8e2"/><path class="path2" d="M3e2 5e2H7e2"/><path class="path3" d="M7e2 6e2H3e2c-2e2.0-2e2-4e2 1e2-450A4e2 380 0 112e2 8e2L8e2 2e2"/></svg>
-<button id=menu-icon-trigger class=menu-icon-trigger></button>
-</div>
-</a>
-<a role=button class=navbar-burger aria-label=menu aria-expanded=false data-target=cloned-navbar-menu>
-<span aria-hidden=true></span>
-<span aria-hidden=true></span>
-<span aria-hidden=true></span>
-</a>
-</div>
-<div id=cloned-navbar-menu class="navbar-menu is-fixed">
-<div class=navbar-start>
-<a class="navbar-item is-hidden-mobile">
-<div id=cloned-menu-icon-wrapper class=menu-icon-wrapper style=visibility:visible><svg width="1e3" height="1e3"><path class="path1" d="M3e2 4e2H7e2c2e2.0 2e2 350-1e2 450A4e2 4e2.0 012e2 2e2L8e2 8e2"/><path class="path2" d="M3e2 5e2H7e2"/><path class="path3" d="M7e2 6e2H3e2c-2e2.0-2e2-4e2 1e2-450A4e2 380 0 112e2 8e2L8e2 2e2"/></svg>
-<button id=cloned-menu-icon-trigger class=menu-icon-trigger></button>
-</div>
-</a>
-</div>
-<div class=navbar-end>
-<a href=https://anton-k.github.io/dyna-frp/ class="navbar-item is-secondary">
-Home
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/get-started class="navbar-item is-secondary">
-Get started
-</a>
-<div class="navbar-item has-dropdown is-hoverable">
-<a class=navbar-link>
-Tutorial
-</a>
-<div class=navbar-dropdown>
-<a href=https://anton-k.github.io/dyna-frp/paper class=navbar-item>
-Paper
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial-toc class=navbar-item>
-Core FRP
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial-toc class=navbar-item>
-Gloss
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-brick/tutorial-toc class=navbar-item>
-Brick
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-processing/tutorial-toc class=navbar-item>
-Processing
-</a>
-</div>
-</div>
-<div class="navbar-item has-dropdown is-hoverable">
-<a class=navbar-link>
-Reference
-</a>
-<div class=navbar-dropdown>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/101-reference class=navbar-item>
-Core FRP
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial/101-reference class=navbar-item>
-Gloss
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-brick/tutorial/101-reference class=navbar-item>
-Brick
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/101-reference class=navbar-item>
-Processing
-</a>
-</div>
-</div>
-<a href=https://github.com/anton-k/dyna-frp class=navbar-item>
-<span class="button signup-button rounded secondary-btn raised">
-Github
-</span>
-</a>
-</div>
-</div>
-</div>
-</nav>
+
 <section class="section is-medium">
-<div class=container>
-<div class=columns>
-<div class="column is-centered-tablet-portrait">
-<h1 class="title section-title">FRP for processing gaming/animation library</h1>
-<h5 class="subtitle is-5 is-muted"></h5>
-<div class=divider></div>
-</div>
-</div>
-<div class=content>
-<p>In this tutorial we will study the FRP binding to the
-<a href=https://hackage.haskell.org/package/processing-for-haskell>processing-for-haskell</a> library.
+  <div class="container">
+    <div class="columns">
+      <div class="column is-centered-tablet-portrait">
+        <h1 class="title section-title">FRP for processing gaming/animation library</h1>
+        <h5 class="subtitle is-5 is-muted"></h5>
+        <div class="divider"></div>
+      </div>
+    </div>
+
+    <div class="content">
+      <p>In this tutorial we will study the FRP binding to the
+<a href="https://hackage.haskell.org/package/processing-for-haskell">processing-for-haskell</a> library.
 The <code>processing-for-haskell</code> is suitable to create animations and games.
 It embeds Processing language into Haskell.
 The application is run with state-machine like approach.
@@ -203,18 +254,18 @@ on the screen and we have a function that updates the state
 on events.</p>
 <p>With FRP we use the same functions for drawing as they are
 defined in the gloss
-(see the module <a href=https://hackage.haskell.org/package/processing-for-haskell-0.1.0.1/docs/Graphics-Proc.html#g:9>Graphics.Proc</a>).</p>
+(see the module <a href="https://hackage.haskell.org/package/processing-for-haskell-0.1.0.1/docs/Graphics-Proc.html#g:9">Graphics.Proc</a>).</p>
 <p>Only to run the application we use FRP approach. The main function is:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#8b008b;font-weight:700>type</span> <span style=color:#00688b;font-weight:700>Draw</span> <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Pio</span> <span style=color:#658b00>()</span>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#8b008b;font-weight:bold">type</span> <span style="color:#00688b;font-weight:bold">Draw</span> <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Pio</span> <span style="color:#658b00">()</span>
 
-<span style=color:#008b45>runApp</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Spec</span> <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Run</span> (<span style=color:#00688b;font-weight:700>Dyn</span> <span style=color:#00688b;font-weight:700>Draw</span>) <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>IO</span> <span style=color:#658b00>()</span>
+<span style="color:#008b45">runApp</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Spec</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Run</span> (<span style="color:#00688b;font-weight:bold">Dyn</span> <span style="color:#00688b;font-weight:bold">Draw</span>) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">IO</span> <span style="color:#658b00">()</span>
 </code></pre></div><p>The <code>Draw</code> is a set of drawing instructions to the renderer.
 Where <code>Spec</code> defines the initial settings of the gloss application:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#8b008b;font-weight:700>data</span> <span style=color:#00688b;font-weight:700>Spec</span> <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Spec</span>
-  { spec&#39;setup  <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Pio</span> <span style=color:#658b00>()</span>  <span style=color:#228b22>-- ^ setup instructions }</span>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#8b008b;font-weight:bold">data</span> <span style="color:#00688b;font-weight:bold">Spec</span> <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Spec</span>
+  { spec&#39;setup  <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Pio</span> <span style="color:#658b00">()</span>  <span style="color:#228b22">-- ^ setup instructions }</span>
 </code></pre></div><p>The <code>spec'setup</code> is a procedure that is run once at startup.
 So to run the application we need to provide the spec and dynamic picture:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>runApp</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Spec</span> <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Run</span> (<span style=color:#00688b;font-weight:700>Dyn</span> <span style=color:#00688b;font-weight:700>Draw</span>) <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>IO</span> <span style=color:#658b00>()</span>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">runApp</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Spec</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Run</span> (<span style="color:#00688b;font-weight:bold">Dyn</span> <span style="color:#00688b;font-weight:bold">Draw</span>) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">IO</span> <span style="color:#658b00">()</span>
 </code></pre></div><p>The <code>Draw</code> is a set of instructions to the OpenGL renderer.
 It&rsquo;s a bit more higher-level but still imperative.
 It run inside <code>Pio</code>-monad which stands for Processing <code>IO</code>.
@@ -227,77 +278,77 @@ It re-exports the core FRP functions of <code>dyna</code>.
 Also it defines special wrappers for <code>Evt</code> and <code>Dyn</code> to avoid
 typing <code>Evt Run a</code> since the <code>Run</code> monad is fixed for gloss applications.
 It&rsquo;s very simple <code>newtype</code>-wrappers:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#8b008b;font-weight:700>newtype</span> <span style=color:#00688b;font-weight:700>Evt</span> a <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Evt</span> { unEvt <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Dyna</span>.<span style=color:#00688b;font-weight:700>Evt</span> <span style=color:#00688b;font-weight:700>Run</span> a }
-<span style=color:#8b008b;font-weight:700>newtype</span> <span style=color:#00688b;font-weight:700>Dyn</span> a <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Evt</span> { unDyn <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Dyna</span>.<span style=color:#00688b;font-weight:700>Dyn</span> <span style=color:#00688b;font-weight:700>Run</span> a }
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#8b008b;font-weight:bold">newtype</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Evt</span> { unEvt <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Dyna</span>.<span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#00688b;font-weight:bold">Run</span> a }
+<span style="color:#8b008b;font-weight:bold">newtype</span> <span style="color:#00688b;font-weight:bold">Dyn</span> a <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Evt</span> { unDyn <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Dyna</span>.<span style="color:#00688b;font-weight:bold">Dyn</span> <span style="color:#00688b;font-weight:bold">Run</span> a }
 </code></pre></div><p>So we can use all the functions from the <code>Dyna</code> module.</p>
-<h3 id=the-first-program>The first program</h3>
+<h3 id="the-first-program">The first program</h3>
 <p>Let&rsquo;s define a simple program. It will draw a circle at
 the position of the mouse:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#8b008b;font-weight:700>module</span> <span style=color:#008b45;text-decoration:underline>Main</span> <span style=color:#8b008b;font-weight:700>where</span>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#8b008b;font-weight:bold">module</span> <span style="color:#008b45;text-decoration:underline">Main</span> <span style="color:#8b008b;font-weight:bold">where</span>
 
-<span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>Dyna.Proc</span>
+<span style="color:#8b008b;font-weight:bold">import</span> <span style="color:#008b45;text-decoration:underline">Dyna.Proc</span>
 
-<span style=color:#008b45>main</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>IO</span> <span style=color:#658b00>()</span>
-<span style=color:#008b45>main</span> <span style=color:#8b008b>=</span> runApp spec $ pure pic
-  <span style=color:#8b008b;font-weight:700>where</span>
-    spec <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Spec</span> $ <span style=color:#8b008b;font-weight:700>do</span>
-      size (<span style=color:#00688b;font-weight:700>P2</span> <span style=color:#b452cd>500</span> <span style=color:#b452cd>500</span>)
+<span style="color:#008b45">main</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">IO</span> <span style="color:#658b00">()</span>
+<span style="color:#008b45">main</span> <span style="color:#8b008b">=</span> runApp spec $ pure pic
+  <span style="color:#8b008b;font-weight:bold">where</span>
+    spec <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Spec</span> $ <span style="color:#8b008b;font-weight:bold">do</span>
+      size (<span style="color:#00688b;font-weight:bold">P2</span> <span style="color:#b452cd">500</span> <span style="color:#b452cd">500</span>)
 
-<span style=color:#008b45>drawCircle</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>P2</span> <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Draw</span>
-<span style=color:#008b45>drawCircle</span> pos <span style=color:#8b008b>=</span> <span style=color:#8b008b;font-weight:700>do</span>
+<span style="color:#008b45">drawCircle</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">P2</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Draw</span>
+<span style="color:#008b45">drawCircle</span> pos <span style="color:#8b008b">=</span> <span style="color:#8b008b;font-weight:bold">do</span>
   background white
   translate pos
   fill green
   stroke green
-  circle <span style=color:#b452cd>30</span> <span style=color:#b452cd>0</span>
+  circle <span style="color:#b452cd">30</span> <span style="color:#b452cd">0</span>
 
-<span style=color:#008b45>pic</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Dyn</span> <span style=color:#00688b;font-weight:700>Draw</span>
-<span style=color:#008b45>pic</span> <span style=color:#8b008b>=</span> drawCircle &lt;$&gt; mouse
+<span style="color:#008b45">pic</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Dyn</span> <span style="color:#00688b;font-weight:bold">Draw</span>
+<span style="color:#008b45">pic</span> <span style="color:#8b008b">=</span> drawCircle &lt;$&gt; mouse
 </code></pre></div><p>Let&rsquo;s save that to the file <code>HelloProcessing.hs</code>.
 To run the programs we can compile it and run executable
 or execute right away with <code>runhaskell</code>:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>stack</span> exec <span style=color:#228b22>-- runhaskell HelloGloss.hs</span>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">stack</span> exec <span style="color:#228b22">-- runhaskell HelloGloss.hs</span>
 </code></pre></div><p>We can close the window to stop the application.
 So let&rsquo;s study the code. What happens:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>pic</span> <span style=color:#8b008b>=</span> drawCircle &lt;$&gt; mouse
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">pic</span> <span style="color:#8b008b">=</span> drawCircle &lt;$&gt; mouse
 </code></pre></div><p>We take mouse positions:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>mouse</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Dyn</span> <span style=color:#00688b;font-weight:700>P2</span>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">mouse</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Dyn</span> <span style="color:#00688b;font-weight:bold">P2</span>
 </code></pre></div><p>The <code>P2</code> is 2D vector. And we map the positions to the pictures:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>drawCircle</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>P2</span> <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Draw</span>
-<span style=color:#008b45>drawCircle</span> pos <span style=color:#8b008b>=</span> <span style=color:#8b008b;font-weight:700>do</span>
-  background white    <span style=color:#228b22>-- clear background to white</span>
-  translate pos       <span style=color:#228b22>-- translate center to position pos</span>
-  fill green          <span style=color:#228b22>-- set fill color to green </span>
-  stroke green        <span style=color:#228b22>-- set stroke color to green</span>
-  circle <span style=color:#b452cd>30</span> <span style=color:#b452cd>0</span>         <span style=color:#228b22>-- draw circle with radious 30 at the point (P2 0 0)</span>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">drawCircle</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">P2</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Draw</span>
+<span style="color:#008b45">drawCircle</span> pos <span style="color:#8b008b">=</span> <span style="color:#8b008b;font-weight:bold">do</span>
+  background white    <span style="color:#228b22">-- clear background to white</span>
+  translate pos       <span style="color:#228b22">-- translate center to position pos</span>
+  fill green          <span style="color:#228b22">-- set fill color to green </span>
+  stroke green        <span style="color:#228b22">-- set stroke color to green</span>
+  circle <span style="color:#b452cd">30</span> <span style="color:#b452cd">0</span>         <span style="color:#228b22">-- draw circle with radious 30 at the point (P2 0 0)</span>
 </code></pre></div><p>Note that to draw animations in processing we need to clear the screen
 first to draw. Otherwise the next frame will be drawn on top of
 the previous one.</p>
 <p>The <code>P2</code> is a type for 2D points. Also there is a type for 3D points.
 As processing can work in 3D.</p>
-<h3 id=user-io>User IO</h3>
+<h3 id="user-io">User IO</h3>
 <p>Instead of getting events over event loop we have
 event streams and dynamics that read the user input.</p>
 <p>Here is most useful of them:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#228b22>-- mouse input</span>
-<span style=color:#008b45>mouse</span>      <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Dyn</span> <span style=color:#00688b;font-weight:700>P2</span>
-<span style=color:#008b45>mouseRight</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Evt</span> <span style=color:#00688b;font-weight:700>P2</span>
-<span style=color:#008b45>mouseLeft</span>  <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Evt</span> <span style=color:#00688b;font-weight:700>P2</span>
-<span style=color:#008b45>mouseWheel</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Evt</span> <span style=color:#00688b;font-weight:700>Float</span>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#228b22">-- mouse input</span>
+<span style="color:#008b45">mouse</span>      <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Dyn</span> <span style="color:#00688b;font-weight:bold">P2</span>
+<span style="color:#008b45">mouseRight</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#00688b;font-weight:bold">P2</span>
+<span style="color:#008b45">mouseLeft</span>  <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#00688b;font-weight:bold">P2</span>
+<span style="color:#008b45">mouseWheel</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#00688b;font-weight:bold">Float</span>
 
-<span style=color:#228b22>-- generic gloss events</span>
-<span style=color:#8b008b;font-weight:700>data</span> <span style=color:#00688b;font-weight:700>Click</span> <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Click</span> (<span style=color:#00688b;font-weight:700>Either</span> <span style=color:#00688b;font-weight:700>Key</span> <span style=color:#00688b;font-weight:700>MouseButton</span>) <span style=color:#00688b;font-weight:700>KeyState</span> <span style=color:#00688b;font-weight:700>Modifiers</span> <span style=color:#00688b;font-weight:700>P2</span>
+<span style="color:#228b22">-- generic gloss events</span>
+<span style="color:#8b008b;font-weight:bold">data</span> <span style="color:#00688b;font-weight:bold">Click</span> <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Click</span> (<span style="color:#00688b;font-weight:bold">Either</span> <span style="color:#00688b;font-weight:bold">Key</span> <span style="color:#00688b;font-weight:bold">MouseButton</span>) <span style="color:#00688b;font-weight:bold">KeyState</span> <span style="color:#00688b;font-weight:bold">Modifiers</span> <span style="color:#00688b;font-weight:bold">P2</span>
 
-<span style=color:#008b45>getClicks</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Evt</span> <span style=color:#00688b;font-weight:700>Click</span>
+<span style="color:#008b45">getClicks</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#00688b;font-weight:bold">Click</span>
 
-<span style=color:#228b22>-- key input</span>
-<span style=color:#008b45>keyUp</span>   <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Key</span> <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> <span style=color:#00688b;font-weight:700>Modifiers</span>
-<span style=color:#008b45>keyDown</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Key</span> <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> <span style=color:#00688b;font-weight:700>Modifiers</span>
+<span style="color:#228b22">-- key input</span>
+<span style="color:#008b45">keyUp</span>   <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Key</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#00688b;font-weight:bold">Modifiers</span>
+<span style="color:#008b45">keyDown</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Key</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#00688b;font-weight:bold">Modifiers</span>
 
-<span style=color:#008b45>charUp</span>   <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Char</span> <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> <span style=color:#00688b;font-weight:700>Modifiers</span>
-<span style=color:#008b45>charDown</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Char</span> <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> <span style=color:#00688b;font-weight:700>Modifiers</span>
+<span style="color:#008b45">charUp</span>   <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Char</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#00688b;font-weight:bold">Modifiers</span>
+<span style="color:#008b45">charDown</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Char</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#00688b;font-weight:bold">Modifiers</span>
 </code></pre></div><p>See the module <code>Dyna.Proc.Run</code> for complete list of the user input functions.</p>
-<h3 id=conclusion>Conclusion</h3>
+<h3 id="conclusion">Conclusion</h3>
 <p>That&rsquo;s it. We have described the FRP binding to <code>processing-fro-haskell</code>.</p>
 <p>Peculiarities comparing to <code>processing-for-haskell</code>:</p>
 <ul>
@@ -322,288 +373,301 @@ specialized for wrapped <code>Evt/Dyn</code> types.</p>
 </ul>
 <hr>
 <ul>
-<li><code>=></code> <a href=https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/01-example>Example</a></li>
-<li>Up: <a href=https://anton-k.github.io/dyna-frp/dyna-processing/tutorial-toc>Table of contents</a></li>
+<li><code>=&gt;</code> <a href="https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/01-example">Example</a></li>
+<li>Up: <a href="https://anton-k.github.io/dyna-frp/dyna-processing/tutorial-toc">Table of contents</a></li>
 </ul>
-</div>
-</div>
+
+    </div>
+  </div>
 </section>
+
+
+
+    
 <footer class="footer footer-dark">
-<div class=container>
-<div class=columns>
-<div class=column>
-<div class=footer-logo>
-<a href=https://anton-k.github.io/dyna-frp/>
-<img src=https://anton-k.github.io/dyna-frp/images/logos/dyna-logo-white-2.png>
-</a>
-</div>
-</div>
-<div class=column>
-<div class=footer-column>
-<div class=footer-header>
-<h3>Docs</h3>
-</div>
-<ul class=link-list>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/get-started>
-Get started
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial-toc>
-Tutorial
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/paper>
-Paper
-</a>
-</li>
-<li>
-<a href=https://hackage.haskell.org/package/dyna>
-Hackage
-</a>
-</li>
-</ul>
-</div>
-</div>
-<div class=column>
-<div class=footer-column>
-<div class=footer-header>
-<h3>Bindings</h3>
-</div>
-<ul class=link-list>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-brick/tutorial-toc>
-Brick
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial-toc>
-Gloss
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-processing/tutorial-toc>
-Processing
-</a>
-</li>
-</ul>
-</div>
-</div>
-<div class=column>
-<div class=footer-column>
-<div class=footer-header>
-<h3>Hackage</h3>
-</div>
-<ul class=link-list>
-<li>
-<a href=https://hackage.haskell.org/package/dyna>
-Core FRP
-</a>
-</li>
-<li>
-<a href=https://hackage.haskell.org/package/dyna-brick>
-Brick
-</a>
-</li>
-<li>
-<a href=https://hackage.haskell.org/package/dyna-gloss>
-Gloss
-</a>
-</li>
-<li>
-<a href=https://hackage.haskell.org/package/dyna-processing>
-Processing
-</a>
-</li>
-</ul>
-</div>
-</div>
-<div class=column>
-<div class=footer-column>
-<div class=footer-header>
-<h3>Follow Us</h3>
-<nav class="level is-mobile">
-<div class=level-left>
-<a class=level-item href=https://github.com/anton-k/dyna-frp/>
-<span class=icon><i class="fa fa-github"></i></span>
-</a>
-</div>
-</nav>
-</div>
-</div>
-</div>
-</div>
-</div>
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        <div class="footer-logo">
+          <a href="https://anton-k.github.io/dyna-frp/">
+            <img src="https://anton-k.github.io/dyna-frp/images/logos/dyna-logo-white-2.png">
+          </a>
+        </div>
+      </div>
+        <div class="column">
+          <div class="footer-column">
+            <div class="footer-header">
+                <h3>Docs</h3>
+            </div>
+            <ul class="link-list">
+              <li>
+                <a href="https://anton-k.github.io/dyna-frp/dyna-core/get-started">
+                  Get started
+                </a>
+              </li>
+              <li>
+                <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial-toc">
+                  Tutorial
+                </a>
+              </li>
+              <li>
+                <a href="https://anton-k.github.io/dyna-frp/paper">
+                  Paper
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna">
+                  Hackage
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="column">
+          <div class="footer-column">
+            <div class="footer-header">
+                <h3>Bindings</h3>
+            </div>
+            <ul class="link-list">
+              <li>
+                <a href="https://anton-k.github.io/dyna-frp/dyna-brick/tutorial-toc">
+                  Brick
+                </a>
+              </li>
+              <li>
+                <a href="https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial-toc">
+                  Gloss
+                </a>
+              </li>
+              <li>
+                <a href="https://anton-k.github.io/dyna-frp/dyna-processing/tutorial-toc">
+                  Processing
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="column">
+          <div class="footer-column">
+            <div class="footer-header">
+                <h3>Hackage</h3>
+            </div>
+            <ul class="link-list">
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna">
+                  Core FRP
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna-brick">
+                  Brick
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna-gloss">
+                  Gloss
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna-processing">
+                  Processing
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      <div class="column">
+        <div class="footer-column">
+          <div class="footer-header">
+            <h3>Follow Us</h3>
+            <nav class="level is-mobile">
+              <div class="level-left">
+                <a class="level-item" href="https://github.com/anton-k/dyna-frp/">
+                  <span class="icon"><i class="fa fa-github"></i></span>
+                </a>
+              </div>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </footer>
-<div id=backtotop><a href=#></a></div>
-<div class=sidebar>
-<div class=sidebar-header>
-<img src=https://anton-k.github.io/dyna-frp/images/logos/fresh-square.svg>
-<a class=sidebar-close href=javascript:void(0);>
-<i data-feather=x></i>
-</a>
+
+
+    
+    <div id="backtotop"><a href="#"></a></div>
+
+    
+<div class="sidebar">
+  <div class="sidebar-header">
+    <img src="https://anton-k.github.io/dyna-frp/images/logos/fresh-square.svg">
+    <a class="sidebar-close" href="javascript:void(0);">
+      <i data-feather="x"></i>
+    </a>
+  </div>
+  <div class="inner">
+    <ul class="sidebar-menu">
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-user"></span>
+          Core
+        </a>
+        <ul>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/01-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/02-event-streams">
+              Event streams
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/03-event-game-example">
+              Console game example
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/04-dynamics">
+              Dynamic values
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/05-backbone-monad">
+              Main FRP monad
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/06-control-flow">
+              Control flow. Sharing and Recursion
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/07-make-bindings">
+              Bindings to imperative libraries
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/08-parser">
+              Parsers of event streams
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/09-conclusion">
+              Conclusion
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-envelope"></span>
+          Brick
+        </a>
+        <ul>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-brick/tutorial/00-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-brick/tutorial/01-puzzle-15">
+              Example: Puzzle 15
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-brick/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-image"></span>
+          Gloss
+        </a>
+        <ul>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial/00-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial/01-example">
+              Example
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-image"></span>
+          Processing
+        </a>
+        <ul>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/00-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/01-example">
+              Example
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-cog"></span>
+          Resources
+        </a>
+        <ul>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/">
+              Publications
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/">
+              Video
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/">
+              Examples
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
 </div>
-<div class=inner>
-<ul class=sidebar-menu>
-<li class=have-children>
-<a href=#>
-<span class="fa fa-user"></span>
-Core
-</a>
-<ul>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/01-intro>
-Introduction
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/02-event-streams>
-Event streams
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/03-event-game-example>
-Console game example
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/04-dynamics>
-Dynamic values
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/05-backbone-monad>
-Main FRP monad
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/06-control-flow>
-Control flow. Sharing and Recursion
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/07-make-bindings>
-Bindings to imperative libraries
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/08-parser>
-Parsers of event streams
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/09-conclusion>
-Conclusion
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/101-reference>
-Quick reference
-</a>
-</li>
-</ul>
-</li>
-<li class=have-children>
-<a href=#>
-<span class="fa fa-envelope"></span>
-Brick
-</a>
-<ul>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-brick/tutorial/00-intro>
-Introduction
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-brick/tutorial/01-puzzle-15>
-Example: Puzzle 15
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-brick/tutorial/101-reference>
-Quick reference
-</a>
-</li>
-</ul>
-</li>
-<li class=have-children>
-<a href=#>
-<span class="fa fa-image"></span>
-Gloss
-</a>
-<ul>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial/00-intro>
-Introduction
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial/01-example>
-Example
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial/101-reference>
-Quick reference
-</a>
-</li>
-</ul>
-</li>
-<li class=have-children>
-<a href=#>
-<span class="fa fa-image"></span>
-Processing
-</a>
-<ul>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/00-intro>
-Introduction
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/01-example>
-Example
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/101-reference>
-Quick reference
-</a>
-</li>
-</ul>
-</li>
-<li class=have-children>
-<a href=#>
-<span class="fa fa-cog"></span>
-Resources
-</a>
-<ul>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/>
-Publications
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/>
-Video
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/>
-Examples
-</a>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
-<script src=https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js></script>
-<script src=https://unpkg.com/feather-icons></script>
-<script src=https://anton-k.github.io/dyna-frp/js/fresh.js></script>
-<script src=https://anton-k.github.io/dyna-frp/js/jquery.panelslider.min.js></script>
-<script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js></script>
-</body>
+
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+<script src="https://anton-k.github.io/dyna-frp/js/fresh.js"></script>
+<script src="https://anton-k.github.io/dyna-frp/js/jquery.panelslider.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+  </body>
 </html>

@@ -1,293 +1,348 @@
-<!doctype html><html lang=en-us>
-<head>
-<meta property="og:title" content="Event streams">
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    
+
+<meta property="og:title" content="Event streams" />
 <meta property="og:description" content="The core type of the library is event stream Evt. The main idea of the library is to use very simple imperative representation of the event streams and use convenient combinators to build compound event streams out of simple ones.
 Often in FRP research papers event stream conceptually is represented as list of some events that happen at certain time stamps:
-type Events event = [(Time, event)] The list is infinite and we can receive events as they come.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/02-event-streams/"><meta property="article:section" content="dyna-core">
-<meta name=description content="Hardcoded description; the author should update :)">
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta http-equiv=x-ua-compatible content="ie=edge">
-<title>Dyna FRP</title>
-<link rel=icon type=image/png href=https://anton-k.github.io/dyna-frp/images/favicon.png>
-<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel=stylesheet>
-<link rel=stylesheet type=text/css href=https://anton-k.github.io/dyna-frp/css/style.min.e783507bb360b9f98a5ed4a121403993a693ea14a1af9420b35e040e776c22f8.css integrity="sha256-54NQe7NgufmKXtShIUA5k6aT6hShr5Qgs14EDndsIvg=">
-<link rel=stylesheet type=text/css href=https://anton-k.github.io/dyna-frp/css/icons.css>
-</head>
-<body>
-<div id=preloader>
-<div id=status></div>
-</div>
-<nav class="navbar is-fresh is-transparent no-shadow" role=navigation aria-label="main navigation">
-<div class=container>
-<div class=navbar-brand>
-<a class=navbar-item href=https://anton-k.github.io/dyna-frp/>
-<img src=https://anton-k.github.io/dyna-frp/images/logos/dyna-logo-2.png alt width=112 height=28>
-</a>
-<a class="navbar-item is-hidden-desktop is-hidden-tablet">
-<div id=menu-icon-wrapper class=menu-icon-wrapper style=visibility:visible><svg width="1e3" height="1e3"><path class="path1" d="M3e2 4e2H7e2c2e2.0 2e2 350-1e2 450A4e2 4e2.0 012e2 2e2L8e2 8e2"/><path class="path2" d="M3e2 5e2H7e2"/><path class="path3" d="M7e2 6e2H3e2c-2e2.0-2e2-4e2 1e2-450A4e2 380 0 112e2 8e2L8e2 2e2"/></svg>
-<button id=menu-icon-trigger class=menu-icon-trigger></button>
-</div>
-</a>
-<a role=button class=navbar-burger aria-label=menu aria-expanded=false data-target=navbar-menu>
-<span aria-hidden=true></span>
-<span aria-hidden=true></span>
-<span aria-hidden=true></span>
-</a>
-</div>
-<div id=navbar-menu class="navbar-menu is-static">
-<div class=navbar-start>
-<a class="navbar-item is-hidden-mobile">
-<div id=menu-icon-wrapper class=menu-icon-wrapper style=visibility:visible><svg width="1e3" height="1e3"><path class="path1" d="M3e2 4e2H7e2c2e2.0 2e2 350-1e2 450A4e2 4e2.0 012e2 2e2L8e2 8e2"/><path class="path2" d="M3e2 5e2H7e2"/><path class="path3" d="M7e2 6e2H3e2c-2e2.0-2e2-4e2 1e2-450A4e2 380 0 112e2 8e2L8e2 2e2"/></svg>
-<button id=menu-icon-trigger class=menu-icon-trigger></button>
-</div>
-</a>
-</div>
-<div class=navbar-end>
-<a href=https://anton-k.github.io/dyna-frp/ class="navbar-item is-secondary">
-Home
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/get-started class="navbar-item is-secondary">
-Get started
-</a>
-<div class="navbar-item has-dropdown is-hoverable">
-<a class=navbar-link>
-Tutorial
-</a>
-<div class=navbar-dropdown>
-<a href=https://anton-k.github.io/dyna-frp/paper class=navbar-item>
-Paper
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial-toc class=navbar-item>
-Core FRP
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial-toc class=navbar-item>
-Gloss
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-brick/tutorial-toc class=navbar-item>
-Brick
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-processing/tutorial-toc class=navbar-item>
-Processing
-</a>
-</div>
-</div>
-<div class="navbar-item has-dropdown is-hoverable">
-<a class=navbar-link>
-Reference
-</a>
-<div class=navbar-dropdown>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/101-reference class=navbar-item>
-Core FRP
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial/101-reference class=navbar-item>
-Gloss
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-brick/tutorial/101-reference class=navbar-item>
-Brick
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/101-reference class=navbar-item>
-Processing
-</a>
-</div>
-</div>
-<a href=https://github.com/anton-k/dyna-frp class=navbar-item>
-<span class="button signup-button rounded secondary-btn raised">
-Github
-</span>
-</a>
-</div>
-</div>
+type Events event = [(Time, event)] The list is infinite and we can receive events as they come." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/02-event-streams/" /><meta property="article:section" content="dyna-core" />
+
+
+
+
+
+<meta name="description" content="Hardcoded description; the author should update :)" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Dyna FRP</title>
+    
+<link rel="icon" type="image/png" href="https://anton-k.github.io/dyna-frp/images/favicon.png" />
+<link href="https://fonts.googleapis.com/css?family=Open&#43;Sans:400,600" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="https://anton-k.github.io/dyna-frp/css/style.min.e783507bb360b9f98a5ed4a121403993a693ea14a1af9420b35e040e776c22f8.css" integrity="sha256-54NQe7NgufmKXtShIUA5k6aT6hShr5Qgs14EDndsIvg=">
+<link rel="stylesheet" type="text/css" href="https://anton-k.github.io/dyna-frp/css/icons.css">
+
+  </head>
+  <body>
+    
+    <div id="preloader">
+      <div id="status"></div>
+    </div>
+
+    
+
+    
+
+<nav class="navbar is-fresh is-transparent no-shadow" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://anton-k.github.io/dyna-frp/">
+        <img src="https://anton-k.github.io/dyna-frp/images/logos/dyna-logo-2.png" alt="" width="112" height="28">
+      </a>
+      <a class="navbar-item is-hidden-desktop is-hidden-tablet">
+        <div id="menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+          <svg width="1000px" height="1000px">
+            <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+            <path class="path2" d="M 300 500 L 700 500"></path>
+            <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+          </svg>
+          <button id="menu-icon-trigger" class="menu-icon-trigger"></button>
+        </div>
+      </a>
+
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-menu">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+      <div id="navbar-menu" class="navbar-menu is-static">
+        <div class="navbar-start">
+          <a class="navbar-item is-hidden-mobile">
+            <div id="menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+              <svg width="1000px" height="1000px">
+                <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+                <path class="path2" d="M 300 500 L 700 500"></path>
+                <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+              </svg>
+              <button id="menu-icon-trigger" class="menu-icon-trigger"></button>
+            </div>
+          </a>
+        </div>
+
+        <div class="navbar-end">
+          <a href="https://anton-k.github.io/dyna-frp/" class="navbar-item is-secondary">
+            Home
+          </a>
+          <a href="https://anton-k.github.io/dyna-frp/dyna-core/get-started" class="navbar-item is-secondary">
+            Get started
+          </a>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">
+              Tutorial
+            </a>
+
+            <div class="navbar-dropdown">
+              <a href="https://anton-k.github.io/dyna-frp/paper" class="navbar-item">
+                Paper
+              </a>
+              <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial-toc" class="navbar-item">
+                Core FRP
+              </a>
+              <a href="https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial-toc" class="navbar-item">
+                Gloss
+              </a>
+              <a href="https://anton-k.github.io/dyna-frp/dyna-brick/tutorial-toc" class="navbar-item">
+                Brick
+              </a>
+              <a href="https://anton-k.github.io/dyna-frp/dyna-processing/tutorial-toc" class="navbar-item">
+                Processing
+              </a>
+            </div>
+          </div>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">
+              Reference
+            </a>
+
+            <div class="navbar-dropdown">
+              <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/101-reference" class="navbar-item">
+                Core FRP
+              </a>
+              <a href="https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial/101-reference" class="navbar-item">
+                Gloss
+              </a>
+              <a href="https://anton-k.github.io/dyna-frp/dyna-brick/tutorial/101-reference" class="navbar-item">
+                Brick
+              </a>
+              <a href="https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/101-reference" class="navbar-item">
+                Processing
+              </a>
+            </div>
+          </div>
+          <a href="https://github.com/anton-k/dyna-frp" class="navbar-item">
+            <span class="button signup-button rounded secondary-btn raised">
+              Github
+            </span>
+          </a>
+        </div>
+      </div>
+  </div>
+</nav>
+
+
+
+<nav id="navbar-clone" class="navbar is-fresh is-transparent" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://anton-k.github.io/dyna-frp/">
+        <img src="https://anton-k.github.io/dyna-frp/images/logos/dyna-logo-2.png" alt="" width="112" height="28">
+      </a>
+      <a class="navbar-item is-hidden-desktop is-hidden-tablet">
+        <div id="menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+          <svg width="1000px" height="1000px">
+            <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+            <path class="path2" d="M 300 500 L 700 500"></path>
+            <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+          </svg>
+          <button id="menu-icon-trigger" class="menu-icon-trigger"></button>
+        </div>
+      </a>
+
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="cloned-navbar-menu">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+    <div id="cloned-navbar-menu" class="navbar-menu is-fixed">
+      <div class="navbar-start">
+        <a class="navbar-item is-hidden-mobile">
+          <div id="cloned-menu-icon-wrapper" class="menu-icon-wrapper" style="visibility: visible;">
+            <svg width="1000px" height="1000px">
+              <path class="path1" d="M 300 400 L 700 400 C 900 400 900 750 600 850 A 400 400 0 0 1 200 200 L 800 800"></path>
+              <path class="path2" d="M 300 500 L 700 500"></path>
+              <path class="path3" d="M 700 600 L 300 600 C 100 600 100 200 400 150 A 400 380 0 1 1 200 800 L 800 200"></path>
+            </svg>
+            <button id="cloned-menu-icon-trigger" class="menu-icon-trigger"></button>
+          </div>
+        </a>
+      </div>
+
+      <div class="navbar-end">
+        <a href="https://anton-k.github.io/dyna-frp/" class="navbar-item is-secondary">
+          Home
+        </a>
+        <a href="https://anton-k.github.io/dyna-frp/dyna-core/get-started" class="navbar-item is-secondary">
+          Get started
+        </a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            Tutorial
+          </a>
+
+          <div class="navbar-dropdown">
+            <a href="https://anton-k.github.io/dyna-frp/paper" class="navbar-item">
+              Paper
+            </a>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial-toc" class="navbar-item">
+              Core FRP
+            </a>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial-toc" class="navbar-item">
+              Gloss
+            </a>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-brick/tutorial-toc" class="navbar-item">
+              Brick
+            </a>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-processing/tutorial-toc" class="navbar-item">
+              Processing
+            </a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            Reference
+          </a>
+
+          <div class="navbar-dropdown">
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/101-reference" class="navbar-item">
+              Core FRP
+            </a>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial/101-reference" class="navbar-item">
+              Gloss
+            </a>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-brick/tutorial/101-reference" class="navbar-item">
+              Brick
+            </a>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/101-reference" class="navbar-item">
+              Processing
+            </a>
+          </div>
+        </div>
+        <a href="https://github.com/anton-k/dyna-frp" class="navbar-item">
+          <span class="button signup-button rounded secondary-btn raised">
+            Github
+          </span>
+        </a>
+      </div>
+    </div>
 </div>
 </nav>
-<nav id=navbar-clone class="navbar is-fresh is-transparent" role=navigation aria-label="main navigation">
-<div class=container>
-<div class=navbar-brand>
-<a class=navbar-item href=https://anton-k.github.io/dyna-frp/>
-<img src=https://anton-k.github.io/dyna-frp/images/logos/dyna-logo-2.png alt width=112 height=28>
-</a>
-<a class="navbar-item is-hidden-desktop is-hidden-tablet">
-<div id=menu-icon-wrapper class=menu-icon-wrapper style=visibility:visible><svg width="1e3" height="1e3"><path class="path1" d="M3e2 4e2H7e2c2e2.0 2e2 350-1e2 450A4e2 4e2.0 012e2 2e2L8e2 8e2"/><path class="path2" d="M3e2 5e2H7e2"/><path class="path3" d="M7e2 6e2H3e2c-2e2.0-2e2-4e2 1e2-450A4e2 380 0 112e2 8e2L8e2 2e2"/></svg>
-<button id=menu-icon-trigger class=menu-icon-trigger></button>
-</div>
-</a>
-<a role=button class=navbar-burger aria-label=menu aria-expanded=false data-target=cloned-navbar-menu>
-<span aria-hidden=true></span>
-<span aria-hidden=true></span>
-<span aria-hidden=true></span>
-</a>
-</div>
-<div id=cloned-navbar-menu class="navbar-menu is-fixed">
-<div class=navbar-start>
-<a class="navbar-item is-hidden-mobile">
-<div id=cloned-menu-icon-wrapper class=menu-icon-wrapper style=visibility:visible><svg width="1e3" height="1e3"><path class="path1" d="M3e2 4e2H7e2c2e2.0 2e2 350-1e2 450A4e2 4e2.0 012e2 2e2L8e2 8e2"/><path class="path2" d="M3e2 5e2H7e2"/><path class="path3" d="M7e2 6e2H3e2c-2e2.0-2e2-4e2 1e2-450A4e2 380 0 112e2 8e2L8e2 2e2"/></svg>
-<button id=cloned-menu-icon-trigger class=menu-icon-trigger></button>
-</div>
-</a>
-</div>
-<div class=navbar-end>
-<a href=https://anton-k.github.io/dyna-frp/ class="navbar-item is-secondary">
-Home
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/get-started class="navbar-item is-secondary">
-Get started
-</a>
-<div class="navbar-item has-dropdown is-hoverable">
-<a class=navbar-link>
-Tutorial
-</a>
-<div class=navbar-dropdown>
-<a href=https://anton-k.github.io/dyna-frp/paper class=navbar-item>
-Paper
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial-toc class=navbar-item>
-Core FRP
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial-toc class=navbar-item>
-Gloss
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-brick/tutorial-toc class=navbar-item>
-Brick
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-processing/tutorial-toc class=navbar-item>
-Processing
-</a>
-</div>
-</div>
-<div class="navbar-item has-dropdown is-hoverable">
-<a class=navbar-link>
-Reference
-</a>
-<div class=navbar-dropdown>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/101-reference class=navbar-item>
-Core FRP
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial/101-reference class=navbar-item>
-Gloss
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-brick/tutorial/101-reference class=navbar-item>
-Brick
-</a>
-<a href=https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/101-reference class=navbar-item>
-Processing
-</a>
-</div>
-</div>
-<a href=https://github.com/anton-k/dyna-frp class=navbar-item>
-<span class="button signup-button rounded secondary-btn raised">
-Github
-</span>
-</a>
-</div>
-</div>
-</div>
-</nav>
+
 <section class="section is-medium">
-<div class=container>
-<div class=columns>
-<div class="column is-centered-tablet-portrait">
-<h1 class="title section-title">Event streams</h1>
-<h5 class="subtitle is-5 is-muted"></h5>
-<div class=divider></div>
-</div>
-</div>
-<div class=content>
-<p>The core type of the library is event stream <code>Evt</code>.
+  <div class="container">
+    <div class="columns">
+      <div class="column is-centered-tablet-portrait">
+        <h1 class="title section-title">Event streams</h1>
+        <h5 class="subtitle is-5 is-muted"></h5>
+        <div class="divider"></div>
+      </div>
+    </div>
+
+    <div class="content">
+      <p>The core type of the library is event stream <code>Evt</code>.
 The main idea of the library is to use very simple imperative representation of the
 event streams and use convenient combinators to build compound
 event streams out of simple ones.</p>
 <p>Often in FRP research papers event stream conceptually is represented
 as list of some events that happen at certain time stamps:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#8b008b;font-weight:700>type</span> <span style=color:#00688b;font-weight:700>Events</span> event <span style=color:#8b008b>=</span> [(<span style=color:#00688b;font-weight:700>Time</span>, event)]
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#8b008b;font-weight:bold">type</span> <span style="color:#00688b;font-weight:bold">Events</span> event <span style="color:#8b008b">=</span> [(<span style="color:#00688b;font-weight:bold">Time</span>, event)]
 </code></pre></div><p>The list is infinite and we can receive events as they come.
 Instead of that we can think not about what event stream is but
 why do we need the event stream in the first place? How is it related to
 the rest of the application?</p>
 <p>In imperative approach we use event streams as source of call back invocations.
-<strong>Mr Run Event</strong> says: You can give me a procedure <code>a -> IO ()</code> and when event will happen I
+<strong>Mr Run Event</strong> says: You can give me a procedure <code>a -&gt; IO ()</code> and when event will happen I
 gonna call it for you. That&rsquo;s nice to have! Thanks <strong>Mr Run Event</strong>.</p>
 <p>So we define not what event is but what we are going to do with it.
 The problem with this approach is that it often leads to a very clumsy code.
 It&rsquo;s even called call-back hell.</p>
-<figure><img src=https://anton-k.github.io/dyna-frp/images/run-evt.svg alt="Run event" width=90%>
+<figure><img src="https://anton-k.github.io/dyna-frp/images/run-evt.svg"
+         alt="Run event" width="90%"/>
 </figure>
+
 <p>The main idea of the <code>dyna</code> library is to take this hellish approach and turn it
 into heaven by offering nice interface to combine the callback processors.</p>
 <p>The event stream is just a callback processor:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#8b008b;font-weight:700>newtype</span> <span style=color:#00688b;font-weight:700>Evt</span> m a <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Evt</span> {
-  runEvt <span style=color:#8b008b>::</span> (a <span style=color:#8b008b>-&gt;</span> m <span style=color:#658b00>()</span>) <span style=color:#8b008b>-&gt;</span> m <span style=color:#658b00>()</span>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#8b008b;font-weight:bold">newtype</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Evt</span> {
+  runEvt <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> m <span style="color:#658b00">()</span>) <span style="color:#8b008b">-&gt;</span> m <span style="color:#658b00">()</span>
 }
 </code></pre></div><p>It&rsquo;s a real definition from the library (not a simplified one).
 So the event stream is that Mr <strong>Run Event</strong> that takes
-our procedure <code>a -> m ()</code> and does something useful with it on our behalf, i.e.
+our procedure <code>a -&gt; m ()</code> and  does something useful with it on our behalf, i.e.
 run is as procedure and result is <code>m ()</code>. Here <code>m</code> is some monad. Let&rsquo;s
 for simplicity assume that it&rsquo;s <code>IO</code>. We are going to make our tiny version of the
 library to understand the main concepts. We are going to work with this simplified
 version for now:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#8b008b;font-weight:700>newtype</span> <span style=color:#00688b;font-weight:700>Evt</span> a <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Evt</span> {
-  runEvt <span style=color:#8b008b>::</span> (a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>IO</span> <span style=color:#658b00>()</span>) <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>IO</span> <span style=color:#658b00>()</span>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#8b008b;font-weight:bold">newtype</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Evt</span> {
+  runEvt <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">IO</span> <span style="color:#658b00">()</span>) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">IO</span> <span style="color:#658b00">()</span>
 }
-</code></pre></div><h3 id=simple-event-streams>Simple event streams</h3>
+</code></pre></div><h3 id="simple-event-streams">Simple event streams</h3>
 <p>Let&rsquo;s look at some examples of event streams.
 The most simple one is super lazy and arrogant event stream. It just ignores
 the callback and returns:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>never</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Evt</span> a
-<span style=color:#008b45>never</span> <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Evt</span> $ <span style=color:#008b45>\</span><span style=color:#8b008b;font-weight:700>_</span> <span style=color:#8b008b>-&gt;</span> pure <span style=color:#658b00>()</span>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">never</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+<span style="color:#008b45">never</span> <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Evt</span> $ <span style="color:#008b45">\</span><span style="color:#8b008b;font-weight:bold">_</span> <span style="color:#8b008b">-&gt;</span> pure <span style="color:#658b00">()</span>
 </code></pre></div><p>It emulates the empty event stream with events that never happen.
 We can even call it in the interpreter:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell>&gt; ghci
-&gt; <span style=color:#8b008b;font-weight:700>newtype</span> <span style=color:#00688b;font-weight:700>Evt</span> a <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Evt</span> { runEvt <span style=color:#8b008b>::</span> (a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>IO</span> <span style=color:#658b00>()</span>) <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>IO</span> <span style=color:#658b00>()</span> }
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">&gt; ghci
+&gt; <span style="color:#8b008b;font-weight:bold">newtype</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Evt</span> { runEvt <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">IO</span> <span style="color:#658b00">()</span>) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">IO</span> <span style="color:#658b00">()</span> }
 &gt;
-&gt; never <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Evt</span> $ <span style=color:#008b45>\</span><span style=color:#8b008b;font-weight:700>_</span> <span style=color:#8b008b>-&gt;</span> pure <span style=color:#658b00>()</span>
+&gt; never <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Evt</span> $ <span style="color:#008b45">\</span><span style="color:#8b008b;font-weight:bold">_</span> <span style="color:#8b008b">-&gt;</span> pure <span style="color:#658b00">()</span>
 &gt; runEvt never putStrLn 
 </code></pre></div><p>So it did nothing. Let&rsquo;s define event stream that does
 something only <code>once</code> and does it right away:</p>
-<figure><img src=https://anton-k.github.io/dyna-frp/images/once.svg alt="Monoid events" width=95%>
+<figure><img src="https://anton-k.github.io/dyna-frp/images/once.svg"
+         alt="Monoid events" width="95%"/>
 </figure>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>once</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>IO</span> a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> a
-<span style=color:#008b45>once</span> getter <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Evt</span> $ <span style=color:#008b45>\</span>go <span style=color:#8b008b>-&gt;</span> go =&lt;&lt; getter
+
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">once</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">IO</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
+<span style="color:#008b45">once</span> getter <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Evt</span> $ <span style="color:#008b45">\</span>go <span style="color:#8b008b">-&gt;</span> go =&lt;&lt; getter
 </code></pre></div><p>So we pass a IO-getter function that reads some value and
 on running that event stream we just use that function to get the value
 and apply the callback to it.</p>
 <p>Let&rsquo;s copy that definition to REPL:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell>&gt; once getter <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Evt</span> $ <span style=color:#008b45>\</span>go <span style=color:#8b008b>-&gt;</span> go =&lt;&lt; getter
-&gt; <span style=color:#00688b;font-weight:700>:</span>t once
-<span style=color:#008b45>once</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>IO</span> a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> a
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">&gt; once getter <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Evt</span> $ <span style="color:#008b45">\</span>go <span style="color:#8b008b">-&gt;</span> go =&lt;&lt; getter
+&gt; <span style="color:#00688b;font-weight:bold">:</span>t once
+<span style="color:#008b45">once</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">IO</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a
 </code></pre></div><p>With it we can do something useful. For example we can query user for a
 number and show the twice amount of that number. First we define helper function
 that asks user for single input:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell>&gt; getLines <span style=color:#8b008b>=</span> once getLine
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">&gt; getLines <span style="color:#8b008b">=</span> once getLine
 </code></pre></div><p>Let&rsquo;s define the doubler callback and call it with a user input:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell>&gt; doubler str <span style=color:#8b008b>=</span> putStrLn $ <span style=color:#cd5555>&#34;Answer: &#34;</span> &lt;&gt; show (read str * <span style=color:#b452cd>2</span>)
-&gt; <span style=color:#00688b;font-weight:700>:</span>t doubler
-<span style=color:#008b45>doubler</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>String</span> <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>IO</span> <span style=color:#658b00>()</span>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">&gt; doubler str <span style="color:#8b008b">=</span> putStrLn $ <span style="color:#cd5555">&#34;Answer: &#34;</span> &lt;&gt; show (read str * <span style="color:#b452cd">2</span>)
+&gt; <span style="color:#00688b;font-weight:bold">:</span>t doubler
+<span style="color:#008b45">doubler</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">String</span> <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">IO</span> <span style="color:#658b00">()</span>
 &gt; runEvt getLineE doubler
-<span style=color:#b452cd>4</span>                             <span style=color:#228b22>-- our input</span>
-<span style=color:#00688b;font-weight:700>Answer:</span> <span style=color:#b452cd>8</span>                     <span style=color:#228b22>-- Mr Run Event produces</span>
-<span style=color:#00688b;font-weight:700>Prelude</span>&gt;
+<span style="color:#b452cd">4</span>                             <span style="color:#228b22">-- our input</span>
+<span style="color:#00688b;font-weight:bold">Answer:</span> <span style="color:#b452cd">8</span>                     <span style="color:#228b22">-- Mr Run Event produces</span>
+<span style="color:#00688b;font-weight:bold">Prelude</span>&gt;
 </code></pre></div><p>With this function we asked only for one input. But also we can create
 a process that can double input <code>forever</code>. Let&rsquo;s define a helper function:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell> &gt; <span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>Control.Monad</span>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"> &gt; <span style="color:#8b008b;font-weight:bold">import</span> <span style="color:#008b45;text-decoration:underline">Control.Monad</span>
 
-<span style=color:#228b22>-- forevers :: Evt a -&gt; Evt a</span>
- &gt; forevers evt <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Evt</span> $ <span style=color:#008b45>\</span>go <span style=color:#8b008b>-&gt;</span> forever $ runEvt evt go
+<span style="color:#228b22">-- forevers :: Evt a -&gt; Evt a</span>
+ &gt; forevers evt <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Evt</span> $ <span style="color:#008b45">\</span>go <span style="color:#8b008b">-&gt;</span> forever $ runEvt evt go
 </code></pre></div><p>We use standard function <code>forever</code> from the module <code>Control.Monad</code>
 to call procedure in the infinite loop.
 The function <code>forevers</code> takes in an event and calls it all the time in an infinite loop.
 With what we have already defined we can use it to create doubler service:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell>&gt; runEvt (forevers getLines) doubler
-<span style=color:#b452cd>4</span>
-<span style=color:#00688b;font-weight:700>Answer:</span> <span style=color:#b452cd>8</span>
-<span style=color:#b452cd>100</span>
-<span style=color:#00688b;font-weight:700>Answer:</span> <span style=color:#b452cd>200</span>
-<span style=color:#b452cd>43</span>
-<span style=color:#00688b;font-weight:700>Answer:</span> <span style=color:#b452cd>86</span>
-<span style=color:#b452cd>0</span>
-<span style=color:#00688b;font-weight:700>Answer:</span> <span style=color:#b452cd>0</span>
-<span style=color:#b452cd>2</span>
-<span style=color:#00688b;font-weight:700>Answer:</span> <span style=color:#b452cd>4</span>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">&gt; runEvt (forevers getLines) doubler
+<span style="color:#b452cd">4</span>
+<span style="color:#00688b;font-weight:bold">Answer:</span> <span style="color:#b452cd">8</span>
+<span style="color:#b452cd">100</span>
+<span style="color:#00688b;font-weight:bold">Answer:</span> <span style="color:#b452cd">200</span>
+<span style="color:#b452cd">43</span>
+<span style="color:#00688b;font-weight:bold">Answer:</span> <span style="color:#b452cd">86</span>
+<span style="color:#b452cd">0</span>
+<span style="color:#00688b;font-weight:bold">Answer:</span> <span style="color:#b452cd">0</span>
+<span style="color:#b452cd">2</span>
+<span style="color:#00688b;font-weight:bold">Answer:</span> <span style="color:#b452cd">4</span>
 </code></pre></div><p>That was neat! We can define some useful call-back building abstractions
 right in the <code>ghci</code> session. All those functions <code>getLines</code>, <code>forevers</code>, <code>once</code>, <code>never</code>
 are already defined in <code>dyna</code>. We just look at the implementation to get familiar
@@ -297,28 +352,28 @@ It&rsquo;s just a callback consumer. It get&rsquo;s a callback and does somethin
 whenever an event happens.</p>
 <p>In the <code>dyna</code> we have cool event stream of time stamps that produce the current clock
 or passed time:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell>&gt; <span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>Dyna</span>
-&gt; runEvt (clock <span style=color:#b452cd>1</span>) print
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">&gt; <span style="color:#8b008b;font-weight:bold">import</span> <span style="color:#008b45;text-decoration:underline">Dyna</span>
+&gt; runEvt (clock <span style="color:#b452cd">1</span>) print
 </code></pre></div><p>The <code>clock</code> takes in a number of seconds in which to periodically sample the current time.
 Try also functions <code>timer</code>, <code>ticks</code> and <code>pulse</code> instead of <code>clock</code>.</p>
-<h3 id=printing-the-events>Printing the events</h3>
+<h3 id="printing-the-events">Printing the events</h3>
 <p>Also we can define a useful function to show the events (also standard function):</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>prints</span> evt <span style=color:#8b008b>=</span> runEvt evt print
-<span style=color:#008b45>putStrLns</span> evt <span style=color:#8b008b>=</span> runEvt evt putStrLn
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">prints</span> evt <span style="color:#8b008b">=</span> runEvt evt print
+<span style="color:#008b45">putStrLns</span> evt <span style="color:#8b008b">=</span> runEvt evt putStrLn
 </code></pre></div><p>We take an event and pass a printing function to it as a callback.</p>
-<h3 id=operators-for-event-streams>Operators for event streams</h3>
+<h3 id="operators-for-event-streams">Operators for event streams</h3>
 <p>The most fun things start to happen when we take some tiny basic event streams
 and start to build more complicated ones out of them. The Haskell power starts to shine.</p>
 <p>We already did that with function <code>forevers</code> as it&rsquo;s a stream processor. It takes one stream
 and turns it to stream of forever loop. Let&rsquo;s discuss other useful operations.</p>
-<h4 id=analogy-with-a-list>Analogy with a List</h4>
+<h4 id="analogy-with-a-list">Analogy with a List</h4>
 <p>Many operations are easy to understand if we think about event stream as an infinite
 list of events. Later on we will borrow many list functions and redefine them for event streams.
 Only for our implementation we just trigger some callback whenever element is added to the list.
 But of course there is no list whatsoever. It&rsquo;s just helpful analogy.</p>
-<h4 id=functor>Functor</h4>
+<h4 id="functor">Functor</h4>
 <p>Let&rsquo;s recall the doubler function:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell>&gt; doubler str <span style=color:#8b008b>=</span> putStrLn $ <span style=color:#cd5555>&#34;Answer: &#34;</span> &lt;&gt; show (read str * <span style=color:#b452cd>2</span>)
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">&gt; doubler str <span style="color:#8b008b">=</span> putStrLn $ <span style="color:#cd5555">&#34;Answer: &#34;</span> &lt;&gt; show (read str * <span style="color:#b452cd">2</span>)
 </code></pre></div><p>It does 3 things. It:</p>
 <ul>
 <li>
@@ -332,68 +387,72 @@ But of course there is no list whatsoever. It&rsquo;s just helpful analogy.</p>
 </li>
 </ul>
 <p>If we had the list of strings as input we could apply the doubler like this:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell>&gt; toAnswer x <span style=color:#8b008b>=</span> <span style=color:#cd5555>&#34;Answer: &#34;</span> &lt;&gt; show x
-&gt; fmap (toAnswer . (<span style=color:#b452cd>2</span> *) . read) inputs
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">&gt; toAnswer x <span style="color:#8b008b">=</span> <span style="color:#cd5555">&#34;Answer: &#34;</span> &lt;&gt; show x
+&gt; fmap (toAnswer . (<span style="color:#b452cd">2</span> *) . read) inputs
 </code></pre></div><p>Here we use standard function <code>fmap</code> from the functor typeclass:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#8b008b;font-weight:700>class</span> <span style=color:#00688b;font-weight:700>Functor</span> f <span style=color:#8b008b;font-weight:700>where</span>
-  fmap <span style=color:#8b008b>::</span> (a <span style=color:#8b008b>-&gt;</span> b) <span style=color:#8b008b>-&gt;</span> f a <span style=color:#8b008b>-&gt;</span> f b
-</code></pre></div><figure><img src=https://anton-k.github.io/dyna-frp/images/fmap-evt.svg alt="Monoid events" width=100%>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#8b008b;font-weight:bold">class</span> <span style="color:#00688b;font-weight:bold">Functor</span> f <span style="color:#8b008b;font-weight:bold">where</span>
+  fmap <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> b) <span style="color:#8b008b">-&gt;</span> f a <span style="color:#8b008b">-&gt;</span> f b
+</code></pre></div><figure><img src="https://anton-k.github.io/dyna-frp/images/fmap-evt.svg"
+         alt="Monoid events" width="100%"/>
 </figure>
+
 <p>For the lists it takes in a function and applies it to every element in the list.
 For the list that conceptually contains all possible events it is cool to have opration like <code>fmap</code>.
 and it can easily be defined:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#8b008b;font-weight:700>instance</span> <span style=color:#00688b;font-weight:700>Functor</span> <span style=color:#00688b;font-weight:700>Evt</span> <span style=color:#8b008b;font-weight:700>where</span>
-  fmap f evt <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Evt</span> $ <span style=color:#008b45>\</span>go <span style=color:#8b008b>-&gt;</span> runEvt evt (go . f)
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#8b008b;font-weight:bold">instance</span> <span style="color:#00688b;font-weight:bold">Functor</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#8b008b;font-weight:bold">where</span>
+  fmap f evt <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Evt</span> $ <span style="color:#008b45">\</span>go <span style="color:#8b008b">-&gt;</span> runEvt evt (go . f)
 </code></pre></div><p>So we take the callback for the new input of type <code>b</code> and to use the
 event stream defined on <code>a</code>&rsquo;s we use function <code>f</code> to adjust the input.
 We can save that instance to file with our defenitions and use it.
 Let&rsquo;s create the module <code>Evt.hs</code> and save there all definitions from the current session.
 After we load it we can try out our <code>Functor</code> instance:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>printE</span> $ fmap reverse (forevers $ once getLine)
-<span style=color:#00688b;font-weight:700>Hi</span>!
-<span style=color:#cd5555>&#34;!iH&#34;</span>
-<span style=color:#00688b;font-weight:700>Bill</span>
-<span style=color:#cd5555>&#34;lliB&#34;</span>
-<span style=color:#00688b;font-weight:700>Bob</span>
-<span style=color:#cd5555>&#34;boB&#34;</span>
-<span style=color:#008b45>hit</span> <span style=color:#00688b;font-weight:700>Ctrl</span>+<span style=color:#00688b;font-weight:700>C</span> to exit
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">printE</span> $ fmap reverse (forevers $ once getLine)
+<span style="color:#00688b;font-weight:bold">Hi</span>!
+<span style="color:#cd5555">&#34;!iH&#34;</span>
+<span style="color:#00688b;font-weight:bold">Bill</span>
+<span style="color:#cd5555">&#34;lliB&#34;</span>
+<span style="color:#00688b;font-weight:bold">Bob</span>
+<span style="color:#cd5555">&#34;boB&#34;</span>
+<span style="color:#008b45">hit</span> <span style="color:#00688b;font-weight:bold">Ctrl</span>+<span style="color:#00688b;font-weight:bold">C</span> to exit
 </code></pre></div><p>We have defined a service that reverses every line of the input.
 Let&rsquo;s define our dubler function as a composition of smaller parts:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell>&gt; <span style=color:#00688b;font-weight:700>:</span>set -<span style=color:#00688b;font-weight:700>XTypeApplications</span>
-&gt; readInts <span style=color:#8b008b>=</span> fmap (read @<span style=color:#00688b;font-weight:700>Int</span>) $ forevers $ once getLine
-&gt; <span style=color:#00688b;font-weight:700>:</span>t readInts
-<span style=color:#008b45>readInts</span> <span style=color:#8b008b>::</span> <span style=color:#00688b;font-weight:700>Evt</span> <span style=color:#00688b;font-weight:700>IO</span> <span style=color:#00688b;font-weight:700>Int</span>
-&gt; toAnswer x <span style=color:#8b008b>=</span> <span style=color:#cd5555>&#34;Answer: &#34;</span> &lt;&gt; show x
-&gt; putStrLnE $ fmap (toAnswer . (<span style=color:#b452cd>2</span> * )) readInts
-<span style=color:#b452cd>3</span>
-<span style=color:#00688b;font-weight:700>Answer:</span> <span style=color:#b452cd>6</span>
-<span style=color:#b452cd>7</span>
-<span style=color:#00688b;font-weight:700>Answer:</span> <span style=color:#b452cd>14</span>
-<span style=color:#b452cd>23</span>
-<span style=color:#00688b;font-weight:700>Answer:</span> <span style=color:#b452cd>46</span>
-<span style=color:#b452cd>7687</span>
-<span style=color:#00688b;font-weight:700>Answer:</span> <span style=color:#b452cd>15374</span>
-<span style=color:#00688b;font-weight:700>Press</span> <span style=color:#00688b;font-weight:700>Ctrl</span>+<span style=color:#00688b;font-weight:700>C</span> to stop
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">&gt; <span style="color:#00688b;font-weight:bold">:</span>set -<span style="color:#00688b;font-weight:bold">XTypeApplications</span>
+&gt; readInts <span style="color:#8b008b">=</span> fmap (read @<span style="color:#00688b;font-weight:bold">Int</span>) $ forevers $ once getLine
+&gt; <span style="color:#00688b;font-weight:bold">:</span>t readInts
+<span style="color:#008b45">readInts</span> <span style="color:#8b008b">::</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#00688b;font-weight:bold">IO</span> <span style="color:#00688b;font-weight:bold">Int</span>
+&gt; toAnswer x <span style="color:#8b008b">=</span> <span style="color:#cd5555">&#34;Answer: &#34;</span> &lt;&gt; show x
+&gt; putStrLnE $ fmap (toAnswer . (<span style="color:#b452cd">2</span> * )) readInts
+<span style="color:#b452cd">3</span>
+<span style="color:#00688b;font-weight:bold">Answer:</span> <span style="color:#b452cd">6</span>
+<span style="color:#b452cd">7</span>
+<span style="color:#00688b;font-weight:bold">Answer:</span> <span style="color:#b452cd">14</span>
+<span style="color:#b452cd">23</span>
+<span style="color:#00688b;font-weight:bold">Answer:</span> <span style="color:#b452cd">46</span>
+<span style="color:#b452cd">7687</span>
+<span style="color:#00688b;font-weight:bold">Answer:</span> <span style="color:#b452cd">15374</span>
+<span style="color:#00688b;font-weight:bold">Press</span> <span style="color:#00688b;font-weight:bold">Ctrl</span>+<span style="color:#00688b;font-weight:bold">C</span> to stop
 </code></pre></div><p>Notice how we used <code>fmap</code> once to define the input stream of integers
 and another one to double the number and show it to the user.</p>
 <p>There is another useful function:</p>
-<figure><img src=https://anton-k.github.io/dyna-frp/images/map-maybe-evt.svg alt="Monoid events" width=95%>
+<figure><img src="https://anton-k.github.io/dyna-frp/images/map-maybe-evt.svg"
+         alt="Monoid events" width="95%"/>
 </figure>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>mapMay</span> <span style=color:#8b008b>::</span> (a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Maybe</span> b) <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> b
+
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">mapMay</span> <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Maybe</span> b) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> b
 </code></pre></div><p>It has very simple definition:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>mapMay</span> f evt <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Evt</span> $ <span style=color:#008b45>\</span>go <span style=color:#8b008b>-&gt;</span> runEvt evt (mapM_ go . f)
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">mapMay</span> f evt <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Evt</span> $ <span style="color:#008b45">\</span>go <span style="color:#8b008b">-&gt;</span> runEvt evt (mapM_ go . f)
 </code></pre></div><p>It skips all the events that return <code>Nothing</code> and puts to output stream all
 events that return <code>Just</code>. It is mapping combined with filtering.
 For example if user writes non-integer input program will just break up with exception.
 But we can do better with <code>mapMay</code>:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell>&gt; <span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>Text.Read</span>
-&gt; readInts <span style=color:#8b008b>=</span> mapMay (readMaybe @<span style=color:#00688b;font-weight:700>Int</span>) $ foreverE $ once getLine
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">&gt; <span style="color:#8b008b;font-weight:bold">import</span> <span style="color:#008b45;text-decoration:underline">Text.Read</span>
+&gt; readInts <span style="color:#8b008b">=</span> mapMay (readMaybe @<span style="color:#00688b;font-weight:bold">Int</span>) $ foreverE $ once getLine
 </code></pre></div><p>This definition is more solid. Because it skips all non integers.
 We can try it out with doubler and see how it skips invalid input.</p>
 <p>One very often used case of functor is combo with <code>const</code>. When we want
 to substitute all the events with the constant:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>prints</span> (<span style=color:#b452cd>100</span> &lt;$ readInts)
-</code></pre></div><h4 id=monoid>Monoid</h4>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">prints</span> (<span style="color:#b452cd">100</span> &lt;$ readInts)
+</code></pre></div><h4 id="monoid">Monoid</h4>
 <p>Another useful class to have for events is Monoid (and Semigroup).
 For a thing to be a Monoid it have to support <code>mappend</code> operation which is associative
 and have neutral element <code>mempty</code>.</p>
@@ -402,59 +461,65 @@ anything happens on both of the events. The neutral element we have seen already
 So if we combine it with any another stream it will be equivalent by behavior to the original
 stream. Which is exactly what we expect from monoidal neutral element.</p>
 <p>Let&rsquo;s define the Monoid:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#8b008b;font-weight:700>instance</span> <span style=color:#00688b;font-weight:700>Monoid</span> <span style=color:#00688b;font-weight:700>Evt</span> <span style=color:#8b008b;font-weight:700>where</span>
-  mempty <span style=color:#8b008b>=</span> never
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#8b008b;font-weight:bold">instance</span> <span style="color:#00688b;font-weight:bold">Monoid</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#8b008b;font-weight:bold">where</span>
+  mempty <span style="color:#8b008b">=</span> never
 </code></pre></div><p>To define the append we are going to use function <code>concurrently_</code> from the library <code>async</code>.
 It takes in two procedures and executes them concurrently (or <strong>at the same time</strong>).</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#8b008b;font-weight:700>instance</span> <span style=color:#00688b;font-weight:700>Semigroup</span> <span style=color:#00688b;font-weight:700>Evt</span> <span style=color:#8b008b;font-weight:700>where</span>
-  as &lt;&gt; bs <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Evt</span> $ <span style=color:#008b45>\</span>go <span style=color:#8b008b>-&gt;</span> concurrently_ (runEvt as go) (runEvt bs go)
-</code></pre></div><figure><img src=https://anton-k.github.io/dyna-frp/images/monoid-evt.svg alt="Monoid events" width=95%>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#8b008b;font-weight:bold">instance</span> <span style="color:#00688b;font-weight:bold">Semigroup</span> <span style="color:#00688b;font-weight:bold">Evt</span> <span style="color:#8b008b;font-weight:bold">where</span>
+  as &lt;&gt; bs <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Evt</span> $ <span style="color:#008b45">\</span>go <span style="color:#8b008b">-&gt;</span> concurrently_ (runEvt as go) (runEvt bs go)
+</code></pre></div><figure><img src="https://anton-k.github.io/dyna-frp/images/monoid-evt.svg"
+         alt="Monoid events" width="95%"/>
 </figure>
+
 <p>That&rsquo;s it! So in the result we take single callback and execute it on
 both of the event streams concurrently.
 The nice property of the <code>concurrently_</code> is that if we force stop of execution
 by exception it will stop both of the event processes and we won&rsquo;t have any
 leakage of the resources with unwanted background processes.</p>
 <p>Monoid is useful to aggregate several event streams to a single one.</p>
-<h4 id=more-list-like-functions>More list-like functions</h4>
+<h4 id="more-list-like-functions">More list-like functions</h4>
 <p>There are plenty of list-like functions in the <code>dyna</code> library.
 They do just what we expect form lists but lifted to the event streams.
 Usually they have the same name but with suffix <code>s</code>.</p>
 <p>Let&rsquo;s load the <code>dyna</code> lib to interpreter and see some of most useful functions.
 Let&rsquo;s start with simple ones: <code>cycles</code></p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell>&gt; <span style=color:#8b008b;font-weight:700>import</span> <span style=color:#008b45;text-decoration:underline>Dyna</span>
-&gt; prints $ cycles [<span style=color:#b452cd>1</span>,<span style=color:#b452cd>2</span>,<span style=color:#b452cd>3</span>,<span style=color:#b452cd>4</span>] (ticks <span style=color:#b452cd>1</span>)
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">&gt; <span style="color:#8b008b;font-weight:bold">import</span> <span style="color:#008b45;text-decoration:underline">Dyna</span>
+&gt; prints $ cycles [<span style="color:#b452cd">1</span>,<span style="color:#b452cd">2</span>,<span style="color:#b452cd">3</span>,<span style="color:#b452cd">4</span>] (ticks <span style="color:#b452cd">1</span>)
 </code></pre></div><p>Also we can do filtering with <code>filters</code>:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>filters</span> <span style=color:#8b008b>::</span> (a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Bool</span>) <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m a
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">filters</span> <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Bool</span>) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a
 
-&gt; prints $ filters odd $ cycles [<span style=color:#b452cd>1</span>,<span style=color:#b452cd>2</span>,<span style=color:#b452cd>3</span>,<span style=color:#b452cd>4</span>] (ticks <span style=color:#b452cd>1</span>)
-</code></pre></div><figure><img src=https://anton-k.github.io/dyna-frp/images/filter-evt.svg alt="Monoid events" width=90%>
+&gt; prints $ filters odd $ cycles [<span style="color:#b452cd">1</span>,<span style="color:#b452cd">2</span>,<span style="color:#b452cd">3</span>,<span style="color:#b452cd">4</span>] (ticks <span style="color:#b452cd">1</span>)
+</code></pre></div><figure><img src="https://anton-k.github.io/dyna-frp/images/filter-evt.svg"
+         alt="Monoid events" width="90%"/>
 </figure>
+
 <p>Notice that the event happens once per two seconds because
 we skip even numbers. We can sum and product with <code>sums</code> and <code>products</code>.
 Also we can count the number of events on the stream <code>count</code>.
 We can count how many times user provided the input:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>prints</span> $ count $ forevers (once getLine)
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">prints</span> $ count $ forevers (once getLine)
 </code></pre></div><p>Sometimes it&rsquo;s also useful to keep the original value. We can
 use <code>withCount</code> for that:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>printE</span> $ withCount $ foreverE (once getLine)
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">printE</span> $ withCount $ foreverE (once getLine)
 </code></pre></div><p>The <code>sums</code> and <code>products</code> can be generalized with single function <code>appends</code>.
 It appends all the events that are instance of some monoid.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>appends</span> <span style=color:#8b008b>::</span> (<span style=color:#00688b;font-weight:700>Monoid</span> a) <span style=color:#8b008b>=&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m a
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">appends</span> <span style="color:#8b008b">::</span> (<span style="color:#00688b;font-weight:bold">Monoid</span> a) <span style="color:#8b008b">=&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a
 </code></pre></div><p>We have seen the simple functions. One of the most useful function is <code>scan</code>.
 It iterates over elements of the stream and updates the state on every new input:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>scan</span> <span style=color:#8b008b>::</span> (a <span style=color:#8b008b>-&gt;</span> b <span style=color:#8b008b>-&gt;</span> b) <span style=color:#8b008b>-&gt;</span> b <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m b
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">scan</span> <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> b <span style="color:#8b008b">-&gt;</span> b) <span style="color:#8b008b">-&gt;</span> b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m b
 </code></pre></div><p>For example we can redefine the function <code>count</code> with <code>scan</code>:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell>&gt; prints $ scan (+) <span style=color:#b452cd>0</span> (<span style=color:#b452cd>1</span> &lt;$ ticks <span style=color:#b452cd>1</span>)
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">&gt; prints $ scan (+) <span style="color:#b452cd">0</span> (<span style="color:#b452cd">1</span> &lt;$ ticks <span style="color:#b452cd">1</span>)
 </code></pre></div><p>We used combination of functor and scan. Can you find out how to define it without a functor
 and use only scan?</p>
 <p>Function that is close to scan is <code>iterates</code>. It ignores the events on the stream
 and just updates the state:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>iterates</span> <span style=color:#8b008b>::</span> (a <span style=color:#8b008b>-&gt;</span> a) <span style=color:#8b008b>-&gt;</span> a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m b <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m a
-</code></pre></div><figure><img src=https://anton-k.github.io/dyna-frp/images/iterate-evt.svg alt="Monoid events" width=90%>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">iterates</span> <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> a) <span style="color:#8b008b">-&gt;</span> a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m b <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a
+</code></pre></div><figure><img src="https://anton-k.github.io/dyna-frp/images/iterate-evt.svg"
+         alt="Monoid events" width="90%"/>
 </figure>
+
 <p>Just as count it has special version that keeps the elements of the stream
-alongside with updated state. It&rsquo;s called <code>withIterates</code>.</p>
+alongside with updated state.  It&rsquo;s called <code>withIterates</code>.</p>
 <p>Also there are familiar list functions <code>takes</code>, <code>drops</code>, <code>takesWhile</code>, <code>dropsWhile</code>.
 They do the same stuff as the corresponding list functions.</p>
 <p>For many functions that perform map or update of the state with accumulator
@@ -463,42 +528,42 @@ variants that can filter and map at the same time.</p>
 <p>Also there are effectful variants that map or filter with dirty effectful functions.
 They have the same name but end up with tick at the end.
 For example we can filter with effectful predicate:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>filters&#39;</span> <span style=color:#8b008b>::</span> (a <span style=color:#8b008b>-&gt;</span> m <span style=color:#00688b;font-weight:700>Bool</span>) <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m a
-</code></pre></div><h4 id=random-event-streams>Random event streams</h4>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">filters&#39;</span> <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> m <span style="color:#00688b;font-weight:bold">Bool</span>) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a
+</code></pre></div><h4 id="random-event-streams">Random event streams</h4>
 <p>When we implement a game we need some source of surprise. Something
 unexpected happens and we are happy to deal with that.
 For those cases it&rsquo;s great to use random generators. In the library
 we have handful of functions for that. We can toss a coin with function <code>oneOf</code>:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell>&gt; <span style=color:#8b008b;font-weight:700>data</span> <span style=color:#00688b;font-weight:700>Coin</span> <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Heads</span> | <span style=color:#00688b;font-weight:700>Tails</span>  <span style=color:#8b008b;font-weight:700>deriving</span> (<span style=color:#00688b;font-weight:700>Show</span>, <span style=color:#00688b;font-weight:700>Eq</span>)
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell">&gt; <span style="color:#8b008b;font-weight:bold">data</span> <span style="color:#00688b;font-weight:bold">Coin</span> <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Heads</span> | <span style="color:#00688b;font-weight:bold">Tails</span>  <span style="color:#8b008b;font-weight:bold">deriving</span> (<span style="color:#00688b;font-weight:bold">Show</span>, <span style="color:#00688b;font-weight:bold">Eq</span>)
 &gt;
-&gt; prints (oneOf [<span style=color:#00688b;font-weight:700>Heads</span>, <span style=color:#00688b;font-weight:700>Tails</span>] (ticks <span style=color:#b452cd>1</span>))
-<span style=color:#00688b;font-weight:700>Heads</span>
-<span style=color:#00688b;font-weight:700>Heads</span>
-<span style=color:#00688b;font-weight:700>Heads</span>
-<span style=color:#00688b;font-weight:700>Tails</span>
-<span style=color:#00688b;font-weight:700>Heads</span>
-<span style=color:#00688b;font-weight:700>Tails</span>
-<span style=color:#00688b;font-weight:700>Tails</span>
-<span style=color:#00688b;font-weight:700>Tails</span>
-<span style=color:#00688b;font-weight:700>Heads</span>
+&gt; prints (oneOf [<span style="color:#00688b;font-weight:bold">Heads</span>, <span style="color:#00688b;font-weight:bold">Tails</span>] (ticks <span style="color:#b452cd">1</span>))
+<span style="color:#00688b;font-weight:bold">Heads</span>
+<span style="color:#00688b;font-weight:bold">Heads</span>
+<span style="color:#00688b;font-weight:bold">Heads</span>
+<span style="color:#00688b;font-weight:bold">Tails</span>
+<span style="color:#00688b;font-weight:bold">Heads</span>
+<span style="color:#00688b;font-weight:bold">Tails</span>
+<span style="color:#00688b;font-weight:bold">Tails</span>
+<span style="color:#00688b;font-weight:bold">Tails</span>
+<span style="color:#00688b;font-weight:bold">Heads</span>
 </code></pre></div><p>The <code>oneOf</code> selects one element at random when event on the stream happens.
 The variant <code>withOneOf</code> keeps also the original event value alongside with random value.
 Also we can have stream of random values:</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#008b45>toRandom</span>  <span style=color:#8b008b>::</span> (<span style=color:#00688b;font-weight:700>Random</span> b) <span style=color:#8b008b>=&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m b
-<span style=color:#008b45>toRandomR</span> <span style=color:#8b008b>::</span> (<span style=color:#00688b;font-weight:700>Random</span> b) <span style=color:#8b008b>=&gt;</span> (b, b) <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m b
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#008b45">toRandom</span>  <span style="color:#8b008b">::</span> (<span style="color:#00688b;font-weight:bold">Random</span> b) <span style="color:#8b008b">=&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m b
+<span style="color:#008b45">toRandomR</span> <span style="color:#8b008b">::</span> (<span style="color:#00688b;font-weight:bold">Random</span> b) <span style="color:#8b008b">=&gt;</span> (b, b) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m b
 
-<span style=color:#008b45>withRandom</span> <span style=color:#8b008b>::</span> (<span style=color:#00688b;font-weight:700>Random</span> b) <span style=color:#8b008b>=&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m (b, a)
-<span style=color:#008b45>withRandomR</span> <span style=color:#8b008b>::</span> (<span style=color:#00688b;font-weight:700>Random</span> b) <span style=color:#8b008b>=&gt;</span> (b, b) <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m a <span style=color:#8b008b>-&gt;</span> <span style=color:#00688b;font-weight:700>Evt</span> m (b, a)
+<span style="color:#008b45">withRandom</span> <span style="color:#8b008b">::</span> (<span style="color:#00688b;font-weight:bold">Random</span> b) <span style="color:#8b008b">=&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m (b, a)
+<span style="color:#008b45">withRandomR</span> <span style="color:#8b008b">::</span> (<span style="color:#00688b;font-weight:bold">Random</span> b) <span style="color:#8b008b">=&gt;</span> (b, b) <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">-&gt;</span> <span style="color:#00688b;font-weight:bold">Evt</span> m (b, a)
 </code></pre></div><p>Also useful function is <code>freqOf</code> it allows us to use time varying probability
 of event occurrence.</p>
-<h4 id=event-streams-recap>Event streams recap</h4>
+<h4 id="event-streams-recap">Event streams recap</h4>
 <p>So far so good! We have covered a lot of ground based on event streams.
 Let&rsquo;s recap. An event stream is a callback consumer/processor. It has very
-simple definition. If you give me callback procedure <code>a -> m ()</code> I can
+simple definition. If you give me callback procedure <code>a -&gt; m ()</code> I can
 call it whenever any event happen on the stream. But we don&rsquo;t know when it&rsquo;s
 gonna happen.</p>
-<div class=highlight><pre tabindex=0 style=background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-haskell data-lang=haskell><span style=color:#8b008b;font-weight:700>newtype</span> <span style=color:#00688b;font-weight:700>Evt</span> m a <span style=color:#8b008b>=</span> <span style=color:#00688b;font-weight:700>Evt</span> {
-  runEvt <span style=color:#8b008b>::</span> (a <span style=color:#8b008b>-&gt;</span> m <span style=color:#658b00>()</span>) <span style=color:#8b008b>-&gt;</span> m <span style=color:#658b00>()</span>
+<div class="highlight"><pre tabindex="0" style="background-color:#eed;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-haskell" data-lang="haskell"><span style="color:#8b008b;font-weight:bold">newtype</span> <span style="color:#00688b;font-weight:bold">Evt</span> m a <span style="color:#8b008b">=</span> <span style="color:#00688b;font-weight:bold">Evt</span> {
+  runEvt <span style="color:#8b008b">::</span> (a <span style="color:#8b008b">-&gt;</span> m <span style="color:#658b00">()</span>) <span style="color:#8b008b">-&gt;</span> m <span style="color:#658b00">()</span>
 }
 </code></pre></div><p>By using the power of Haskell functions we have built a nice DSL on top of this definition.
 We have defined instances for <code>Functor</code> and <code>Monoid</code> classes. We have defined
@@ -507,289 +572,302 @@ We encountered some simple event streams: <code>once</code>, <code>never</code>,
 They can generate various basic event streams.</p>
 <hr>
 <ul>
-<li><code>&lt;=</code> <a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/01-intro>Introduction</a></li>
-<li><code>=></code> <a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/03-event-game-example>Interactive Game example</a></li>
-<li>Up: <a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial-toc>Table of Contents</a></li>
+<li><code>&lt;=</code> <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/01-intro">Introduction</a></li>
+<li><code>=&gt;</code> <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/03-event-game-example">Interactive Game example</a></li>
+<li>Up: <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial-toc">Table of Contents</a></li>
 </ul>
-</div>
-</div>
+
+    </div>
+  </div>
 </section>
+
+
+
+    
 <footer class="footer footer-dark">
-<div class=container>
-<div class=columns>
-<div class=column>
-<div class=footer-logo>
-<a href=https://anton-k.github.io/dyna-frp/>
-<img src=https://anton-k.github.io/dyna-frp/images/logos/dyna-logo-white-2.png>
-</a>
-</div>
-</div>
-<div class=column>
-<div class=footer-column>
-<div class=footer-header>
-<h3>Docs</h3>
-</div>
-<ul class=link-list>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/get-started>
-Get started
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial-toc>
-Tutorial
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/paper>
-Paper
-</a>
-</li>
-<li>
-<a href=https://hackage.haskell.org/package/dyna>
-Hackage
-</a>
-</li>
-</ul>
-</div>
-</div>
-<div class=column>
-<div class=footer-column>
-<div class=footer-header>
-<h3>Bindings</h3>
-</div>
-<ul class=link-list>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-brick/tutorial-toc>
-Brick
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial-toc>
-Gloss
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-processing/tutorial-toc>
-Processing
-</a>
-</li>
-</ul>
-</div>
-</div>
-<div class=column>
-<div class=footer-column>
-<div class=footer-header>
-<h3>Hackage</h3>
-</div>
-<ul class=link-list>
-<li>
-<a href=https://hackage.haskell.org/package/dyna>
-Core FRP
-</a>
-</li>
-<li>
-<a href=https://hackage.haskell.org/package/dyna-brick>
-Brick
-</a>
-</li>
-<li>
-<a href=https://hackage.haskell.org/package/dyna-gloss>
-Gloss
-</a>
-</li>
-<li>
-<a href=https://hackage.haskell.org/package/dyna-processing>
-Processing
-</a>
-</li>
-</ul>
-</div>
-</div>
-<div class=column>
-<div class=footer-column>
-<div class=footer-header>
-<h3>Follow Us</h3>
-<nav class="level is-mobile">
-<div class=level-left>
-<a class=level-item href=https://github.com/anton-k/dyna-frp/>
-<span class=icon><i class="fa fa-github"></i></span>
-</a>
-</div>
-</nav>
-</div>
-</div>
-</div>
-</div>
-</div>
+  <div class="container">
+    <div class="columns">
+      <div class="column">
+        <div class="footer-logo">
+          <a href="https://anton-k.github.io/dyna-frp/">
+            <img src="https://anton-k.github.io/dyna-frp/images/logos/dyna-logo-white-2.png">
+          </a>
+        </div>
+      </div>
+        <div class="column">
+          <div class="footer-column">
+            <div class="footer-header">
+                <h3>Docs</h3>
+            </div>
+            <ul class="link-list">
+              <li>
+                <a href="https://anton-k.github.io/dyna-frp/dyna-core/get-started">
+                  Get started
+                </a>
+              </li>
+              <li>
+                <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial-toc">
+                  Tutorial
+                </a>
+              </li>
+              <li>
+                <a href="https://anton-k.github.io/dyna-frp/paper">
+                  Paper
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna">
+                  Hackage
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="column">
+          <div class="footer-column">
+            <div class="footer-header">
+                <h3>Bindings</h3>
+            </div>
+            <ul class="link-list">
+              <li>
+                <a href="https://anton-k.github.io/dyna-frp/dyna-brick/tutorial-toc">
+                  Brick
+                </a>
+              </li>
+              <li>
+                <a href="https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial-toc">
+                  Gloss
+                </a>
+              </li>
+              <li>
+                <a href="https://anton-k.github.io/dyna-frp/dyna-processing/tutorial-toc">
+                  Processing
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="column">
+          <div class="footer-column">
+            <div class="footer-header">
+                <h3>Hackage</h3>
+            </div>
+            <ul class="link-list">
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna">
+                  Core FRP
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna-brick">
+                  Brick
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna-gloss">
+                  Gloss
+                </a>
+              </li>
+              <li>
+                <a href="https://hackage.haskell.org/package/dyna-processing">
+                  Processing
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      <div class="column">
+        <div class="footer-column">
+          <div class="footer-header">
+            <h3>Follow Us</h3>
+            <nav class="level is-mobile">
+              <div class="level-left">
+                <a class="level-item" href="https://github.com/anton-k/dyna-frp/">
+                  <span class="icon"><i class="fa fa-github"></i></span>
+                </a>
+              </div>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </footer>
-<div id=backtotop><a href=#></a></div>
-<div class=sidebar>
-<div class=sidebar-header>
-<img src=https://anton-k.github.io/dyna-frp/images/logos/fresh-square.svg>
-<a class=sidebar-close href=javascript:void(0);>
-<i data-feather=x></i>
-</a>
+
+
+    
+    <div id="backtotop"><a href="#"></a></div>
+
+    
+<div class="sidebar">
+  <div class="sidebar-header">
+    <img src="https://anton-k.github.io/dyna-frp/images/logos/fresh-square.svg">
+    <a class="sidebar-close" href="javascript:void(0);">
+      <i data-feather="x"></i>
+    </a>
+  </div>
+  <div class="inner">
+    <ul class="sidebar-menu">
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-user"></span>
+          Core
+        </a>
+        <ul>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/01-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/02-event-streams">
+              Event streams
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/03-event-game-example">
+              Console game example
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/04-dynamics">
+              Dynamic values
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/05-backbone-monad">
+              Main FRP monad
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/06-control-flow">
+              Control flow. Sharing and Recursion
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/07-make-bindings">
+              Bindings to imperative libraries
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/08-parser">
+              Parsers of event streams
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/09-conclusion">
+              Conclusion
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-core/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-envelope"></span>
+          Brick
+        </a>
+        <ul>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-brick/tutorial/00-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-brick/tutorial/01-puzzle-15">
+              Example: Puzzle 15
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-brick/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-image"></span>
+          Gloss
+        </a>
+        <ul>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial/00-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial/01-example">
+              Example
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-image"></span>
+          Processing
+        </a>
+        <ul>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/00-intro">
+              Introduction
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/01-example">
+              Example
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/101-reference">
+              Quick reference
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="have-children">
+        <a href="#">
+          <span class="fa fa-cog"></span>
+          Resources
+        </a>
+        <ul>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/">
+              Publications
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/">
+              Video
+            </a>
+          </li>
+          <li>
+            <a href="https://anton-k.github.io/dyna-frp/">
+              Examples
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
 </div>
-<div class=inner>
-<ul class=sidebar-menu>
-<li class=have-children>
-<a href=#>
-<span class="fa fa-user"></span>
-Core
-</a>
-<ul>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/01-intro>
-Introduction
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/02-event-streams>
-Event streams
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/03-event-game-example>
-Console game example
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/04-dynamics>
-Dynamic values
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/05-backbone-monad>
-Main FRP monad
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/06-control-flow>
-Control flow. Sharing and Recursion
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/07-make-bindings>
-Bindings to imperative libraries
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/08-parser>
-Parsers of event streams
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/09-conclusion>
-Conclusion
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-core/tutorial/101-reference>
-Quick reference
-</a>
-</li>
-</ul>
-</li>
-<li class=have-children>
-<a href=#>
-<span class="fa fa-envelope"></span>
-Brick
-</a>
-<ul>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-brick/tutorial/00-intro>
-Introduction
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-brick/tutorial/01-puzzle-15>
-Example: Puzzle 15
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-brick/tutorial/101-reference>
-Quick reference
-</a>
-</li>
-</ul>
-</li>
-<li class=have-children>
-<a href=#>
-<span class="fa fa-image"></span>
-Gloss
-</a>
-<ul>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial/00-intro>
-Introduction
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial/01-example>
-Example
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-gloss/tutorial/101-reference>
-Quick reference
-</a>
-</li>
-</ul>
-</li>
-<li class=have-children>
-<a href=#>
-<span class="fa fa-image"></span>
-Processing
-</a>
-<ul>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/00-intro>
-Introduction
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/01-example>
-Example
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/dyna-processing/tutorial/101-reference>
-Quick reference
-</a>
-</li>
-</ul>
-</li>
-<li class=have-children>
-<a href=#>
-<span class="fa fa-cog"></span>
-Resources
-</a>
-<ul>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/>
-Publications
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/>
-Video
-</a>
-</li>
-<li>
-<a href=https://anton-k.github.io/dyna-frp/>
-Examples
-</a>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
-<script src=https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js></script>
-<script src=https://unpkg.com/feather-icons></script>
-<script src=https://anton-k.github.io/dyna-frp/js/fresh.js></script>
-<script src=https://anton-k.github.io/dyna-frp/js/jquery.panelslider.min.js></script>
-<script src=https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js></script>
-</body>
+
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+<script src="https://anton-k.github.io/dyna-frp/js/fresh.js"></script>
+<script src="https://anton-k.github.io/dyna-frp/js/jquery.panelslider.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+  </body>
 </html>
