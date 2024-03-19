@@ -1,11 +1,14 @@
 resolver:
-  url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/22.yaml
+  lts-22.11
+  #  url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/22.yaml
 
 packages:
 - dyna
-- dyna-brick
+  # - dyna-brick
 - dyna-gloss
 - dyna-processing
+
+allow-newer: true
 
 extra-deps:
 - brick-0.66.1
@@ -15,4 +18,6 @@ extra-deps:
 - hsnoise-0.0.2
 
 # flags: {}
+
+
 
