@@ -1,4 +1,4 @@
--- | IO of thebrick application
+-- | IO of the brick application
 module Dyna.Brick.Run(
   Spec(..),
   defSpec,
@@ -29,6 +29,7 @@ import Control.Concurrent.Chan.Unagi
 import Control.Exception.Lifted
 import Data.Default
 import Data.Text (Text)
+import Data.Functor(void)
 
 import Data.IORef
 import Dyna qualified as D
@@ -39,6 +40,7 @@ import qualified Graphics.Vty as Vty
 import Graphics.Vty (Key(..), Modifier, Button)
 
 import Dyna.Brick.Types
+import qualified Graphics.Vty.CrossPlatform as Vty
 
 data Spec = Spec
   { spec'attrMap :: AttrMap
@@ -66,7 +68,7 @@ runApp Spec{..} dynActs = do
         { appDraw         = id
         , appChooseCursor = const spec'cursor
         , appHandleEvent  = handleEvent env
-        , appStartEvent   = pure
+        , appStartEvent   = pure ()
         , appAttrMap      = const spec'attrMap
         }
   let evs = (\(Win dyn acts) -> (UpdateWidgets <$> D.unhold (unDyn dyn)) <> (BrickAct <$> unEvt acts)) <$> dynActs
@@ -74,21 +76,21 @@ runApp Spec{..} dynActs = do
   runChanMain actChan app
     `finally` killThread tid
   where
-    handleEvent env@Env{..} st evt = case evt of
+    handleEvent env@Env{..} evt = case evt of
       VtyEvent event -> do
         liftIO $ writeChan (fst env'eventChan) event
-        continueWithoutRedraw st
+        continueWithoutRedraw
       AppEvent act -> case act of
-        UpdateWidgets ws -> continue ws
+        UpdateWidgets ws -> pure ()
         BrickAct act     ->
           case act of
-            Quit -> halt st
+            Quit -> halt
       MouseDown n but mods loc -> do
         liftIO $ writeChan (fst env'mouseDownChan) (MouseDownEvent n but mods loc)
-        continueWithoutRedraw st
+        continueWithoutRedraw
       MouseUp n mBut loc       -> do
         liftIO $ writeChan (fst env'mouseUpChan) (MouseUpEvent n mBut loc)
-        continueWithoutRedraw st
+        continueWithoutRedraw
 
     runChanMain chan app = do
       let buildVty = Vty.mkVty Vty.defaultConfig

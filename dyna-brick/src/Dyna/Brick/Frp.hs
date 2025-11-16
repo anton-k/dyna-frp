@@ -1,3 +1,4 @@
+{-# LANGUAGE TypeOperators #-}
 -- | FRP main types and combinators
 module Dyna.Brick.Frp(
   -- * Events
